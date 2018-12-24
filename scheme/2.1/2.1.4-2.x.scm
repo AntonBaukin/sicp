@@ -14,6 +14,13 @@
  (cdr i)
 )
 
+(define (interval-eq? i j)
+ (and
+  (= (interval-low i) (interval-low j))
+  (= (interval-up i) (interval-up j))
+ )
+)
+
 (define (interval-str i)
  (string-append
   "["
