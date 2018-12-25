@@ -1,8 +1,4 @@
-(include "2.1.4-2.x.scm")
-
-(define (interval-radius i)
- (* 0.5 (- (interval-up i) (interval-low i)))
-)
+(include "2.1.4-2.y.scm")
 
 (log "radius [1 .. 2] = " (interval-radius (interval-make 1 2)))
 
