@@ -38,6 +38,13 @@
  )
 )
 
+(define (interval-sub i j)
+ (interval-make
+  (- (interval-low i) (interval-up j))
+  (- (interval-up i) (interval-low j))
+ )
+)
+
 (define (interval-mul i j)
  (let
   (
