@@ -78,4 +78,11 @@
 (define x-cross (lines->painter x-cross-lines))
 (define wave (lines->painter wave-lines))
 
-(provide frame-outline rhombus x-cross wave)
+(provide
+  frame-outline
+  rhombus
+  x-cross
+  wave
+  wave-lines
+  lines->painter
+)
