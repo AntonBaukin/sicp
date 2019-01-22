@@ -1,0 +1,11 @@
+(define (log . args) (for-each display args) (newline))
+
+(log "(list 'a 'b 'c) → " (list 'a 'b 'c))
+(log "(list (list 'George)) → " (list (list 'George)))
+(log "(cdr '((x1 x2) (y1 y2))) → " (cdr '((x1 x2) (y1 y2))))
+(log "(cadr '((x1 x2) (y1 y2))) → " (cadr '((x1 x2) (y1 y2))))
+(log "(pair? (car '(a short list)))  → " (pair? (car '(a short list))))
+(log "(pair? (cdr '(a short list)))  → " (pair? (cdr '(a short list))))
+(log "(memq 'red '(red shoes blue socks))  → " (memq 'red '(red shoes blue socks)))
+(log "(memq 'blue '(red shoes blue socks))  → " (memq 'blue '(red shoes blue socks)))
+(log "(memq 'red '((red shoes) (blue socks)))  → " (memq 'red '((red shoes) (blue socks))))
