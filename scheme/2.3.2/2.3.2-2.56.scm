@@ -28,7 +28,7 @@
  (caddr exp-expr)
 )
 
-; Allows chaining of derivatives computators.
+; Allows chaining of derivative computators.
 (define (make-deriv-exp deriv-else)
  (lambda (var expr deriv-outer)
   (if (not (exponentation? expr))
@@ -54,3 +54,4 @@
 (log "deriv (^ x 3) = " (deriv-x '(^ x 3)))
 (log "deriv (^ (+ x 1) 3) = " (deriv-x '(^ (+ x 1) 3)))
 (log "deriv (* (^ x 3) (+ x 1)) = " (deriv-x '(* (^ x 3) (+ x 1))))
+(log "deriv (^ (^ x 2) 3) = " (deriv-x '(^ (^ x 2) 3)))
