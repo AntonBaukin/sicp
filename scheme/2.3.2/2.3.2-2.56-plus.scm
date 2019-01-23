@@ -1,4 +1,5 @@
-(include "2.3.2-2.56.scm")
+(include "2.3.2-2.5z.scm")
+(define (log . args) (for-each display args) (newline))
 
 (define (make-diff expr-a expr-b)
  (cond
