@@ -87,6 +87,50 @@
  )
 )
 
-(log "deriv (x + 2 + x + 4 + x) = " (deriv-x '(x + 2 + x + 4 + x)))
-(log "deriv (x * 2 * x) = " (deriv-x '(x * 2 * x)))
-;(log "deriv (x + 3 * (x + y + 2)) = " (deriv-x '(x + (3 * (x + (y + 2))))))
+(log "wrong deriv (x + x * x + x) = " (deriv-x '(x + x * x + x)))
+(log "scope deriv (x + ((x * x) + x)) = " (deriv-x '(x + ((x * x) + x))))
+
+; In the given expression list searches for the first
+; product '* and returns pair of the left and the right
+; sides of the expression as a pair. Else, returns '().
+(define (split-by-product expr)
+ (define (next left right)
+  (if (null? (cdr right)) '()
+   (let* (
+     (a (car right))
+     (x (cadr right))
+
+     ;—> the left side is empty or has sums only
+     (l (append left (if (null? left) (list a) (list '+ a))))
+     (r (cddr right)) ;<— skip the sign
+    )
+
+    (if (eq? '* x) (cons l r) (next l r))
+   )
+  )
+ )
+
+ (next '() expr)
+)
+
+(log "split by product (x + y + z) = "
+ (split-by-product '(x + y + z)))
+
+(log "split by product (x + y + z * v + w) = "
+ (split-by-product '(x + y + z * v + w)))
+
+; Expression is a sum if it has no products.
+(define (sum? expr)
+ (and (pair? expr) (null? (split-by-product expr)))
+)
+
+(log "sum (x + y) ?= " (sum? '(x + y)))
+(log "sum (x + y + z) ?= " (sum? '(x + y + z)))
+(log "sum (x + y + z) ?= " (sum? '(x + y + z)))
+
+;(define (augend sum-expr)
+; (let ((res (cddr sum-expr)))
+;  (if (null? (cdr res)) (car res) res)
+; )
+;)
+
