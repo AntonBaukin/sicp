@@ -3,7 +3,7 @@ in Gambit Scheme implementation. To compele the tasks we
 have to use else LISP system, well-known Racket, see
 racket-lang.org for the manuals and binaries.
 
-The paining package is descriped in this article:
+The painting package is descriped in this article:
 http://planet.racket-lang.org/package-source/soegaard/sicp.plt/2/0/planet-docs/sicp-manual/index.html
 
 You need to start DrRacket IDE with Gui. On the first start of

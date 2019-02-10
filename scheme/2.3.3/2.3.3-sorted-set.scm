@@ -1,7 +1,6 @@
-(define (log . args) (for-each display args) (newline))
 
 ; Creates collection of utilities related to sorted set
-; packed into a single ops-list, i.e. an «object».
+; packed into a single ops-list, i.e. a «class».
 ; Use set-op-* selectors of the ops.
 ; Comparator is as < operator.
 (define (make-sorted-set smaller?)
