@@ -1,5 +1,5 @@
 (define (log . args) (for-each display args) (newline))
-(include "2.3.3-sorted-set.scm")
+(include "sorted-set.scm")
 
 (define NumbersSet (make-sorted-set <))
 

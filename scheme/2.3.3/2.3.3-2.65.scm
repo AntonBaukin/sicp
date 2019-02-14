@@ -1,7 +1,7 @@
 (define (log . args) (for-each display args) (newline))
 
-(include "2.3.3-tree.scm")
-(include "2.3.3-tree-print.scm")
+(include "tree.scm")
+(include "tree-print.scm")
 
 (define (tree->list treeops tree)
  (define get (tree-op-get treeops))
@@ -51,7 +51,7 @@
 (define (union-set treeops set-tree-a set-tree-b)
  (define smaller? (tree-op-smaller? treeops))
 
- ; Implementation from «2.3.3-sorted-set.scm» takes o(n + m)
+ ; Implementation from «sorted-set.scm» takes o(n + m)
  (define (union seta setb)
   (cond
    ((null? seta) setb)
@@ -80,7 +80,7 @@
 (define (intersect-set treeops set-tree-a set-tree-b)
  (define smaller? (tree-op-smaller? treeops))
 
- ; Implementation from «2.3.3-sorted-set.scm» takes o(n + m)
+ ; Implementation from «sorted-set.scm» takes o(n + m)
  (define (intersect seta setb)
   (cond
    ((null? seta) '())

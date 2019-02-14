@@ -1,7 +1,7 @@
 (define (log . args) (for-each display args) (newline))
 
-(include "2.3.3-tree.scm")
-(include "2.3.3-tree-print.scm")
+(include "tree.scm")
+(include "tree-print.scm")
 
 (define (list->tree treeops list-elements)
  (define (make-node v l r)
