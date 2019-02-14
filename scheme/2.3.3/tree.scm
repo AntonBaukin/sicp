@@ -1,3 +1,4 @@
+(include "sorted-set.scm")
 
 ; Creates collection of utilities related to a tree
 ; packed into a single ops-list, i.e. a «class».
@@ -6,6 +7,9 @@
 (define (make-tree smaller?)
 
  (define nil '())
+
+ (define Set (make-sorted-set smaller?))
+ (define make-set (set-op-make Set))
 
  (define (node item left right)
   (cons item (cons left right))
@@ -43,10 +47,54 @@
   (and (null? (get-left node)) (null? (get-right node)))
  )
 
+ (define (tree->list t)
+  (if (null? t) t
+   (append
+    (tree->list (get-left t))
+    (cons (get t) (tree->list (get-right t)))
+    )
+  )
+ )
+
+ ; Goes to the first item dividing the list by 2 on each step
+ ; combining the left and rights sub-trees with the center
+ ; item to be the node (local root) up to the very center
+ ; of the initial list making it the resulting root.
+ ; Takes o(n) steps.
+ (define (partial-tree elements n)
+  (if (= 0 n) (cons '() elements)
+   (let* (
+     (left-size (quotient (- n 1) 2))
+     (left-result (partial-tree elements left-size))
+     (left-tree (car left-result))
+     (non-left-elements (cdr left-result))
+     (right-size (- n (+ left-size 1)))   ; +1 as we take leading item
+     (this-entry (car non-left-elements)) ; as this-entry of the node
+     (right-result (partial-tree (cdr non-left-elements) right-size))
+     (right-tree (car right-result))
+     (remaining-elements (cdr right-result))
+    )
+
+    (cons
+     (node this-entry left-tree right-tree)
+     remaining-elements
+    )
+   )
+  )
+ )
+
+ (define (list->tree sequence)
+  (let ((seq (make-set sequence)))
+   (car (partial-tree seq (length seq)))
+  )
+ )
+
  ;      0     1        2        3    4     5
  (list get get-left get-right node single leaf?
  ;        6        7       8     9
-       set-left set-right set smaller?)
+       set-left set-right set smaller?
+ ;         10         11     12
+       tree->list list->tree Set )
 )
 
 ; Returns the value of the give node.
@@ -99,4 +147,20 @@
 ; Comparison operator used to create this tree class.
 (define (tree-op-smaller? treeops)
  (list-ref treeops 9)
+)
+
+; Creates sorted list from the given tree.
+(define (tree-op->list treeops)
+ (list-ref treeops 10)
+)
+
+; Creates tree from the given list that may be not sorted
+; and may contain duplicates (that ares removed).
+(define (tree-op<-list treeops)
+ (list-ref treeops 11)
+)
+
+; Returns sorted Set ops «class» with the same comparator.
+(define (tree-op-Set treeops)
+ (list-ref treeops 12)
 )
