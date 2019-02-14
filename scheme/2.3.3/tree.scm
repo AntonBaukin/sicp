@@ -35,6 +35,26 @@
   (cddr node)
  )
 
+ (define (search tree item)
+  (define (next node)
+   (cond
+    ((null? node) '())
+
+    ((smaller? item (get node))
+     (next (get-left node))
+    )
+
+    ((smaller? (get node) item)
+     (next (get-right node))
+    )
+
+    (else (get node)) ;<— found it
+   )
+  )
+
+  (next tree)
+ )
+
  (define (set-left node branch)
   (cons (get node) (cons branch (get-right node)))
  )
@@ -91,9 +111,9 @@
 
  ;      0     1        2        3    4     5
  (list get get-left get-right node single leaf?
- ;        6        7       8     9
-       set-left set-right set smaller?
- ;         10         11     12
+ ;        6        7       8     9     10
+       set-left set-right set search smaller?
+ ;         11         12     13
        tree->list list->tree Set )
 )
 
@@ -144,23 +164,31 @@
  (list-ref treeops 8)
 )
 
+; Searches for the given item and returns the item
+; stored in the tree — this allows to search actual
+; records by phone ones having only the keys set.
+; Returns '() on not found.
+(define (tree-op-search treeops)
+ (list-ref treeops 9)
+)
+
 ; Comparison operator used to create this tree class.
 (define (tree-op-smaller? treeops)
- (list-ref treeops 9)
+ (list-ref treeops 10)
 )
 
 ; Creates sorted list from the given tree.
 (define (tree-op->list treeops)
- (list-ref treeops 10)
+ (list-ref treeops 11)
 )
 
 ; Creates tree from the given list that may be not sorted
 ; and may contain duplicates (that ares removed).
 (define (tree-op<-list treeops)
- (list-ref treeops 11)
+ (list-ref treeops 12)
 )
 
 ; Returns sorted Set ops «class» with the same comparator.
 (define (tree-op-Set treeops)
- (list-ref treeops 12)
+ (list-ref treeops 13)
 )
