@@ -1,3 +1,4 @@
+(include "quick-sort.scm")
 
 ; Creates collection of utilities related to sorted set
 ; packed into a single ops-list, i.e. a «class».
@@ -28,14 +29,23 @@
   )
  )
 
- (define (make items)
-  (define (next res tail)
+ (define (remove-sorted-dups set)
+  (define (iter res tail)
    (if (null? tail) res
-    (next (add res (car tail)) (cdr tail))
+    (if (or (null? res) (smaller? (car res) (car tail)))
+     (iter (cons (car tail) res) (cdr tail))
+     (iter res (cdr tail))
+    )
    )
   )
 
-  (if (sorted? items) items (next '() items))
+  (reverse (iter '() set))
+ )
+
+ (define (make items)
+  (if (sorted? items) items
+   (remove-sorted-dups (quick-sort smaller? items))
+  )
  )
 
  (define (has? set x)
