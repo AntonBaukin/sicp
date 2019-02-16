@@ -6,7 +6,7 @@
 (define StringTree (make-tree string-ci<?))
 (define make-str-single (tree-op-single StringTree))
 (define make-str-node (tree-op-node StringTree))
-(define str-tree->str (make-tree-str-printer StringTree (lambda (s) s)))
+(define str-tree->str (make-tree->str-printer StringTree (lambda (s) s)))
 
 (define test-str-tree (make-str-node "a"
  (make-str-node "b" (make-str-single "d") (make-str-single "e"))
@@ -58,7 +58,7 @@
 (define NumTree (make-tree <))
 (define make-num-single (tree-op-single NumTree))
 (define make-num-node (tree-op-node NumTree))
-(define num-tree->str (make-tree-str-printer NumTree number->string))
+(define num-tree->str (make-tree->str-printer NumTree number->string))
 
 
 ;—————————————————————————————————————————————————————————————————

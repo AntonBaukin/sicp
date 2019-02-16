@@ -30,7 +30,7 @@
  )
 )
 
-(define datatree->str (make-tree-str-printer DataTree record->str))
+(define datatree->str (make-tree->str-printer DataTree record->str))
 
 (log "Database tree\n" (datatree->str database))
 

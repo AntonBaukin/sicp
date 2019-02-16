@@ -6,7 +6,7 @@
 (define StringTree (make-tree string-ci<?))
 (define make-str-single (tree-op-single StringTree))
 (define make-str-node (tree-op-node StringTree))
-(define str-tree->str (make-tree-str-printer StringTree (lambda (s) s)))
+(define str-tree->str (make-tree->str-printer StringTree (lambda (s) s)))
 
 (define a (make-str-single "a"))
 (define b (make-str-single "b"))

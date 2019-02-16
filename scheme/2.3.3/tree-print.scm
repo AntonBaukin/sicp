@@ -6,7 +6,7 @@
 ; not printed; empty branches are blank spaces.
 ;
 ; See «tree-print-str» function.
-(define (make-tree-str-printer treeops item->string)
+(define (make-tree->str-printer treeops item->string)
 
  (define (marker) #t)
  (define (novalue) #t)

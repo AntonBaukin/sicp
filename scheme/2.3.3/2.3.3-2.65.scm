@@ -65,7 +65,7 @@
 )
 
 (define NumTree (make-tree <))
-(define num-tree->str (make-tree-str-printer NumTree number->string))
+(define num-tree->str (make-tree->str-printer NumTree number->string))
 (define num-tree->list (tree-op->list NumTree))
 (define num-list->tree (tree-op<-list NumTree))
 
