@@ -13,6 +13,7 @@
 ; is not possible, iteration is breaked returning
 ; list ('break way node from stack). On else result,
 ; list ('result result node from stack) is returned.
+; Special way 'root orders to start from the root.
 (define (make-tree-iter treeops)
  (define left (tree-op-get-left treeops))
  (define right (tree-op-get-right treeops))
@@ -43,6 +44,8 @@
        (navigate (car stack) node (cdr stack))
       )
      )
+
+     ((eq? 'root way) (navigate tree '() '()))
 
      (else (list 'result way node from stack))
     )
