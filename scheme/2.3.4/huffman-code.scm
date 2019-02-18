@@ -146,3 +146,74 @@
 
  (reverse result)
 )
+
+
+; Tree of pairs (character . bits sequence) used
+; to rapidly encode messgae without tree walking.
+(define HuffmanEncodeDict (make-tree
+ (lambda (a b) (string-ci<? (car a) (car b)))
+))
+
+; Builds instance of EncodeDict for the given tree.
+(define (huffman-encode-dict huffman-tree)
+ (define get-leafs (make-tree-get-leafs HuffmanTree))
+ (define make-dict (tree-op<-list HuffmanEncodeDict))
+ (define left (tree-op-get-left HuffmanTree))
+ (define (left? node parent) (eq? node (left parent)))
+
+ (define (collect-bits way-up)
+  (define (add-bit bits node parent)
+   (cons (if (left? node parent) 0 1) bits)
+  )
+
+  (define (next tail bits)
+   (if (= 1 (length tail)) bits
+    (next (cdr tail) (add-bit bits (car tail) (cadr tail)))
+   )
+  )
+
+  (next way-up '())
+ )
+
+ ; The way up starts from a leaf and walks to the root.
+ (define (make-dict-entry way-up)
+  (cons (car (get-huffman-tree-chars (car way-up)))
+   (collect-bits way-up)
+  )
+ )
+
+ (make-dict (map make-dict-entry (get-leafs huffman-tree)))
+)
+
+
+; Returns a list of bits lists each being a code of character.
+; You need to make the result flat to get the code. Not known
+; characters are placed instead of a bits list.
+(define (huffman-encode dict msg)
+ (define search (tree-op-search HuffmanEncodeDict))
+
+ (define (add-bits bits-list bits-search char)
+  (cons (if (null? bits-search) char (cdr bits-search)) bits-list)
+ )
+
+ (define (encode-next msg-tail bits-list)
+  (if (null? msg-tail) bits-list
+   (let ((bits (search dict msg-tail)))
+    (encode-next (cdr msg-tail)
+     (add-bits bits-list bits (car msg-tail))
+    )
+   )
+  )
+ )
+
+ (reverse (encode-next msg '()))
+)
+
+(define (huffman-encode-flat dict msg)
+ (huffman-accumulate
+  (huffman-encode dict msg) '()
+  (lambda (res bits)
+   (append res (if (pair? bits) bits (list bits)))
+  )
+ )
+)

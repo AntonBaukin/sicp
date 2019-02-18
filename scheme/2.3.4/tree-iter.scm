@@ -58,11 +58,11 @@
 
 ; Creates iteration function that walks the tree from the
 ; minimum item to the maximum. The function takes (tree iter),
-; where «iter» is function taking the value (item) of a node.
+; where «iter» is function taking arguments (node from stack).
 ; When iterator returns void it asks to continue, else value
 ; is treated as overall iteration result, it breaks iteration.
-(define (make-tree-order-iter treeops)
- (define get (tree-op-get treeops))
+(define (make-tree-order-iter-ext treeops)
+ ; (define get (tree-op-get treeops))
  (define left (tree-op-get-left treeops))
  (define right (tree-op-get-right treeops))
  (define tree-iter (make-tree-iter treeops))
@@ -83,8 +83,8 @@
   (eq? from (right node))
  )
 
- (define (call-or-go iter node dir)
-  (let ((res (iter (get node))))
+ (define (call-or-go dir iter node from stack)
+  (let ((res (iter node from stack)))
    ;(log "go " (if (eq? void res) dir res))
    (if (eq? void res) dir res)
   )
@@ -118,12 +118,12 @@
 
     ;{ we came not from the right and may go there}
     ((and (right? node) (not (from-right? node from)))
-     (call-or-go iter node 'right)
+     (call-or-go 'right iter node from stack)
     )
 
     ;{ have no right }
     ((not (right? node))
-     (call-or-go iter node 'up)
+     (call-or-go 'up iter node from stack)
      'up
     )
 
@@ -131,6 +131,17 @@
     (else 'up)
    )
   ))
+ )
+)
+
+; Wrapper around tree order iterator that invokes
+; the callback with single argument: node item (value).
+(define (make-tree-order-iter treeops)
+ (define get (tree-op-get treeops))
+ (define order-iter (make-tree-order-iter-ext treeops))
+
+ (lambda (tree iter)
+  (order-iter tree (lambda (node from stack) (iter (get node))))
  )
 )
 
@@ -281,5 +292,25 @@
     (else (get-min-safe (right node)))
    )
   )))
+ )
+)
+
+; Returns list of the leafs of the given tree. Each item
+; of the result is a pair of (node . parents stack) that
+; allows to navigate back to the top.
+(define (make-tree-get-leafs treeops)
+ (define leaf? (tree-op-leaf? treeops))
+ (define order-iter (make-tree-order-iter-ext treeops))
+
+ (lambda (tree)
+  (define result '())
+
+  (order-iter tree (lambda (node from stack)
+   (if (not (leaf? node)) void
+    (set! result (cons (cons node stack) result))
+   )
+  ))
+
+  (reverse result)
  )
 )

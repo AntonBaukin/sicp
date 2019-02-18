@@ -23,4 +23,5 @@
 
 (log "\nSample Huffman tree\n" (huffman-tree->str sample-tree))
 (log "Decoding " sample-bits)
-(log ":> " (huffman-decode sample-tree sample-bits) "\n")
+(define sample-message (huffman-decode sample-tree sample-bits))
+(log ":> " sample-message "\n")
