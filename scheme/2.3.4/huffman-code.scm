@@ -3,6 +3,7 @@
 (include "../2.3.3/tree-print.scm")
 (include "tree-iter.scm")
 
+; Set ot characters.
 (define CharsSet (make-sorted-set string-ci<?))
 
 ; Huffman tree has no natural order, thus — comparator.
@@ -216,4 +217,68 @@
    (append res (if (pair? bits) bits (list bits)))
   )
  )
+)
+
+(define (chars-set-smaller? set-a set-b)
+ (define (next tail-a tail-b)
+  (cond
+   ((null? tail-a) (not (null? tail-b)))
+   ((null? tail-b) #f)
+   ((string-ci<? (car tail-a) (car tail-b)) #t) ;<— char smaller
+   ((string-ci<? (car tail-b) (car tail-a)) #f) ;<— char greater
+   (else (next (cdr tail-a) (cdr tail-b)))
+  )
+ )
+
+ (next set-a set-b)
+)
+
+(define (huffman-tree-node-smaller? a b)
+ (let (
+   (wa (get-huffman-tree-weight a))
+   (wb (get-huffman-tree-weight b))
+  )
+  (cond
+   ((< wa wb) #t) ;<— compare by the weights
+   ((> wa wb) #f)
+   (else (chars-set-smaller?
+    (get-huffman-tree-chars a)
+    (get-huffman-tree-chars b)
+   ))
+  )
+ )
+)
+
+; Takes list of pairs (with arbitrary order) and creates
+; «instance» of HuffmanTree «class».
+(define (build-huffman-tree log huffman-pairs)
+
+ (define (nodes->str nodes)
+  (huffman-accumulate nodes "" (lambda (res n)
+   (string-append res " " (huffman-tree-node->str n))
+  ))
+ )
+
+ (define (merge-two nodes)
+  ; { only one pair is left } resulting node
+  (if (null? (cdr nodes)) (car nodes)
+   (let ((m (merge-huffman-nodes (car nodes) (cadr nodes))))
+    (log "merged" (nodes->str (list (car nodes) (cadr nodes))))
+    (sort-and-merge (cons m (cddr nodes)))
+   )
+  )
+ )
+
+ (define (sort-and-merge nodes)
+  (let ((s (quick-sort huffman-tree-node-smaller? nodes)))
+   (log "sorted" (nodes->str s))
+   (merge-two s)
+  )
+ )
+
+ (define (init-node p)
+  (make-huffman-tree-leaf (cadr p) (car p))
+ )
+
+ (sort-and-merge (map init-node huffman-pairs))
 )
