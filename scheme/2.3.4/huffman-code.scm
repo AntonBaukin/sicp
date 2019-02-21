@@ -262,7 +262,7 @@
  (define (merge-two nodes)
   ; { only one pair is left } resulting node
   (if (null? (cdr nodes)) (car nodes)
-   (let ((m (merge-huffman-nodes (car nodes) (cadr nodes))))
+   (let ((m (merge-huffman-nodes (cadr nodes) (car nodes))))
     (log "merged" (nodes->str (list (car nodes) (cadr nodes))))
     (sort-and-merge (cons m (cddr nodes)))
    )
