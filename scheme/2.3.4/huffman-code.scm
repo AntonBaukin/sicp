@@ -3,7 +3,7 @@
 (include "../2.3.3/tree-print.scm")
 (include "tree-iter.scm")
 
-; Set ot characters.
+; Set of characters (elements of the dictionary).
 (define CharsSet (make-sorted-set string-ci<?))
 
 ; Huffman tree has no natural order, thus — comparator.
