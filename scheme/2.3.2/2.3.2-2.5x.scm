@@ -10,6 +10,10 @@
  )
 )
 
+(define (operator expr)
+ (car expr)
+)
+
 (define (make-sum expr-a expr-b)
  (list '+ expr-a expr-b)
 )
@@ -44,7 +48,7 @@
 
 ; Follows the derivative-else protocol.
 (define (deriv-error var expr deriv-outer)
- (error "Unknown derivative expression by " var expr)
+ (error "Unknown derivative expression by" var expr)
 )
 
 ; General derivative function with extension point.
