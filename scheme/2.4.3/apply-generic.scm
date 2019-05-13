@@ -1,5 +1,3 @@
-(define (log . args) (for-each display args) (newline))
-
 (include "../2.3.3/tree.scm")
 
 ; When called with single argument, checks whether the

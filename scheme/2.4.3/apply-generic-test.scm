@@ -1,7 +1,7 @@
-(define (log . args) (for-each display args) (newline))
-
 (include "apply-generic.scm")
 (include "../2.3.3/tree-print.scm")
+
+(define (log . args) (for-each display args) (newline))
 
 (define apply-generic-tree->str (make-tree->str-printer
   ApplyGenericTable apply-generic-op-key->str)

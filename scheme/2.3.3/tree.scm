@@ -166,7 +166,7 @@
 
 ; Searches for the given item and returns the item
 ; stored in the tree — this allows to search actual
-; records by phone ones having only the keys set.
+; records by phony ones having only the keys set.
 ; Returns '() on not found.
 (define (tree-op-search treeops)
  (list-ref treeops 9)
