@@ -1,13 +1,8 @@
+(include "curry.scm")
+
 (define (log . args) (for-each display args) (newline))
 
 (define (apply-generic op arg . args) (arg op args))
-
-; Binds first arguments of the function with the given.
-(define (curry f . xargs)
- (lambda (arg . rest)
-  (apply f (append xargs (cons arg rest)))
- )
-)
 
 (define (dispatch-real-imag x y op args)
  (cond
