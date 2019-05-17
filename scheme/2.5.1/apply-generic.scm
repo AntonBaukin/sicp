@@ -33,7 +33,16 @@
 ;
 ; Functions to check or wrap a symbol tag remain
 ; global as they do not depend on a scope.
-(define (apply-generic-make)
+;
+; Takes two external strategies:
+; – tag-get() that returns tag symbol from the given wrapping
+;   pair, defaults to apply-generic-tag-get();
+; – unwrap() that returns object wrapped by a tag procedure,
+;   defaults to apply-generic-unwrap().
+;
+; These strategies allow to customize the wrapping procedure
+; according to some exercises, such as not wrapping numbers.
+(define (apply-generic-make tag-get unwrap)
  (define scope->list (tree-op->list ApplyGenericScope))
  (define scope<-list (tree-op<-list ApplyGenericScope))
  (define scope-search (tree-op-search ApplyGenericScope))
@@ -81,11 +90,11 @@
  ;
  (define (apply-generic op-symbol . args)
   (let* (
-    (arg-symbols-list (map apply-generic-tag-get args))
+    (arg-symbols-list (map tag-get args))
     (function (lookup op-symbol arg-symbols-list))
    )
    (if (procedure? function)
-    (apply function (map apply-generic-unwrap args))
+    (apply function (map unwrap args))
     (error "Apply generic function is not found for: " op-symbol args)
    )
   )
@@ -101,6 +110,10 @@
 
  ; Scoped operations set.
  (list apply-generic register lookup (lambda () scope))
+)
+
+(define (apply-generic-make-default)
+ (apply-generic-make apply-generic-tag-get apply-generic-unwrap)
 )
 
 ; Returns apply-generic function instance from the scope.
@@ -120,11 +133,11 @@
 
 
 ; Global version of apply generic functions collection.
-(define apply-generic-global (apply-generic-make))
+(define apply-generic-global (apply-generic-make-default))
 
 ; Overwrites the global scope, apply-generic supports this.
 (define (apply-generic-global-reset)
- (set! apply-generic-global (apply-generic-make))
+ (set! apply-generic-global (apply-generic-make-default))
 )
 
 ; Apply generic that works with the global scope.

@@ -1,12 +1,12 @@
 
-(define (install-rational-package)
+(define (install-rational-package scope)
  (include "../2.1/2.1.1-2.1.scm")
 
  (define (call-and-tag op a b)
   (num-tag-set 'rational (op a b))
  )
 
- (apply-generic-put-all
+ ((apply-generic-scope-register scope)
   'num '(rational) (curry call-and-tag rat-make)
   'str '(rational) rat-str
 
