@@ -18,9 +18,9 @@
  )
 )
 
-;(log "Rational " (num->str r1_3) " is " r1_3)
-;(log (test-op->str 'add r1_3 r4_5))
-;(log (test-op->str 'sub r4_5 r1_3))
+(log "Rational " (num->str r1_3) " is " r1_3)
+(log (test-op->str 'add r1_3 r4_5))
+(log (test-op->str 'sub r4_5 r1_3))
 
 (define pi 3.14159265359)
 
@@ -29,10 +29,10 @@
 (define xy1_0 (make-complex-xy 1 0))
 (define xy0_1 (make-complex-xy 0 1))
 
+(newline)
 (log "Complex " (num->str xy1_1) " is " xy1_1)
 (log "Complex " (num->str ra_sq2_45) " is " ra_sq2_45)
 (log (test-op->str 'add xy1_1 xy1_0))
 (log (test-op->str 'sub xy1_1 xy1_0))
 (log (test-op->str 'mul xy1_1 xy0_1))
 (log (test-op->str 'mul xy0_1 xy0_1))
-

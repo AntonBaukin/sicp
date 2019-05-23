@@ -29,7 +29,7 @@
 )
 
 ; Global apply-generic scope for the numbers [only].
-(define num-generic-scope
+(define numbers-scope
  (apply-generic-make num-tag-get num-unwrap)
 )
 
@@ -37,13 +37,13 @@
 ; Creates a number with the given variant symbol:
 ; use 'num when only one variant exists.
 (define (make-num variant type . args)
- (define lookup (apply-generic-scope-lookup num-generic-scope))
+ (define lookup (apply-generic-scope-lookup numbers-scope))
  (apply (lookup variant (list type)) args)
 )
 
 ; Generic call for an operation.
 (define (num-call op . args)
- (define apply-generic (apply-generic-scope-function num-generic-scope))
+ (define apply-generic (apply-generic-scope-function numbers-scope))
  (apply apply-generic (cons op args))
 )
 
@@ -72,7 +72,7 @@
 
 ; Include arithmetics modules...
 (include "2.5.1-rat.scm")
-(install-rational-package num-generic-scope)
+(install-rational-package numbers-scope)
 
 (include "2.5.1-complex.scm")
-(install-complex-package num-generic-scope)
+(define complex-package (install-complex-package numbers-scope))

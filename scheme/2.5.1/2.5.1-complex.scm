@@ -155,6 +155,10 @@
   'mul TAG2 (curry call-and-tag mul)
   'div TAG2 (curry call-and-tag div)
  )
+
+ ; We export these internal functions as they are
+ ; required for some exercises.
+ (list TAG real-part imag-part magnitude angle)
 )
 
 (define make-complex-xy (curry make-num 'num-xy 'complex))
