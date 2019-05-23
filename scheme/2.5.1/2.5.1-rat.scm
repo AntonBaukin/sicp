@@ -17,4 +17,4 @@
  )
 )
 
-(define make-rat (curry make-num 'rational))
+(define make-rat (curry make-num 'num 'rational))

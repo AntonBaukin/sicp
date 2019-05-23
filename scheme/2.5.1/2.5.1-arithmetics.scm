@@ -34,33 +34,45 @@
 )
 
 
-; Generic arithmetics functions.
-(define (make-num type . args)
+; Creates a number with the given variant symbol:
+; use 'num when only one variant exists.
+(define (make-num variant type . args)
  (define lookup (apply-generic-scope-lookup num-generic-scope))
- (apply (lookup 'num (list type)) args)
+ (apply (lookup variant (list type)) args)
 )
 
-(define (add x y)
- ((apply-generic-scope-function num-generic-scope) 'add x y)
+; Generic call for an operation.
+(define (num-call op . args)
+ (define apply-generic (apply-generic-scope-function num-generic-scope))
+ (apply apply-generic (cons op args))
 )
 
-(define (sub x y)
- ((apply-generic-scope-function num-generic-scope) 'sub x y)
-)
+; Generic arithmetics functions.
+(define add (curry num-call 'add))
+(define sub (curry num-call 'sub))
+(define mul (curry num-call 'mul))
+(define div (curry num-call 'mul))
+(define num->str (curry num-call 'str))
 
-(define (mul x y)
- ((apply-generic-scope-function num-generic-scope) 'mul x y)
-)
-
-(define (div x y)
- ((apply-generic-scope-function num-generic-scope) 'div x y)
-)
-
-(define (num->str num)
- ((apply-generic-scope-function num-generic-scope) 'str num)
+; Gives operation character, for the tests.
+(define (num-op->str op)
+ (cond
+  ((eq? op 'add) "+")
+  ((eq? op  add) "+")
+  ((eq? op 'sub) "-")
+  ((eq? op  sub) "-")
+  ((eq? op 'mul) "*")
+  ((eq? op  mul) "*")
+  ((eq? op 'div) "/")
+  ((eq? op  div) "/")
+  (else "?")
+ )
 )
 
 
 ; Include arithmetics modules...
 (include "2.5.1-rat.scm")
 (install-rational-package num-generic-scope)
+
+(include "2.5.1-complex.scm")
+(install-complex-package num-generic-scope)
