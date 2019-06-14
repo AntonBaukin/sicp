@@ -6,28 +6,14 @@
 ; In the following exercises we will overwrite the default
 ; implementations of tag get and object unwrap to allow
 ; extended tagging based on native Lisp types.
-(define (num-tag-get tagged-obj)
-; (if (procedure? num-tag-get-custom)
-;  (num-tag-get-custom tagged-obj)
-  (apply-generic-tag-get tagged-obj)
-; )
-)
+(define-value-if-not 'num-tag-get apply-generic-tag-get)
 
-(define (num-unwrap tagged-obj)
-; (if (procedure? num-tag-get-custom)
-;  (num-unwrap-custom tagged-obj)
-  (apply-generic-unwrap tagged-obj)
-; )
-)
+; Returns number wrapped.
+(define-value-if-not 'num-unwrap apply-generic-unwrap)
 
 ; The following tagging function is not needed for apply
 ; generic module, but for our number packages.
-(define (num-tag-set tag obj)
-; (if (procedure? num-tag-set-custom)
-;  (num-tag-set-custom tag obj)
-  (apply-generic-tag tag obj)
-; )
-)
+(define-value-if-not 'num-tag-set apply-generic-tag)
 
 ; Global apply-generic scope for the numbers [only].
 (define numbers-scope
@@ -79,10 +65,13 @@
 
 ; Include arithmetics modules...
 (include "2.5.1-num.scm")
-(install-arithmetic-package 'number-package install-number-package)
+(define-value-if-not 'number-package-init install-number-package)
+(install-arithmetic-package 'number-package number-package-init)
 
 (include "2.5.1-rat.scm")
-(install-arithmetic-package 'rational-package install-rational-package)
+(define-value-if-not 'rational-package-init install-rational-package)
+(install-arithmetic-package 'rational-package rational-package-init)
 
 (include "2.5.1-complex.scm")
-(install-arithmetic-package 'complex-package install-complex-package)
+(define-value-if-not 'complex-package-init install-complex-package)
+(install-arithmetic-package 'complex-package complex-package-init)

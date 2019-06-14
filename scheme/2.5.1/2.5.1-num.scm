@@ -24,4 +24,4 @@
  TAG ;<— return the tag list
 )
 
-(define make-number (curry make-num 'num 'number))
+(define-value-if-not 'make-number (curry make-num 'num 'number))

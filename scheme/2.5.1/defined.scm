@@ -17,3 +17,18 @@
   )
  )
 )
+
+(define (define-value-if-not var-symbol value)
+ (define-if-not var-symbol (lambda () value))
+)
+
+; Invokes the global function defined by name fun-symbol,
+; or else function (that may be void) with the given arguments.
+(define (if-defined?-else fun-symbol else-fun . args)
+ (if (not (defined? fun-symbol))
+  (if (eq? void else-fun) void (apply else-fun args))
+  (let ((f (eval fun-symbol)))
+   (apply f args)
+  )
+ )
+)
