@@ -71,6 +71,9 @@
 
 
 ; Include arithmetics modules...
+(include "2.5.1-num.scm")
+(install-number-package numbers-scope)
+
 (include "2.5.1-rat.scm")
 (install-rational-package numbers-scope)
 

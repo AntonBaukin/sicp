@@ -1,9 +1,6 @@
 (include "2.5.1-arithmetics.scm")
 (define (log . args) (for-each display args) (newline))
 
-(define r1_3 (make-rat 1 3))
-(define r4_5 (make-rat 4 5))
-
 (define (test-op->str op a b)
  (string-append
   (num->str a) " "
@@ -18,9 +15,22 @@
  )
 )
 
+(define n1 (make-number 1))
+(define n2 (make-number 2))
+
+(log "Number " (num->str n1) " is " n1)
+(log (test-op->str 'add n1 n2))
+(log (test-op->str 'div n1 n2))
+
+
+(define r1_3 (make-rat 1 3))
+(define r4_5 (make-rat 4 5))
+
+(newline)
 (log "Rational " (num->str r1_3) " is " r1_3)
 (log (test-op->str 'add r1_3 r4_5))
 (log (test-op->str 'sub r4_5 r1_3))
+
 
 (define pi 3.14159265359)
 
