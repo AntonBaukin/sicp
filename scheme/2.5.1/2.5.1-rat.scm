@@ -12,6 +12,8 @@
  ((apply-generic-scope-register scope)
   'num TAG (curry call-and-tag rat-make)
   'str TAG rat-str
+  'numerator TAG rat-num
+  'denominator TAG rat-den
 
   'add TAG2 (curry call-and-tag rat-add)
   'sub TAG2 (curry call-and-tag rat-sub)
