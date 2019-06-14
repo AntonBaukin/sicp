@@ -1,3 +1,4 @@
+(include "defined.scm")
 (include "apply-generic.scm")
 (include "../2.4.3/curry.scm")
 
@@ -69,13 +70,19 @@
  )
 )
 
+(define (install-arithmetic-package package-symbol installer)
+ (define-if-not package-symbol
+  (lambda () (installer numbers-scope))
+ )
+)
+
 
 ; Include arithmetics modules...
 (include "2.5.1-num.scm")
-(install-number-package numbers-scope)
+(install-arithmetic-package 'number-package install-number-package)
 
 (include "2.5.1-rat.scm")
-(install-rational-package numbers-scope)
+(install-arithmetic-package 'rational-package install-rational-package)
 
 (include "2.5.1-complex.scm")
-(define complex-package (install-complex-package numbers-scope))
+(install-arithmetic-package 'complex-package install-complex-package)
