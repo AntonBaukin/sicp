@@ -34,15 +34,19 @@
 ; Functions to check or wrap a symbol tag remain
 ; global as they do not depend on a scope.
 ;
-; Takes two external strategies:
+; Takes three external strategies:
 ; – tag-get() that returns tag symbol from the given wrapping
 ;   pair, defaults to apply-generic-tag-get();
 ; – unwrap() that returns object wrapped by a tag procedure,
-;   defaults to apply-generic-unwrap().
+;   defaults to apply-generic-unwrap();
+; – apply fallback that is invoked when there is no direct match
+;   in the table and must return. The default raises error: see
+;   apply-generic-fallback-error().
 ;
 ; These strategies allow to customize the wrapping procedure
 ; according to some exercises, such as not wrapping numbers.
-(define (apply-generic-make tag-get unwrap)
+;
+(define (apply-generic-make tag-get unwrap apply-fallback)
  (define scope->list (tree-op->list ApplyGenericScope))
  (define scope<-list (tree-op<-list ApplyGenericScope))
  (define scope-search (tree-op-search ApplyGenericScope))
@@ -91,11 +95,12 @@
  (define (apply-generic op-symbol . args)
   (let* (
     (arg-symbols-list (map tag-get args))
+    (arguments (map unwrap args))
     (function (lookup op-symbol arg-symbols-list))
    )
    (if (procedure? function)
-    (apply function (map unwrap args))
-    (error "Apply generic function is not found for: " op-symbol args)
+    (apply function arguments)
+    (apply-fallback op-symbol arg-symbols-list arguments)
    )
   )
  )
@@ -112,8 +117,17 @@
  (list apply-generic register lookup (lambda () scope))
 )
 
+; Default apply fallback that raises an error.
+(define (apply-generic-fallback-error op-symbol arg-symbols-list arguments)
+ (error "Apply generic function is not found for: " op-symbol arg-symbols-list)
+)
+
 (define (apply-generic-make-default)
- (apply-generic-make apply-generic-tag-get apply-generic-unwrap)
+ (apply-generic-make
+  apply-generic-tag-get
+  apply-generic-unwrap
+  apply-generic-fallback-error
+ )
 )
 
 ; Returns apply-generic function instance from the scope.

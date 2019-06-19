@@ -15,9 +15,15 @@
 ; generic module, but for our number packages.
 (define-value-if-not 'num-tag-set apply-generic-tag)
 
+; Fallback lookup procedure for the numbers-specific
+; apply generic. Used in §2.5.2.
+(define-value-if-not 'num-call-fallback
+ apply-generic-fallback-error
+)
+
 ; Global apply-generic scope for the numbers [only].
 (define numbers-scope
- (apply-generic-make num-tag-get num-unwrap)
+ (apply-generic-make num-tag-get num-unwrap num-call-fallback)
 )
 
 

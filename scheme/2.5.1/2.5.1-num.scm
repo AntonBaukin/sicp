@@ -1,7 +1,6 @@
 
-(define (install-number-package scope)
- (define TAG  '(number))
- (define TAG2 '(number number))
+(define (install-number-package-base scope TAG)
+ (define TAG2 (list (car TAG) (car TAG)))
 
  (define (call-and-tag op a b)
   (num-tag-set (car TAG) (op a b))
@@ -22,6 +21,10 @@
  )
 
  TAG ;<— return the tag list
+)
+
+(define (install-number-package scope)
+ (install-number-package-base scope '(number))
 )
 
 (define-value-if-not 'make-number (curry make-num 'num 'number))
