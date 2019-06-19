@@ -29,6 +29,11 @@
  )
 )
 
+; Function invoked to apply-generic the coerced numbers.
+; The argument types are the original source.
+(define (num-call-apply-coerced op-symbol arg-symbols-list coerced)
+ (apply num-call (append (list op-symbol) coerced))
+)
 
 ; This is fallback function for the numbers scope
 ; apply-generic. Instead of overwriting apply-generic
@@ -40,7 +45,7 @@
   ; (log "coerced " arg-symbols-list " to " coerced)
   (if (null? coerced)
    (error "Can't coerce arguments" arg-symbols-list)
-   (apply num-call (append (list op-symbol) coerced))
+   (num-call-apply-coerced op-symbol arg-symbols-list coerced)
   )
  )
 )
