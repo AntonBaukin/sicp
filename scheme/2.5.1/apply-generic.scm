@@ -51,7 +51,7 @@
  (define scope<-list (tree-op<-list ApplyGenericScope))
  (define scope-search (tree-op-search ApplyGenericScope))
 
- ; Local scope instance.
+ ; Local scope tree instance.
  (define scope '())
 
  ; Recreates scope tree on each insert.
@@ -142,7 +142,11 @@
 
 ; Returns apply-generic scope lookup function.
 (define (apply-generic-scope-lookup scope)
- (caddr scope)
+ (list-ref scope 2)
+)
+
+(define (apply-generic-scope-internal-get-tree scope)
+ (list-ref scope 3)
 )
 
 

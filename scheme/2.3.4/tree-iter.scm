@@ -145,7 +145,7 @@
  )
 )
 
-; For the given tree find the minimum (left-most) item.
+; For the given tree finds the minimum (left-most) item.
 (define (make-tree-get-min treeops)
  (define get (tree-op-get treeops))
  (define tree-iter (make-tree-iter treeops))
@@ -159,7 +159,7 @@
  )
 )
 
-; For the given tree find the maximum (right-most) item.
+; For the given tree finds the maximum (right-most) item.
 (define (make-tree-get-max treeops)
  (define get (tree-op-get treeops))
  (define tree-iter (make-tree-iter treeops))

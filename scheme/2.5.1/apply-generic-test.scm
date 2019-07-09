@@ -1,4 +1,5 @@
 (include "apply-generic.scm")
+(include "apply-generic-search.scm")
 (include "../2.3.3/tree-print.scm")
 
 (define (log . args) (for-each display args) (newline))
@@ -12,7 +13,9 @@
 
 (define (apply-generic-log-tree)
  (log "\nGlobal scope tree\n"
-  (apply-generic-tree->str ((cadddr apply-generic-global)))
+  (apply-generic-tree->str
+   ((apply-generic-scope-internal-get-tree apply-generic-global))
+  )
  )
 )
 
@@ -53,3 +56,35 @@
 
 (define tagged-abc (apply-generic-tag 'string "abc"))
 (log "abc + 123 = " (apply-generic '+ tagged-abc tagged-123))
+
+
+(define search (make-apply-generic-search apply-generic-global))
+
+; Dummy registrations required for search tests:
+(apply-generic-register
+ '+ '(number string) +
+ '+ '(number number number) +
+ '+ '(number string number) +
+ '+ '(number number string number) +
+)
+
+(log "\nSearch for +(...) ops: ")
+(for-each log (search '+ '()))
+
+(log "\nSearch for +(number ...) ops: ")
+(for-each log (search '+ '(number)))
+
+(log "\nSearch for +(number string ...) ops: ")
+(for-each log (search '+ '(number string)))
+
+(log "\nSearch for +(number number ...) ops: ")
+(for-each log (search '+ '(number number)))
+
+(log "\nSearch for +(number number number ...) ops: ")
+(for-each log (search '+ '(number number number)))
+
+(log "\nSearch for +(number number number number ...) ops: ")
+(for-each log (search '+ '(number number number number)))
+
+(log "\nSearch for +(number number string number ...) ops: ")
+(for-each log (search '+ '(number number string number)))

@@ -69,10 +69,12 @@
  )
 
  (define (valid-args? l)
-  (and
-   (pair? l)
-   (> (length l) 0)
-   (null? (find-invalid-arg l))
+  (or
+   (null? l) ;<— zero arguments are also allowed!
+   (and
+    (pair? l)
+    (null? (find-invalid-arg l))
+   )
   )
  )
 
