@@ -46,63 +46,7 @@
 ; Can't coerce arguments (integer number integer)
 ; (log "1 + 2 + 3 = " (add (I 1) (N 2) (I 3)))
 
-(define (try-coerce types values)
- (define (coerce-safe type t v)
-  (if (eq? type t)
-   (num-tag-set type v) ;<— the result must be wrapped
-   (let ((t->type (get-coercion (list t type))))
-    (if (null? t->type) '()
-     (t->type v)
-    )
-   )
-  )
- )
-
- (define (coerce-all type)
-  (define (coerce-iter res ts vs)
-   (if (null? ts) res
-    (let ((v (coerce-safe type (car ts) (car vs))))
-     (if (null? v) '()
-      (coerce-iter (cons v res) (cdr ts) (cdr vs))
-     )
-    )
-   )
-  )
-
-  (reverse (coerce-iter '() types values))
- )
-
- (define (try-iter ts)
-  (if (null? ts) '()
-   (let ((res (coerce-all (car ts))))
-    (if (null? res)
-     (try-iter (cdr ts))
-     res
-    )
-   )
-  )
- )
-
- (define (same-types? types)
-  (if (null? (cdr types)) #t
-   (if (eq? (car types) (cadr types))
-    (same-types? (cdr types))
-    #f ;<— two heading types do not match
-   )
-  )
- )
-
- ; We can't coerce all the same types as the result
- ; will be the same that causes infinite recursion!
- (if (same-types? types) '()
-  (let ((res (try-iter types)))
-   (if (null? res)
-    (error "Can't coerce n-arguments" types)
-    res
-   )
-  )
- )
-)
+(include "2.5.2-try-coerce.scm")
 
 ;(log "(i n) —> " (try-coerce '(integer number) '(1 2)))
 ;(log "(n i) —> " (try-coerce '(number integer) '(1 2)))
