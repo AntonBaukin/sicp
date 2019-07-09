@@ -22,13 +22,3 @@
   (error "Not a number value" v)
  )
 ))
-
-; We also add this natural coercion to make the graph
-; more complex, with alternate ways. This sophisicates
-; the algoritms traversing it.
-(put-coercion '(integer number) (lambda (v)
- (if (integer? v)
-  (make-number v)
-  (error "Not an integer number value" v)
- )
-))

@@ -63,4 +63,5 @@
 
 ; And this call now reports «Can't coerce arguments».
 ; We could tell it more clear: there is no operation...
+(log "The following error must be:")
 (exp (make-complex-xy 2 0) (make-complex-xy 4 0))

@@ -22,6 +22,6 @@
 (include "2.5.2-tower.scm")
 
 ; Works as we registered special short way omitting rationals.
-(test-add (make-integer 1) (make-number 2))
+(test-add (make-rat 1 1) (make-number 2))
 
 (test-add (make-number 2) (make-complex-xy -1 1))
