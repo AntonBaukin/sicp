@@ -10,9 +10,14 @@
   (/ (* 1.0 a) b)
  )
 
+ (define (number->short-string n)
+  (number->string (* 0.001 (round (* n 1000))))
+ )
+
  ((apply-generic-scope-register scope)
   'num TAG (lambda (n) (num-tag-set (car TAG) n))
   'str TAG number->string
+  'short-str TAG number->short-string
 
   'add TAG2 (curry call-and-tag +)
   'sub TAG2 (curry call-and-tag -)

@@ -70,7 +70,7 @@
  )
 ))
 
-; We alse re-define the number maker to always be float.
+; We also re-define the number maker to always be float.
 (define (make-number v)
  (make-num 'num 'number (* 1.0 v))
 )

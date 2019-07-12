@@ -1,5 +1,6 @@
 (include "2.5.2-arithmetics.scm")
 (include "2.5.2-try-coerce.scm")
+(include "2.5.2-tower.scm")
 (include "2.5.2-raise.scm")
 
 (define (log . args) (for-each display args) (newline))

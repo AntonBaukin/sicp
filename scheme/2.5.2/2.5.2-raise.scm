@@ -1,4 +1,3 @@
-(include "2.5.2-tower.scm")
 
 ; Generic raise function.
 (define raise (curry num-call 'raise))

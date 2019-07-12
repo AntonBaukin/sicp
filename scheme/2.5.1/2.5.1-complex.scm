@@ -1,21 +1,62 @@
 
+; Converts number to string. This version rounds it up.
+(define (complex-utils-number->string n)
+ (number->string (* 0.001 (round (* n 1000))))
+)
+
+; Converts radians value to string appending «°» symbol.
+(define (complex-utils-radians->string r)
+ (string-append
+  (complex-utils-number->string
+   (/ (* 180.0 r) 3.14159265359)
+  )
+  "°"
+ )
+)
+
+
+; Collection of number utils required for complex
+; package. In 2.5.2-2.86 we will overwrite it with
+; generic analogues that stay the same data type.
+(define-value-if-not 'complex-utils (list
+ +
+ *
+ square
+ sqrt
+ cos
+ sin
+ atan
+ -
+ /
+ complex-utils-number->string
+ complex-utils-radians->string
+))
+
 (define (install-complex-rect-package scope)
  (define TAG '(rectangular))
+
+ (define ad (list-ref complex-utils 0))
+ (define mu (list-ref complex-utils 1))
+ (define sq (list-ref complex-utils 2))
+ (define sr (list-ref complex-utils 3))
+ (define co (list-ref complex-utils 4))
+ (define si (list-ref complex-utils 5))
+ (define at (list-ref complex-utils 6))
 
  (define (make x y) (cons x y))
  (define (real z) (car z))
  (define (imag z) (cdr z))
 
  (define (mag z)
-  (sqrt (+ (square (real z)) (square (imag z))))
+  (sr (ad (sq (real z)) (sq (imag z))))
  )
 
  (define (ang z)
-  (atan (imag z) (real z))
+  (at (imag z) (real z))
  )
 
  (define (make-from-mag-ang r a)
-  (make (* r (cos a)) (* r (sin a)))
+  (make (mu r (co a)) (mu r (si a)))
  )
 
  (define (call-and-tag f)
@@ -38,20 +79,28 @@
 (define (install-complex-polar-package scope)
  (define TAG '(polar))
 
+ (define ad (list-ref complex-utils 0))
+ (define mu (list-ref complex-utils 1))
+ (define sq (list-ref complex-utils 2))
+ (define sr (list-ref complex-utils 3))
+ (define co (list-ref complex-utils 4))
+ (define si (list-ref complex-utils 5))
+ (define at (list-ref complex-utils 6))
+
  (define (make r a) (cons r a))
  (define (mag z) (car z))
  (define (ang z) (cdr z))
 
  (define (real z) (car z)
-  (* (mag z) (cos (ang z)))
+  (mu (mag z) (co (ang z)))
  )
 
  (define (imag z) (car z)
-  (* (mag z) (sin (ang z)))
+  (mu (mag z) (si (ang z)))
  )
 
  (define (make-from-real-imag x y)
-  (make (sqrt (+ (square x) (square y))) (atan y x))
+  (make (sr (+ (sq x) (sq y))) (at y x))
  )
 
  (define (call-and-tag f)
@@ -75,6 +124,11 @@
  (define TAG  '(complex))
  (define TAG2 '(complex complex))
 
+ (define ad (list-ref complex-utils 0))
+ (define mu (list-ref complex-utils 1))
+ (define su (list-ref complex-utils 7))
+ (define dv (list-ref complex-utils 8))
+
  ; We use distinct scope to define complex-internal packages
  (define complex-scope  (apply-generic-make-default))
  (define complex-lookup (apply-generic-scope-lookup complex-scope))
@@ -97,39 +151,34 @@
  ; Complex arithmetics in the best system
  (define (add a b)
   (make-from-real-imag
-   (+ (real-part a) (real-part b))
-   (+ (imag-part a) (imag-part b))
+   (ad (real-part a) (real-part b))
+   (ad (imag-part a) (imag-part b))
   )
  )
 
  (define (sub a b)
   (make-from-real-imag
-   (- (real-part a) (real-part b))
-   (- (imag-part a) (imag-part b))
+   (su (real-part a) (real-part b))
+   (su (imag-part a) (imag-part b))
   )
  )
 
  (define (mul a b)
   (make-from-mag-ang
-   (* (magnitude a) (magnitude b))
-   (+ (angle a) (angle b))
+   (mu (magnitude a) (magnitude b))
+   (ad (angle a) (angle b))
   )
  )
 
  (define (div a b)
   (make-from-mag-ang
-   (/ (magnitude a) (magnitude b))
-   (- (angle a) (angle b))
+   (dv (magnitude a) (magnitude b))
+   (su (angle a) (angle b))
   )
  )
 
- (define (n->s n) (number->string (* 0.001 (round (* n 1000)))))
-
- (define pi 3.14159265359)
-
- (define (degrees-str radians)
-  (string-append (n->s (/ (* 180.0 radians) pi)) "°")
- )
+ (define n->s (list-ref complex-utils 9))
+ (define degrees-str (list-ref complex-utils 10))
 
  (define (complex-str z)
   (string-append

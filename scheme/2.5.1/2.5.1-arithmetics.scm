@@ -36,8 +36,10 @@
 
 ; Generic call for an operation.
 (define (num-call op . args)
- (define apply-generic (apply-generic-scope-function numbers-scope))
- (apply apply-generic (cons op args))
+ (apply
+  (apply-generic-scope-function numbers-scope)
+  (cons op args)
+ )
 )
 
 ; Generic arithmetics functions.
@@ -46,6 +48,22 @@
 (define mul (curry num-call 'mul))
 (define div (curry num-call 'mul))
 (define num->str (curry num-call 'str))
+
+; Converts to short version (less digits) with
+; fallback to long version.
+(define (num->short-str n)
+ (let* (
+   (lookup (apply-generic-scope-lookup numbers-scope))
+   (type (apply-generic-tag-get n))
+   (n->s (lookup 'short-str (list type)))
+  )
+
+  (if (procedure? n->s)
+   (n->s (apply-generic-unwrap n))
+   (num->str n)
+  )
+ )
+)
 
 ; Gives operation character, for the tests.
 (define (num-op->str op)
