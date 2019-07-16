@@ -36,12 +36,24 @@
  (make-tree op-key<?)
 )
 
+; Checks that the given object is a tag wrapping pair
+; having the given symbol tag. With single argument
+; it checks whether it's a tagged object. Compare it
+; with a havier version of §2.4.3.
+(define (apply-generic-tagged? tag . obj)
+ (if (= 0 (length obj))
+  (and (pair? tag) (symbol? (car tag)))
+  (and
+   (symbol? tag)
+   (pair? (car obj))
+   (eq? tag (caar obj))
+  )
+ )
+)
+
 ; Returns symbol tagging object wrapped in a tagged pair.
 (define (apply-generic-tag-get tagged-obj)
- (if (or
-   (not (pair? tagged-obj))
-   (not (symbol? (car tagged-obj)))
-  )
+ (if (not (apply-generic-tagged? tagged-obj))
   (error "Not a tagged object: " tagged-obj)
   (car tagged-obj)
  )
@@ -49,10 +61,7 @@
 
 ; Returns object wrapped in a tagged pair.
 (define (apply-generic-unwrap tagged-obj)
- (if (or
-   (not (pair? tagged-obj))
-   (not (symbol? (car tagged-obj)))
-  )
+ (if (not (apply-generic-tagged? tagged-obj))
   (error "Not a tagged object: " tagged-obj)
   (cdr tagged-obj)
  )

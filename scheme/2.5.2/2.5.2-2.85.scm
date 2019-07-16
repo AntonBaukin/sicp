@@ -19,7 +19,7 @@
  (log "drop " n " —> " (drop n))
 )
 
-
+; These are direct calls for drop().
 (test-drop (make-integer 2))
 (test-drop (make-rat 10 1))
 (test-drop (make-rat 10 3))
@@ -28,3 +28,20 @@
 (test-drop (make-complex-xy 3.0 0))
 (test-drop (make-complex-xy (/ 7.0 5) 0))
 (test-drop (make-complex-xy (/ 7.0 5) 1))
+
+
+(define (test-add a b)
+ (log a " + " b " = " (add a b))
+)
+
+(newline)
+(log "The following generic call has no the result dropped:")
+(test-add (make-complex-xy (/ 7.0 5) 1) (make-complex-xy 0.6 -1))
+
+
+; Now we overwtite the result post-processing applying drop().
+(define (num-call-result result) (drop result))
+
+(newline)
+(log "And now we apply drop() to the result:")
+(test-add (make-complex-xy (/ 7.0 5) 1) (make-complex-xy 0.6 -1))

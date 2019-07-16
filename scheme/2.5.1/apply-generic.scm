@@ -1,16 +1,5 @@
 (include "apply-generic-utils.scm")
 
-; Checks that the giben object is a tag wrapping pair
-; having the given symbol tag as the first item.
-; Compare it with a havier version of §2.4.3.
-(define (apply-generic-tagged? tag obj)
- (and
-  (symbol? tag)
-  (pair? obj)
-  (eq? tag (car obj))
- )
-)
-
 ; Wraps given object into a pair with the given tag symbol.
 (define (apply-generic-tag tag obj)
  (if (symbol? tag)
@@ -35,18 +24,20 @@
 ; global as they do not depend on a scope.
 ;
 ; Takes three external strategies:
+;
 ; – tag-get() that returns tag symbol from the given wrapping
 ;   pair, defaults to apply-generic-tag-get();
 ; – unwrap() that returns object wrapped by a tag procedure,
 ;   defaults to apply-generic-unwrap();
 ; – apply fallback that is invoked when there is no direct match
 ;   in the table and must return. The default raises error: see
-;   apply-generic-fallback-error().
+;   apply-generic-fallback-error();
+; – result value post-processing strategy.
 ;
 ; These strategies allow to customize the wrapping procedure
 ; according to some exercises, such as not wrapping numbers.
 ;
-(define (apply-generic-make tag-get unwrap apply-fallback)
+(define (apply-generic-make tag-get unwrap apply-fallback result)
  (define scope->list (tree-op->list ApplyGenericScope))
  (define scope<-list (tree-op<-list ApplyGenericScope))
  (define scope-search (tree-op-search ApplyGenericScope))
@@ -98,9 +89,12 @@
     (arguments (map unwrap args))
     (function (lookup op-symbol arg-symbols-list))
    )
-   (if (procedure? function)
-    (apply function arguments)
-    (apply-fallback op-symbol arg-symbols-list arguments)
+
+   (result
+    (if (procedure? function)
+     (apply function arguments)
+     (apply-fallback op-symbol arg-symbols-list arguments)
+    )
    )
   )
  )
@@ -127,6 +121,7 @@
   apply-generic-tag-get
   apply-generic-unwrap
   apply-generic-fallback-error
+  (lambda (result) result)
  )
 )
 

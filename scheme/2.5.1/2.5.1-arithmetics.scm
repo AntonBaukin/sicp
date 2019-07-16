@@ -21,10 +21,17 @@
  apply-generic-fallback-error
 )
 
+; Special extension point to post-process apply-result()
+; for the numbers calculation. Used in 2.5.2-2.85 task.
+(define (num-call-result result) result)
+
 ; Global apply-generic scope for the numbers [only].
-(define numbers-scope
- (apply-generic-make num-tag-get num-unwrap num-call-fallback)
-)
+(define numbers-scope (apply-generic-make
+  num-tag-get
+  num-unwrap
+  num-call-fallback
+  (lambda (result) (num-call-result result))
+))
 
 
 ; Creates a number with the given variant symbol:
