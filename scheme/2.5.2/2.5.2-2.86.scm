@@ -50,6 +50,7 @@
 
 (define (log . args) (for-each display args) (newline))
 
+
 (define (register-number-ops number-tag)
  (define TAG  (list number-tag))
  (define TAG2 (list number-tag number-tag))
@@ -155,11 +156,11 @@
 
 ; Create complex numbers with real numbers:
 (define nxy_11 (make-complex-xy
- (make-number 1) (make-number 1)
+ (make-number 1) (make-number 0.5)
 ))
 
 (define nxy_21 (make-complex-xy
- (make-number -2) (make-number -1)
+ (make-number -2) (make-number -0.5)
 ))
 
 (log "nxy_11 = " (num->str nxy_11))
@@ -192,6 +193,44 @@
 (include "2.5.2-tower.scm")
 (include "2.5.2-raise.scm")
 (include "2.5.2-try-raise-up.scm")
+(include "2.5.2-zero.scm")
 
 ; And now we are able to make cross-operations!
-(log "nxy_11 + nxy_21 = " (num->str (add nxy_11 rxy_1212)))
+; Still, the result is up-raised, but we may drop it...
+(log "nxy_11 + rxy_1212 = " (num->str (add nxy_11 rxy_1212)))
+
+
+; See task 2.85 for drop() implementation.
+(include "2.5.2-drop.scm")
+
+; Extended version of drop() that can compare each
+; generic number with zero.
+(define (make-drop-params)
+ (define maxd 10000)
+ (define mine (/ 0.05 maxd))
+
+ ; Special generic scope for zero? predicate.
+ (define zero-scope (apply-generic-make-default))
+ (define zero? (install-zero-package zero-scope mine))
+
+ ; Wraps plain numbers in general ones.
+ (define (general-make-number n)
+  (if (number? n) (make-number n) n)
+ )
+ 
+ (list numbers-scope maxd general-make-number zero?)
+)
+
+(define drop-impl (apply install-drop-package (make-drop-params)))
+
+
+; And now we safely drop each number call...
+(define (num-call-result result)
+ (let ((x (drop-impl result)))
+  (if (null? x) result x)
+ )
+)
+
+
+(log "\nDropped version the last sum:")
+(log "nxy_11 + rxy_1212 = " (num->str (add nxy_11 rxy_1212)))

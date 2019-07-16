@@ -12,7 +12,7 @@
  ; Float point numbers may be roughly equal.
  'zero '(number) (lambda (n) (<= n 0.00001))
 
- ; Rational number is strictly equal to zero onle when
+ ; Rational number is strictly equal to zero only when
  ; the numerator is zero. (We back-tag the number.)
  'zero '(rational) (lambda (r)
   (= 0 (num-call 'numerator (num-tag-set 'rational r)))

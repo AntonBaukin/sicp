@@ -1,4 +1,3 @@
-(include "2.5.2-tower.scm")
 
 ; The implementation following resolves 2.85 task
 ; in clear and straight way. The approach asked
@@ -13,15 +12,23 @@
 ; it general, and each returns '() instead of
 ; loosing number accuracy.
 ;
-(define (install-drop-package scope)
- (define MAXD 10000)
- (define MINE (/ 0.05 MAXD))
-
+; Strategy make-number() is to create a number
+; after extracting a part of complex number.
+; Altered in task 2.86 where parts of a complex
+; are general, not plain numbers.
+;
+; Predicate zero? tests «almost» zero values for
+; plain numbers and may be extended for generic
+; ones (see task 2.86).
+;
+; For «maxd» parameter see make-farey-drop-rat().
+; This value is related to zero? threshold.
+;
+(define (install-drop-package scope maxd make-number zero?)
  (define real-part (list-ref complex-package 1))
  (define imag-part (list-ref complex-package 2))
 
- ; Almost zero for the real numbers.
- (define (zero? n) (< (abs n) MINE))
+ ; Almost zero for the real numbers only.
  (define (close? a b) (zero? (- a b)))
 
  ; Reduces real-only complex to real number.
@@ -32,7 +39,7 @@
  )
 
  (include "2.5.2-farey-rat.scm")
- (define farey-drop-rat (make-farey-drop-rat MAXD))
+ (define farey-drop-rat (make-farey-drop-rat maxd))
 
  ; Reduces real number to rational.
  (define (drop-number n)
@@ -57,8 +64,11 @@
 
  ; Applies drop if it exists, or returns '().
  (define (drop-safe n)
-  (let ((d (get-drop (apply-generic-tag-get n))))
-   (if (procedure? d) (d (apply-generic-unwrap n)) '())
+  ;(log "drop " n)
+  (if (not (apply-generic-tagged? n)) '()
+   (let ((d (get-drop (apply-generic-tag-get n))))
+    (if (procedure? d) (d (apply-generic-unwrap n)) '())
+   )
   )
  )
 
