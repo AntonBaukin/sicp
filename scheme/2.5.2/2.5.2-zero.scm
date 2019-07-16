@@ -14,9 +14,10 @@
  )
 
  ((apply-generic-scope-register scope)
+  'zero? '(integer) (lambda (i) (= 0 i))
+
   ; Float point numbers may be roughly equal.
-  'zero? '(integer) zero?
-  'zero? '(number)  zero?
+  'zero? '(number) zero?
 
   ; Rational number is strictly equal to zero
   ; only when the numerator is zero.

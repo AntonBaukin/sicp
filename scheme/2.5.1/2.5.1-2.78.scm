@@ -12,7 +12,7 @@
  )
 )
 
-; The follwoing definition is not required as we re-define
+; The following definition is not required as we re-define
 ; the number package not to use the tags internally.
 (define (num-tag-set tag obj)
  (if (eq? 'number tag) obj
@@ -21,7 +21,7 @@
 )
 
 ; Special version of the numbers package that does not wrap.
-; This package will net be re-installed in arithmetics.scm.
+; This package will not be re-installed in arithmetics.scm.
 (define (install-number-package-278 scope)
  (define TAG  '(number))
  (define TAG2 '(number number))

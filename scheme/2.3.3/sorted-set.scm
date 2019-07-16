@@ -109,7 +109,7 @@
  (list-ref setops 1)
 )
 
-; Make set op takes argitrary list of items:
+; Make set op takes arbitrary list of items:
 ; not sorted and with duplicates.
 (define (set-op-make setops)
  (list-ref setops 2)
