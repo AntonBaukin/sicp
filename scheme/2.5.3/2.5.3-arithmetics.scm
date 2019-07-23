@@ -1,11 +1,12 @@
 
 ; Arithmetics required for polynomial tasks.
-; Installs all required packages and makes all
+; Installs all related packages and makes all
 ; pre- and re-definitions.
 
 ; First, we treat plain numbers as tagged.
 ; But we do not rewrite the numbers package
 ; to force back conversion as in 2.5.1-2.78.
+;
 (define (num-tag-get tagged-obj)
  (if (number? tagged-obj) 'number
   (apply-generic-tag-get tagged-obj)
@@ -29,21 +30,35 @@
 (include "../2.5.2/2.5.2-tower.scm")
 (include "../2.5.2/2.5.2-raise.scm")
 (include "../2.5.2/2.5.2-try-raise-up.scm")
+(include "../2.5.2/2.5.2-zero.scm")
 
+; See task 2.5.2-2.86 for the details, but here
+; we install zero? in global numbers scope.
+(define (make-drop-params)
+ (define maxd 10000)
+ (define mine (/ 0.05 maxd))
+
+ (define zero? (install-zero-package numbers-scope mine))
+
+ ; Wraps plain numbers in general ones.
+ (define (general-make-number n)
+  (if (number? n) (make-number n) n)
+ )
+
+ (list numbers-scope maxd general-make-number zero?)
+)
+
+; We create parameters for drop function and take
+; general zero? predicate from them.
+(define drop-params (make-drop-params))
+(define zero? (list-ref drop-params 3))
 
 ; We install drop package in an ordinary way,
 ; but allow to toggle it on for test purposes.
 (include "../2.5.2/2.5.2-drop.scm")
 
 ; Install drop package and get that function.
-(define drop-impl
- (install-drop-package
-  numbers-scope
-  10000
-  make-number
-  (lambda (n) (< (abs n) 0.0005))
- )
-)
+(define drop-impl (apply install-drop-package drop-params))
 
 ; By default drop() is off.
 (define drop (lambda (n) '()))

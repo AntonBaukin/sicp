@@ -29,3 +29,37 @@
 
 ; Prints 10x² + (y² + 2)x + 3 with polynimial coeffs.
 (log-poly (P 'x 2 10 1 (P 'y 2 1 0 2) 0 3))
+
+
+(define (log-poly-add a b)
+ (log "["
+  (num->str a) "] + ["
+  (num->str b) "] = "
+  (num->str (add a b))
+ )
+)
+
+; Test add with reduced term:
+(log-poly-add
+ (P 'x 1 5 0 5)
+ (P 'x 1 2 0 -5)
+)
+
+
+(log-poly-add
+ (P 'x 100 2 10 2 0 1)
+ (P 'x 10 -2 0 1)
+)
+
+(define (log-poly-sub a b)
+ (log "["
+  (num->str a) "] - ["
+  (num->str b) "] = "
+  (num->str (sub a b))
+ )
+)
+
+(log-poly-sub
+ (P 'x 100 2 10 2 0 1)
+ (P 'x 10 2 0 1)
+)

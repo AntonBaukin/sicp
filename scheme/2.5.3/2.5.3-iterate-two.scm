@@ -64,7 +64,7 @@
 ; Merge takes (a b) to compare and returns: #f when
 ; «a» is smaller, #t when «b» is smaller, or merged
 ; value when they are equal, thus moving left, right,
-; or both lists.
+; or both lists respectively.
 ;
 (define (merge-sorted seqa seqb merge)
  (define (where a b w t)
@@ -89,3 +89,18 @@
 ;
 ; (lambda (a b) (if (= a b) a (> a b)))
 ;))
+
+;(display (merge-sorted
+; '((100 . 2) (10 . 2) (0 . 1))
+; '((10 . -2) (0 . 1))
+;
+; (lambda (a b)
+;  (cond
+;   ((< (car a) (car b)) #t)
+;   ((< (car b) (car a)) #f)
+;   (else (cons (car a) (+ (cdr a) (cdr b))))
+;  )
+; )
+;))
+;
+;(newline)

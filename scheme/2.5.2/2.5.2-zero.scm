@@ -23,7 +23,7 @@
   ; only when the numerator is zero.
   'zero? '(rational) (lambda (r) (= 0 (cdr r)))
 
-  ; Here we compare with complex with zero using
+  ; Here we compare Vs complex with zero using
   ; recursive invocation of generic zero?.
   'zero? '(complex) (lambda (c)
    (and
