@@ -33,8 +33,8 @@
   )
  )
 
- ; Creates polynomial from term pairs.
- ; Does the checks.
+ ; Creates polynomial from term pairs. Does the checks.
+ ; The order of the pair is irrelevant.
  (define (make-poly var terms)
   (cond
    ((not (symbol? var))
@@ -79,6 +79,7 @@
  (define (make-poly-from var . defs)
   (make-poly var (defs->terms '() defs))
  )
+
 
  (list make-poly make-poly-from reduce-terms)
 )

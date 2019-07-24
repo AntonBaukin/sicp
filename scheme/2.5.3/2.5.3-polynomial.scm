@@ -10,7 +10,7 @@
  (define TAG2 (list TAG TAG))
 
  ; Compares terms by their order number.
- ; (Here the order is descending.)
+ ; Here the order is term power descending.
  (define (term<? a b)
   (< (car b) (car a))
  )
@@ -46,6 +46,8 @@
   'sub   TAG2 sub-poly
   'mul   TAG2 mul-poly
  )
- 
- (list make-poly make-poly-from)
+
+
+ ; Package exposed functions:
+ (list make-poly make-poly-from poly->str)
 )
