@@ -32,6 +32,7 @@
  (define ops (make-polynomial-ops reduce-terms))
  (define add-poly (curry call-and-tag (list-ref ops 0)))
  (define sub-poly (curry call-and-tag (list-ref ops 1)))
+ (define mul-poly (curry call-and-tag (list-ref ops 2)))
 
  (define (poly-zero? p)
   (null? (cdr p))
@@ -43,6 +44,7 @@
   'str   TAG1 poly->str
   'add   TAG2 add-poly
   'sub   TAG2 sub-poly
+  'mul   TAG2 mul-poly
  )
  
  (list make-poly make-poly-from)

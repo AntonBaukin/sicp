@@ -2,8 +2,9 @@
 (define (make-polynomial-ops reduce-terms)
  (include "2.5.3-iterate-two.scm")
 
+ 
  ; Checks the same variable of polynomials,
- ; then calls the binary operation.
+ ; then calls the binary operation on terms.
  (define (same?->call op a b)
   (if (and (symbol? (car a)) (eq? (car a) (car b)))
    (cons (car a) (op (cdr a) (cdr b)))
@@ -39,9 +40,40 @@
  ; As in SICP, we use general arithmetics on terms.
  (define add-term-op (curry term-op add))
  (define add-poly (same?->linear-call add-term-op))
-
  (define sub-term-op (curry term-op sub))
  (define sub-poly (same?->linear-call sub-term-op))
 
- (list add-poly sub-poly)
+
+ (define (mul-terms a b)
+  (cons
+   (+ (car a) (car b))   ;<— sum the orders
+   (mul (cdr a) (cdr b)) ;<— general mul of the coefficients
+  )
+ )
+
+ ; Mutiplies terms list by single term reversing the order.
+ (define (mul-terms-by-term-iter terms term res)
+  (if (null? terms) res
+   (mul-terms-by-term-iter (cdr terms) term
+    (cons (mul-terms (car terms) term) res)
+   )
+  )
+ )
+
+ (define (mul-poly-terms-iter res terms-a terms-b)
+  (if (null? terms-b) res
+   (mul-poly-terms-iter
+    (linear-poly-op add-term-op res 
+     (reverse (mul-terms-by-term-iter terms-a (car terms-b) '()))
+    )
+    terms-a (cdr terms-b)
+   )
+  )
+ )
+
+ (define mul-poly (curry same?->call (curry mul-poly-terms-iter '())))
+ 
+
+ ; Resulting functions:
+ (list add-poly sub-poly mul-poly)
 )

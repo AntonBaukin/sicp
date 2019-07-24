@@ -45,11 +45,11 @@
  (P 'x 1 2 0 -5)
 )
 
-
 (log-poly-add
  (P 'x 100 2 10 2 0 1)
  (P 'x 10 -2 0 1)
 )
+
 
 (define (log-poly-sub a b)
  (log "["
@@ -62,4 +62,33 @@
 (log-poly-sub
  (P 'x 100 2 10 2 0 1)
  (P 'x 10 2 0 1)
+)
+
+
+(define (log-poly-mul a b)
+ (log "["
+  (num->str a) "] * ["
+  (num->str b) "] = "
+  (num->str (mul a b))
+ )
+)
+
+(log-poly-mul
+ (P 'x 3 1 2 2 0 1)
+ (P 'x 0 5)
+)
+
+(log-poly-mul
+ (P 'x 3 1 2 -2 0 1)
+ (P 'x 0 -1)
+)
+
+(log-poly-mul
+ (P 'x 3 1 2 2 0 1)
+ (P 'x 1 1 0 2)
+)
+
+(log-poly-mul
+ (P 'x 3 1 2 2 0 1)
+ (P 'x 3 1 2 -2 0 -1)
 )
