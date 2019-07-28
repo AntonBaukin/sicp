@@ -5,7 +5,8 @@
  (include "2.5.3-polynomial-ops.scm")
  (include "2.5.3-polynomial-str.scm")
 
- (define TAG  'polynomial)
+ (define TAG  'polynomial)    ;<— polynomial generic type
+ (define TTAG 'sparse)        ;<— type for sparse tags set
  (define TAG1 (list TAG))
  (define TAG2 (list TAG TAG))
 
@@ -19,7 +20,7 @@
  ; (These sets are essentially lists.)
  (define TermsSet (make-sorted-set term<?))
 
- (define makers (make-polynomial-makers TAG TermsSet))
+ (define makers (make-polynomial-makers TAG TTAG TermsSet))
  (define make-poly (car makers))
  (define make-poly-from (cadr makers))
  (define reduce-terms (caddr makers))
@@ -29,7 +30,7 @@
   (num-tag-set TAG (op a b))
  )
  
- (define ops (make-polynomial-ops reduce-terms))
+ (define ops (make-polynomial-ops TTAG reduce-terms))
  (define add-poly (curry call-and-tag (list-ref ops 0)))
  (define sub-poly (curry call-and-tag (list-ref ops 1)))
  (define mul-poly (curry call-and-tag (list-ref ops 2)))

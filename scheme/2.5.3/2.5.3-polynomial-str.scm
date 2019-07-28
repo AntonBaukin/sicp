@@ -110,7 +110,11 @@
  )
 
  (define (poly->str poly)
-  (poly->str-iter (car poly) (cdr poly) "")
+  (poly->str-iter
+   (car poly)
+   (apply-generic-unwrap (cdr poly))
+   ""
+  )
  )
 
  poly->str ;<— resulting function

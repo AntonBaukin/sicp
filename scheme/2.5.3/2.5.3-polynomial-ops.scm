@@ -1,5 +1,5 @@
 
-(define (make-polynomial-ops reduce-terms)
+(define (make-polynomial-ops TTAG reduce-terms)
  (include "2.5.3-iterate-two.scm")
 
  
@@ -7,7 +7,13 @@
  ; then calls the binary operation on terms.
  (define (same?->call op a b)
   (if (and (symbol? (car a)) (eq? (car a) (car b)))
-   (cons (car a) (op (cdr a) (cdr b)))
+   (cons
+    (car a)
+    (apply-generic-tag
+     TTAG
+     (op (cddr a) (cddr b))
+    )
+   )
    (error "Polynomials with different vars" (car a) (car b))
   )
  )

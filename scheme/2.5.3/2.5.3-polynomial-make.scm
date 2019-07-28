@@ -1,5 +1,8 @@
 
-(define (make-polynomial-makers TAG TermsSet)
+; Takes polynomial and the terms list tags, and
+; ops-set (i.e., class) for the sorted set.
+;
+(define (make-polynomial-makers PTAG TTAG TermsSet)
  (define make-terms-set (set-op-make TermsSet))
 
  (define (reduce-terms-iter res terms)
@@ -52,7 +55,10 @@
      )
 
      (if (= (length xterms) (length set))
-      (num-tag-set TAG (cons var set))
+      (num-tag-set
+       PTAG
+       (cons var (apply-generic-tag TTAG set))
+      )
       (error "Making polynomial with duplicate term orders" xterms)
      )
     )
