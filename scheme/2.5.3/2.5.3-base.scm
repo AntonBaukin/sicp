@@ -9,7 +9,7 @@
 
 (define N make-number)  ;<— shortcuts...
 (define I make-integer)
-(define P (cadr polynomial-package))
+(define P (caddr polynomial-package))
 
 
 (define (log . args) (for-each display args) (newline))

@@ -1,23 +1,8 @@
 
-(define (make-polynomial-ops TTAG reduce-terms)
+(define (make-polynomial-ops reduce-terms)
  (include "2.5.3-iterate-two.scm")
 
  
- ; Checks the same variable of polynomials,
- ; then calls the binary operation on terms.
- (define (same?->call op a b)
-  (if (and (symbol? (car a)) (eq? (car a) (car b)))
-   (cons
-    (car a)
-    (apply-generic-tag
-     TTAG
-     (op (cddr a) (cddr b))
-    )
-   )
-   (error "Polynomials with different vars" (car a) (car b))
-  )
- )
-
  ; General operation on two terms of the same order.
  ; Invoked with coefficients of the terms.
  (define (term-op op a b)
@@ -38,16 +23,17 @@
   )
  )
 
- (define (same?->linear-call term-op)
-  (define poly-call (curry same?->call (curry linear-poly-op term-op)))
-  (lambda (a b) (poly-call a b))
+ (define (bind-linear-call term-op)
+  (define poly-call (curry linear-poly-op term-op))
+  (lambda (a b) (poly-call a b)
+  )
  )
 
  ; As in SICP, we use general arithmetics on terms.
  (define add-term-op (curry term-op add))
- (define add-poly (same?->linear-call add-term-op))
+ (define add-sparse-terms (bind-linear-call add-term-op))
  (define sub-term-op (curry term-op sub))
- (define sub-poly (same?->linear-call sub-term-op))
+ (define sub-sparse-terms (bind-linear-call sub-term-op))
 
 
  (define (mul-terms a b)
@@ -77,9 +63,9 @@
   )
  )
 
- (define mul-poly (curry same?->call (curry mul-poly-terms-iter '())))
- 
+ (define mul-sparse-terms (curry mul-poly-terms-iter '()))
+
 
  ; Resulting functions:
- (list add-poly sub-poly mul-poly)
+ (list add-sparse-terms sub-sparse-terms mul-sparse-terms)
 )

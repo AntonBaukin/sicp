@@ -9,23 +9,23 @@
 ; on the length of the array.
 ;
 ; We also implement raise and drop operations to
-; general tree polynomials. This allows to reuse
+; sparse tree polynomials. This allows to reuse
 ; to-string formatter and make functions.
 ;
 ; Requires polynomial package to be installed
-; and given as the second argument.
+; and given as the first argument.
 ;
-(define (install-poly-dense-package polynomial-package scope)
- (define TAG  'poly-dense)
+(define (install-poly-dense-package TTAG polynomial-package scope)
+ (define TAG  (list-ref polynomial-package 0))
  (define TAG1 (list TAG))
  (define TAG2 (list TAG TAG))
 
 
  ; We reuse various checks and the formatting from
- ; general polynomials to simplify the implementation.
- (define make-poly (list-ref polynomial-package 0))
- (define make-poly-from (list-ref polynomial-package 1))
- (define poly->str (list-ref polynomial-package 2))
+ ; sparse polynomials to simplify the implementation.
+ (define make-poly (list-ref polynomial-package 1))
+ (define make-poly-from (list-ref polynomial-package 2))
+ (define poly->str (list-ref polynomial-package 3))
 
 
  ; General polynomial terms are a set sorted in power
@@ -112,10 +112,10 @@
  
 
  ; Register generic functions:
- ((apply-generic-scope-register scope)
-  'zero? TAG1 dense-poly-zero?
-  'str   TAG1 dense-poly->str
- )
+; ((apply-generic-scope-register scope)
+;  'zero? TAG1 dense-poly-zero?
+;  'str   TAG1 dense-poly->str
+; )
 
 
  (list ; Package exposed functions:

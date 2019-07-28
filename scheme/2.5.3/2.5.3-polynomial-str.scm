@@ -99,23 +99,18 @@
   )
  )
 
- (define (poly->str-iter var terms str)
+ (define (terms->str-iter str var terms)
   (if (null? terms) str
-   (poly->str-iter var (cdr terms)
+   (terms->str-iter
     (string-append str
      (term->str var (caar terms) (cdar terms) str)
     )
+    var
+    (cdr terms)
    )
   )
  )
 
- (define (poly->str poly)
-  (poly->str-iter
-   (car poly)
-   (apply-generic-unwrap (cdr poly))
-   ""
-  )
- )
 
- poly->str ;<— resulting function
+ (curry terms->str-iter "") ;<— resulting function
 )
