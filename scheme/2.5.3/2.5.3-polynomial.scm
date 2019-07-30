@@ -87,7 +87,7 @@
   'mul   TAG2 (curry same?->call 'mul)
 
 
-  ; And here are os on sparse terms set:
+  ; And here are ops on sparse terms sets:
   'add   TTG2 add-sparse-terms
   'sub   TTG2 sub-sparse-terms
   'MUL   TTG2 mul-sparse-terms
@@ -100,5 +100,5 @@
 
 
  ; Package exposed items & functions:
- (list TAG make-poly make-poly-from poly->str same?->call)
+ (list make-poly make-poly-from sparse-terms->str)
 )

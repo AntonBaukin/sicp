@@ -15,17 +15,18 @@
 ; Requires polynomial package to be installed
 ; and given as the first argument.
 ;
-(define (install-poly-dense-package TTAG polynomial-package scope)
- (define TAG  (list-ref polynomial-package 0))
- (define TAG1 (list TAG))
- (define TAG2 (list TAG TAG))
+(define (install-poly-dense-package polynomial-package scope)
+ (define TAG  'polynomial) ;<— polynomial generic type
+ (define TTAG 'sparse)     ;<— generit type of sparse terms set
+ (define DTAG 'dense)      ;<— generit type of dense coeffs list
+ (define SDTG (list 'string DTAG))
 
 
  ; We reuse various checks and the formatting from
  ; sparse polynomials to simplify the implementation.
- (define make-poly (list-ref polynomial-package 1))
- (define make-poly-from (list-ref polynomial-package 2))
- (define poly->str (list-ref polynomial-package 3))
+ (define make-poly (list-ref polynomial-package 0))
+ (define make-poly-from (list-ref polynomial-package 1))
+ (define sparse-terms->str (list-ref polynomial-package 2))
 
 
  ; General polynomial terms are a set sorted in power
@@ -47,35 +48,17 @@
   )
  )
 
+ ; Takes wrapped sparse polynomial terms.
  (define (poly-terms->dense terms)
-  (reverse (terms->dense-iter (reverse terms) 0 '()))
- )
-
- ; Takes generic polynomial (not wrapped).
- (define (poly->dense poly)
-  (cons (car poly) (poly-terms->dense (cdr poly)))
- )
-
-
- ; The following creators are from general polynomials.
- (define (make-poly-dense var terms)
-  (num-tag-set TAG (poly->dense
-   (apply-generic-unwrap
-    (make-poly var terms)
+  (let ((set (apply-generic-unwrap terms)))
+   (num-tag-set DTAG
+    (reverse (terms->dense-iter (reverse set) 0 '()))
    )
-  ))
- )
-
- (define (make-poly-dense-from var . defs)
-  (num-tag-set TAG (poly->dense
-   (apply-generic-unwrap
-    (apply make-poly-from (cons var defs))
-   )
-  ))
+  )
  )
 
 
- ; Back converts a list of dense coeffs to terms.
+ ; Back converts a list of dense coeffs to sparse terms.
  ; The resulting list has the required terms order:
  ; term power descending.
  (define (dense->terms-iter coeffs i res)
@@ -92,42 +75,54 @@
    )
   )
  )
- 
 
- ; Takes dense polynomial (not wrapped).
- (define (dense->poly dense-poly)
-  (cons
-   (car dense-poly)
-   (dense->terms-iter (cdr dense-poly) 0 '())
+ ; Takes wrapped dense polynomial list.
+ (define (dense->poly-terms coeffs)
+  (num-tag-set TTAG
+   (dense->terms-iter (apply-generic-unwrap coeffs) 0 '())
   )
  )
 
- (define (dense-poly->str dense-poly)
-  (poly->str (dense->poly dense-poly))
+
+ ; The following creators are from sparse polynomials.
+ (define (make-poly-dense var terms)
+  (let ((p (apply-generic-unwrap (make-poly var terms))))
+   (num-tag-set TAG (cons var (poly-terms->dense (cdr p))))
+  )
  )
 
- (define (dense-poly-zero? p)
-  (null? (cdr p))
+ (define (make-poly-dense-from var . defs)
+  (let* (
+    (a (cons var defs))
+    (p (apply-generic-unwrap (apply make-poly-from a)))
+   )
+   (num-tag-set TAG (cons var (poly-terms->dense (cdr p))))
+  )
  )
- 
+
+
+ ; Takes variable symbol and unwrapped coeffs list.
+ ; Reuses sparse-terms->str() to convert.
+ (define (dense-coeffs->str var coeffs)
+  (let* (
+    (dense  (num-tag-set DTAG coeffs))
+    (sparse (dense->poly-terms dense))
+    (terms  (apply-generic-unwrap sparse))
+   )
+   (sparse-terms->str var terms)
+  )
+ )
+
 
  ; Register generic functions:
-; ((apply-generic-scope-register scope)
-;  'zero? TAG1 dense-poly-zero?
-;  'str   TAG1 dense-poly->str
-; )
+ ((apply-generic-scope-register scope)
 
-
- (list ; Package exposed functions:
-  make-poly-dense
-  make-poly-dense-from
-  dense-poly->str
-
-  ; We may treat convert functions as raise and drop
-  ; operations. In the tower generic polynomials are
-  ; above the dense ones.
-
-  poly->dense  ; Drops generic polynomial to dense one.
-  dense->poly  ; Raises dense polinomial to generic one.
+  ; Using special '(string dense) types we register
+  ; general formatter for dense coeffs list.
+  'str SDTG dense-coeffs->str
  )
+
+
+ ; Package exposed functions:
+ (list make-poly-dense make-poly-dense-from)
 )
