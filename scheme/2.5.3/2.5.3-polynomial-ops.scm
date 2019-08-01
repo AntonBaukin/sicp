@@ -11,7 +11,7 @@
 
  ; Unlike SICP course, we define linear ops on
  ; terms as special merge on two sorted sets.
- (define (linear-poly-op term-op terms-a terms-b)
+ (define (linear-terms-op term-op terms-a terms-b)
   (reduce-terms
    (merge-sorted terms-a terms-b (lambda (a b)
     (cond
@@ -24,9 +24,8 @@
  )
 
  (define (bind-linear-call term-op)
-  (define poly-call (curry linear-poly-op term-op))
-  (lambda (a b) (poly-call a b)
-  )
+  (define terms-call (curry linear-terms-op term-op))
+  (lambda (a b) (terms-call a b))
  )
 
  ; As in SICP, we use general arithmetics on terms.
@@ -55,7 +54,7 @@
  (define (mul-poly-terms-iter res terms-a terms-b)
   (if (null? terms-b) res
    (mul-poly-terms-iter
-    (linear-poly-op add-term-op res 
+    (linear-terms-op add-term-op res 
      (reverse (mul-terms-by-term-iter terms-a (car terms-b) '()))
     )
     terms-a (cdr terms-b)

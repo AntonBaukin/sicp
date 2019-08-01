@@ -54,6 +54,7 @@
  (define sub-sparse-terms (curry call-sparse (list-ref ops 1)))
  (define mul-sparse-terms (curry call-sparse (list-ref ops 2)))
 
+
  ; Checks the same variable of polynomials,
  ; then calls the binary operation on terms
  ; using generic apply from numbers scope.
@@ -90,7 +91,7 @@
   ; And here are ops on sparse terms sets:
   'add   TTG2 add-sparse-terms
   'sub   TTG2 sub-sparse-terms
-  'MUL   TTG2 mul-sparse-terms
+  'mul   TTG2 mul-sparse-terms
 
 
   ; Using special '(string sparse) types we register

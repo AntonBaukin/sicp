@@ -16,9 +16,13 @@
 ; and given as the first argument.
 ;
 (define (install-poly-dense-package polynomial-package scope)
+ (include "2.5.3-poly-dense-ops.scm")
+
+
  (define TAG  'polynomial) ;<— polynomial generic type
  (define TTAG 'sparse)     ;<— generit type of sparse terms set
  (define DTAG 'dense)      ;<— generit type of dense coeffs list
+ (define DDG2 (list DTAG DTAG))
  (define SDTG (list 'string DTAG))
 
 
@@ -114,8 +118,23 @@
  )
 
 
+ (define (call-dense op a b)
+  (num-tag-set DTAG (op a b))
+ )
+
+ (define ops (make-poly-dense-ops))
+ (define add-dense-terms (curry call-dense (list-ref ops 0)))
+ (define sub-dense-terms (curry call-dense (list-ref ops 1)))
+ ;(define mul-dense-terms (curry call-dense (list-ref ops 2)))
+
+
  ; Register generic functions:
  ((apply-generic-scope-register scope)
+
+  ; Ops on dense terms lists:
+  'add DDG2 add-dense-terms
+  'sub DDG2 sub-dense-terms
+;  'mul   TTG2 mul-dense-terms
 
   ; Using special '(string dense) types we register
   ; general formatter for dense coeffs list.

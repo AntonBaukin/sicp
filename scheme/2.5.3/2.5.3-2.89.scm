@@ -8,3 +8,25 @@
 ; Mixes two representations of polynomials.
 (log-poly (P 'x 2 10 1 (D 'y 2 1 0 2) 0 3))
 (log-poly (D 'x 2 10 1 (P 'y 2 1 0 2) 0 3))
+
+
+; Test add with reduced coefficients:
+(log-poly-add
+ (D 'x 1 5 0 5)
+ (D 'x 1 2 0 -5)
+)
+
+(log-poly-add
+ (D 'x 2 3 1 5 0 1)
+ (D 'x 2 -3 1 5 0 -2)
+)
+
+(log-poly-add
+ (P 'x 100 2 10 2 0 1)
+ (P 'x 10 -2 0 1)
+)
+
+(log-poly-sub
+ (P 'x 100 2 10 2 0 1)
+ (P 'x 10 2 0 1)
+)
