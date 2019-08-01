@@ -42,7 +42,7 @@
   )
  )
 
- ; Mutiplies terms list by single term reversing the order.
+ ; Mutiplies terms sets by single term reversing the order.
  (define (mul-terms-by-term-iter terms term res)
   (if (null? terms) res
    (mul-terms-by-term-iter (cdr terms) term

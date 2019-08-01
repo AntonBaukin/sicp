@@ -123,18 +123,18 @@
  )
 
  (define ops (make-poly-dense-ops))
- (define add-dense-terms (curry call-dense (list-ref ops 0)))
- (define sub-dense-terms (curry call-dense (list-ref ops 1)))
- ;(define mul-dense-terms (curry call-dense (list-ref ops 2)))
+ (define add-dense-coeffs (curry call-dense (list-ref ops 0)))
+ (define sub-dense-coeffs (curry call-dense (list-ref ops 1)))
+ (define mul-dense-coeffs (curry call-dense (list-ref ops 2)))
 
 
  ; Register generic functions:
  ((apply-generic-scope-register scope)
 
-  ; Ops on dense terms lists:
-  'add DDG2 add-dense-terms
-  'sub DDG2 sub-dense-terms
-;  'mul   TTG2 mul-dense-terms
+  ; Ops on dense coeffs lists:
+  'add DDG2 add-dense-coeffs
+  'sub DDG2 sub-dense-coeffs
+  'mul DDG2 mul-dense-coeffs
 
   ; Using special '(string dense) types we register
   ; general formatter for dense coeffs list.

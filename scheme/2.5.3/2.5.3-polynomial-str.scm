@@ -57,23 +57,35 @@
   (needs-braces-iter cs 0 (string-length cs))
  )
 
+ (define (one? cs)
+  (or (equal? cs "1") (equal? cs "1.") (equal? cs "1.0"))
+ )
+
  ; Simplified version of plain one number coefficient test.
  (define (omit-one o cs)
   (if (= 0 o) cs ;<— not omit one coeff for the last term (0-power)
-   (if (or (equal? cs "1") (equal? cs "1.") (equal? cs "1.0")) "" cs)
+   (if (one? cs)  "" cs)
+  )
+ )
+
+ (define (coeff-junction plus minus o cs)
+  (let ((x (string-ref cs 0)))
+   (string-append
+    (if (eq? x #\-) minus plus)
+    (if (eq? x #\-)
+     (omit-one o (substring cs 1 (string-length cs)))
+     (omit-one o cs)
+    )
+   )
   )
  )
 
  ; Plus-junction for the terms. For coefficients starting
  ; with «-» prints minus-junction omitting the coeff sign.
- (define (plus-coeff o cs)
-  (let ((x (string-ref cs 0)))
-   (if (eq? x #\-)
-    (string-append " - " (omit-one o (substring cs 1 (string-length cs))))
-    (string-append " + " (omit-one o cs))
-   )
-  )
- )
+ (define plus-coeff (curry coeff-junction " + " " - "))
+
+ ; Extension of omit-one() for the leading term.
+ (define omit-one-first (curry coeff-junction "" "-"))
 
  (define (term->str v o c s)
   (let ((cs (coeff->str c)))
@@ -88,7 +100,7 @@
      )
 
      ; It's a first coeff?
-     ((= 0 (string-length s)) (omit-one o cs))
+     ((= 0 (string-length s)) (omit-one-first o cs))
 
      ; Add it via a junction.
      (else (plus-coeff o cs))

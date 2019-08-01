@@ -18,27 +18,26 @@
  (log p " = " (num->str p))
 )
 
-(define (log-poly-add a b)
- (log "["
-  (num->str a) "] + ["
-  (num->str b) "] = "
-  (num->str (add a b))
+(define (log-poly-op op-str op a b opts)
+ (let ((r (op a b)))
+  (log "["
+   (num->str a) "] " op-str " ["
+   (num->str b) "] = "
+   (num->str r)
+   (if (null? opts) "" " ")
+   (if (equal? '(raw) opts) r "")
+  )
  )
 )
 
-(define (log-poly-sub a b)
- (log "["
-  (num->str a) "] - ["
-  (num->str b) "] = "
-  (num->str (sub a b))
- )
+(define (log-poly-add a b . opts)
+ (log-poly-op "+" add a b opts)
 )
 
-(define (log-poly-mul a b)
- (log "["
-  (num->str a) "] * ["
-  (num->str b) "] = "
-  (num->str (mul a b))
- )
+(define (log-poly-sub a b . opts)
+ (log-poly-op "-" sub a b opts)
 )
 
+(define (log-poly-mul a b . opts)
+ (log-poly-op "*" mul a b opts)
+)

@@ -22,11 +22,32 @@
 )
 
 (log-poly-add
- (P 'x 100 2 10 2 0 1)
- (P 'x 10 -2 0 1)
+ (D 'x 100 2 5 2 0 1)
+ (D 'x 100 -2 0 1)
+ 'raw
 )
 
 (log-poly-sub
- (P 'x 100 2 10 2 0 1)
- (P 'x 10 2 0 1)
+ (D 'x 100 2 5 2 0 1)
+ (D 'x 100 2 0 1)
+)
+
+(log-poly-mul
+ (D 'x 3 1 2 2 0 1)
+ (D 'x 0 5)
+)
+
+(log-poly-mul
+ (D 'x 3 1 2 -2 0 1)
+ (D 'x 0 -1)
+)
+
+(log-poly-mul
+ (D 'x 3 1 2 2 0 1)
+ (D 'x 1 1 0 2)
+)
+
+(log-poly-mul
+ (D 'x 3 1 2 2 0 1)
+ (D 'x 3 1 2 -2 0 -1)
 )

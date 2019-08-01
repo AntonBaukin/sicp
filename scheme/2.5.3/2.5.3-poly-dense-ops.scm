@@ -1,42 +1,12 @@
 
-; Operations for polynomials with dense terms list.
+; Operations for polynomials with dense coeffs lists.
 (define (make-poly-dense-ops)
+ (include "2.5.3-iterate-two.scm")
+ 
 
- ; Takes two lists of coefficients and merges
- ; them with the operation given. As you may
- ; guess, it's more like merge-sorted() used
- ; in linear-terms-op() for sparse terms.
- ; Returns coeffs in reverse order!
- ;
- (define (linear-coeffs-op-iter op coeffs-a coeffs-b res)
-  (cond
-   ((and (null? coeffs-a) (null? coeffs-b))
-    res
-   )
-
-   ((null? coeffs-a)
-    (linear-coeffs-op-iter op coeffs-a (cdr coeffs-b)
-     (cons (car coeffs-b) res)
-    )
-   )
-
-   ((null? coeffs-b)
-    (linear-coeffs-op-iter op (cdr coeffs-a) coeffs-b
-     (cons (car coeffs-a) res)
-    )
-   )
-
-   (else
-    (linear-coeffs-op-iter op (cdr coeffs-a) (cdr coeffs-b)
-     (cons (op (car coeffs-a) (car coeffs-b)) res)
-    )
-   )
-  )
- )
-
- ; Takes coeffs in reverse order (power descending) and
- ; returns list in normal order (power ascending from 0)
- ; having the higher zeros trimmed.
+ ; Takes coeffs in reverse order (power descending to 0)
+ ; and returns list in normal order having the higher
+ ; zeros trimmed.
  (define (reduce-coeffs-iter coeffs res)
   (if (null? coeffs) res
    (if (zero? (car coeffs))
@@ -46,9 +16,11 @@
   )
  )
 
+ ; Takes two lists of coefficients and merges
+ ; them with the operation given.
  (define (linear-coeffs-op op coeffs-a coeffs-b)
   (reduce-coeffs-iter
-   (linear-coeffs-op-iter op coeffs-a coeffs-b '())
+   (reverse (merge-sorted coeffs-a coeffs-b op))
    '()
   )
  )
@@ -59,10 +31,59 @@
  )
 
  ; We use general arithmetics on the cefficients.
- (define add-dense-terms (bind-linear-call add))
- (define sub-dense-terms (bind-linear-call sub))
+ (define add-dense-coeffs (bind-linear-call add))
+ (define sub-dense-coeffs (bind-linear-call sub))
+
+
+ ; Mutiplies coeffs list by single coeff reversing the order.
+ (define (mul-coeffs-by-coeff-iter coeffs coeff res)
+  (if (null? coeffs) res
+   (mul-coeffs-by-coeff-iter (cdr coeffs) coeff
+    (cons (mul (car coeffs) coeff) res)
+   )
+  )
+ )
+
+ ; Dense terms contains a lot of zeros, and we speed up.
+ (define (mul-coeffs-by-coeff coeffs coeff)
+  (if (zero? coeff) (list coeff) ;<— not an empty list
+   (mul-coeffs-by-coeff-iter coeffs coeff '())
+  )
+ )
+
+ ; Takes reversed coeffs and shifts them by the order.
+ (define (shift-coeffs-iter coeffs order res)
+  (cond
+   ((and (= 0 order) (null? coeffs)) res)
+
+   ((null? coeffs) ; Done reversing, insert zeros?
+    (shift-coeffs-iter '() (- order 1) (cons 0 res))
+   )
+
+   (else ; Just reverse the coeffs order:
+    (shift-coeffs-iter (cdr coeffs) order (cons (car coeffs) res))
+   )
+  )
+ )
+
+ (define (mul-dense-coeffs-iter res order coeffs-a coeffs-b)
+  (if (null? coeffs-b) res
+   (mul-dense-coeffs-iter
+    (add-dense-coeffs
+     res
+     (shift-coeffs-iter
+      (mul-coeffs-by-coeff coeffs-a (car coeffs-b))
+      order '()
+     )
+    )
+    (+ order 1) coeffs-a (cdr coeffs-b)
+   )
+  )
+ )
+
+ (define mul-dense-coeffs (curry mul-dense-coeffs-iter '() 0))
 
 
  ; Resulting functions:
- (list add-dense-terms sub-dense-terms)
+ (list add-dense-coeffs sub-dense-coeffs mul-dense-coeffs)
 )
