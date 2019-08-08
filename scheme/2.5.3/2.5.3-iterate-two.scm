@@ -37,20 +37,20 @@
 
    (else
     (let* (
-      (w! (where a b w t))
-      (t! (take a b w! t))
+      (w? (where a b w t))
+      (t! (take a b w? t))
      )
 
      (cond
-      ((eq? #f w!)
-       (next (cdr a) b w! t!)
+      ((eq? #f w?)
+       (next (cdr a) b w? t!)
       )
 
-      ((eq? #t w!)
-       (next a (cdr b) w! t!)
+      ((eq? #t w?)
+       (next a (cdr b) w? t!)
       )
 
-      (else (next (cdr a) (cdr b) w! t!))
+      (else (next (cdr a) (cdr b) w? t!))
      )
     )
    )
@@ -81,26 +81,3 @@
 
  (reverse (iterate-two seqa seqb where take))
 )
-
-
-;(display (merge-sorted
-; '(1 2 3 4 5 7 10 11)
-; '(0 2 4 6 7 8 9 10 11 12)
-;
-; (lambda (a b) (if (= a b) a (> a b)))
-;))
-
-;(display (merge-sorted
-; '((100 . 2) (10 . 2) (0 . 1))
-; '((10 . -2) (0 . 1))
-;
-; (lambda (a b)
-;  (cond
-;   ((< (car a) (car b)) #t)
-;   ((< (car b) (car a)) #f)
-;   (else (cons (car a) (+ (cdr a) (cdr b))))
-;  )
-; )
-;))
-;
-;(newline)

@@ -1,7 +1,7 @@
 (include "2.5.3-base.scm")
 
 
-; In this implemetation substraction of polynomials
+; In this implemetation subtraction of polynomials
 ; is implemented directly via general sub operation.
 ;
 ; By the way, liniear operations, add and sub, were

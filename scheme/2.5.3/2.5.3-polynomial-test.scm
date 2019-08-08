@@ -32,6 +32,11 @@
  (P 'x 10 2 0 1)
 )
 
+(log-poly-sub
+ (P 'x 5 1 0 -1)
+ (P 'x 5 1 3 -1)
+)
+
 (log-poly-mul
  (P 'x 3 1 2 2 0 1)
  (P 'x 0 5)

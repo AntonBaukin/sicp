@@ -2,37 +2,80 @@
 (define (make-polynomial-ops reduce-terms)
  (include "2.5.3-iterate-two.scm")
 
+
+ ; In our general arithmetics we have no negate operator,
+ ; but with the types tower and auto-raise we can define
+ ; it as (integer 0 – general value).
+ (define (negate v) (sub 0 v))
+
+ ; Identity unary function, returns the same term
+ (define (no-op v) v)
  
  ; General operation on two terms of the same order.
  ; Invoked with coefficients of the terms.
- (define (term-op op a b)
+ (define (term-bi-op op a b)
   (cons (car a) (op (cdr a) (cdr b)))
+ )
+
+ (define (term-uni-op op a)
+  (cons (car a) (op (cdr a)))
  )
 
  ; Unlike SICP course, we define linear ops on
  ; terms as special merge on two sorted sets.
- (define (linear-terms-op term-op terms-a terms-b)
-  (reduce-terms
-   (merge-sorted terms-a terms-b (lambda (a b)
-    (cond
-     ((< (car a) (car b)) #t)
-     ((< (car b) (car a)) #f)
-     (else (term-op a b))
-    )
-   ))
+ (define (linear-terms-op terms-proc terms-a terms-b)
+  (reduce-terms (reverse (terms-proc terms-a terms-b)))
+ )
+
+ ; Terms processing is not a mere merge. For addition,
+ ; this is true: we directly take terms on orders mismatch,
+ ; and summarize them on match. But for subtraction this
+ ; is not true: we take first argument as-is, but negate
+ ; the second one.
+ (define (make-terms-proc bi-op a-op b-op)
+
+  ; On oders mismatch, we pop the highest term (as the
+  ; sparse terms set order is power descending), or we
+  ; pop them both merging them.
+  (define (where a b w t)
+   (cond
+    ((< (caar a) (caar b)) #t) ;<— pop higher b-term
+    ((< (caar b) (caar a)) #f) ;<— pop higher a-term
+    (else (bi-op (car a) (car b)))       ;<— pop both & merge
+   )
+  )
+
+  ; Differs from merge in that we apply a-op or b-op
+  ; before adding to the result t-list.
+  (define (take a b w t)
+   (cond
+    ((eq? #f w) (cons (a-op (car a)) t))
+    ((eq? #t w) (cons (b-op (car b)) t))
+    (else (cons w t))
+   )
+  )
+
+  (lambda (terms-a terms-b)
+   (iterate-two terms-a terms-b where take)
   )
  )
 
- (define (bind-linear-call term-op)
-  (define terms-call (curry linear-terms-op term-op))
-  (lambda (a b) (terms-call a b))
+ (define (bind-linear-call bi-op a-op b-op)
+  (define linear-call
+   (curry linear-terms-op
+    (make-terms-proc bi-op a-op b-op)
+   )
+  )
+  
+  (lambda (terms-a terms-b) (linear-call terms-a terms-b))
  )
 
  ; As in SICP, we use general arithmetics on terms.
- (define add-term-op (curry term-op add))
- (define add-sparse-terms (bind-linear-call add-term-op))
- (define sub-term-op (curry term-op sub))
- (define sub-sparse-terms (bind-linear-call sub-term-op))
+ (define add-bi-op (curry term-bi-op add))
+ (define add-sparse-terms (bind-linear-call add-bi-op no-op no-op))
+ (define sub-bi-op (curry term-bi-op sub))
+ (define neg-b-op (curry term-uni-op negate))
+ (define sub-sparse-terms (bind-linear-call sub-bi-op no-op neg-b-op))
 
 
  (define (mul-terms a b)
@@ -51,11 +94,15 @@
   )
  )
 
+ (define (mul-terms-by-term terms term)
+  (reverse (mul-terms-by-term-iter terms term '()))
+ )
+
  (define (mul-poly-terms-iter res terms-a terms-b)
   (if (null? terms-b) res
    (mul-poly-terms-iter
-    (linear-terms-op add-term-op res 
-     (reverse (mul-terms-by-term-iter terms-a (car terms-b) '()))
+    (add-sparse-terms res
+     (mul-terms-by-term terms-a (car terms-b))
     )
     terms-a (cdr terms-b)
    )
