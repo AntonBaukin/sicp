@@ -112,6 +112,44 @@
  (define mul-sparse-terms (curry mul-poly-terms-iter '()))
 
 
- ; Resulting functions:
- (list add-sparse-terms sub-sparse-terms mul-sparse-terms)
+ ; Implementation of task 2.91. Returns pair of terms.
+ (define (div-sparse-terms terms-num terms-den)
+  (if (null? terms-num) '()
+   (let (
+     (onum (caar terms-num))
+     (oden (caar terms-den))
+    )
+
+    (if (> oden onum)
+     (cons '() terms-num)
+     (let* (
+       (cnum (cdar terms-num))
+       (cden (cdar terms-den))
+       (cnew (div cnum cden))
+       (onew (- onum oden))
+       (tnew (cons onew cnew)) ;<— new resulting term
+       (mult (mul-terms-by-term terms-den tnew))
+       (diff (sub-sparse-terms terms-num mult))
+       (next (div-sparse-terms diff terms-den))
+      )
+
+      (cons
+       ; We push the new term to be the first in the recursive
+       ; result quotient thus forming the desired descending order.
+       (cons tnew (car next))
+       (cdr next) ;<— the rest stays as is
+      )
+     )
+    )
+   )
+  )
+ )
+
+
+ (list ; Resulting functions:
+  add-sparse-terms
+  sub-sparse-terms
+  mul-sparse-terms
+  div-sparse-terms
+ )
 )

@@ -10,6 +10,7 @@
  (define TTAG 'sparse)        ;<— type for sparse tags set
  (define TAG1 (list TAG))
  (define TAG2 (list TAG TAG))
+ (define TTG1 (list TTAG))
  (define TTG2 (list TTAG TTAG))
  (define STTG (list 'string TTAG))
 
@@ -53,20 +54,43 @@
  (define add-sparse-terms (curry call-sparse (list-ref ops 0)))
  (define sub-sparse-terms (curry call-sparse (list-ref ops 1)))
  (define mul-sparse-terms (curry call-sparse (list-ref ops 2)))
+ (define div-sparse-terms (list-ref ops 3))
 
 
  ; Checks the same variable of polynomials,
  ; then calls the binary operation on terms
  ; using generic apply from numbers scope.
- (define (same?->call op a b)
-  (if (and (symbol? (car a)) (eq? (car a) (car b)))
-   (num-tag-set TAG
-    (cons (car a) ;<— polynomial's variable
-     (num-call op (cdr a) (cdr b)) ;<— resulting general term
-    )
-   )
+ (define (same?->then a b call)
+  (if (and (symbol? (car a)) (eq? (car a) (car b))) (call)
    (error "Polynomials with different vars" (car a) (car b))
   )
+ )
+
+ (define (same?->call->then op a b then)
+  (same?->then a b (lambda ()
+   (then (car a) ;<— polynomial's variable
+    (num-call op (cdr a) (cdr b)) ;<— resulting general term
+   )
+  ))
+ )
+
+ (define (same?->call op a b)
+  (same?->call->then op a b (lambda (var terms)
+   (num-tag-set TAG (cons var terms))
+  ))
+ )
+
+ (define (make-poly-raw var terms)
+  (num-tag-set TAG (cons var (num-tag-set TTAG terms)))
+ )
+
+ (define (same?->div a b)
+  (same?->call->then 'div a b (lambda (var quotient-rest)
+   (cons
+    (make-poly-raw var (car quotient-rest))
+    (make-poly-raw var (cdr quotient-rest))
+   )
+  ))
  )
 
 
@@ -83,16 +107,16 @@
   'str   TAG1 poly->str
 
   ; Here we register ops on general polynomials:
-  'add   TAG2 (curry same?->call 'add)
-  'sub   TAG2 (curry same?->call 'sub)
-  'mul   TAG2 (curry same?->call 'mul)
-
+  'add    TAG2 (curry same?->call 'add)
+  'sub    TAG2 (curry same?->call 'sub)
+  'mul    TAG2 (curry same?->call 'mul)
+  'div    TAG2 same?->div
 
   ; And here are ops on sparse terms sets:
   'add   TTG2 add-sparse-terms
   'sub   TTG2 sub-sparse-terms
   'mul   TTG2 mul-sparse-terms
-
+  'div   TTG2 div-sparse-terms
 
   ; Using special '(string sparse) types we register
   ; general formatter for sparse terms set.

@@ -53,7 +53,7 @@
 (define add (curry num-call 'add))
 (define sub (curry num-call 'sub))
 (define mul (curry num-call 'mul))
-(define div (curry num-call 'mul))
+(define div (curry num-call 'div))
 (define num->str (curry num-call 'str))
 
 ; Converts to short version (less digits) with

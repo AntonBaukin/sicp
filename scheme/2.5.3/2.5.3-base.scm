@@ -41,3 +41,16 @@
 (define (log-poly-mul a b . opts)
  (log-poly-op "*" mul a b opts)
 )
+
+(define (log-poly-div a b)
+ (let ((r (div a b)))
+  (log "["
+   (num->str a) "] / ["
+   (num->str b) "] = ["
+   (num->str (car r))
+   "] % ["
+   (num->str (cdr r))
+   "]"
+  )
+ )
+)
