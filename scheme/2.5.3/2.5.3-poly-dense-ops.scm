@@ -2,7 +2,11 @@
 ; Operations for polynomials with dense coeffs lists.
 (define (make-poly-dense-ops)
  (include "2.5.3-iterate-two.scm")
- 
+
+
+ ; On this, see «2.5.3-polynomial-ops.scm»
+ (define (negate v) (sub 0 v))
+ (define (no-op v) v)
 
  ; Takes coeffs in reverse order (power descending to 0)
  ; and returns list in normal order having the higher
@@ -18,21 +22,49 @@
 
  ; Takes two lists of coefficients and merges
  ; them with the operation given.
- (define (linear-coeffs-op op coeffs-a coeffs-b)
-  (reduce-coeffs-iter
-   (reverse (merge-sorted coeffs-a coeffs-b op))
-   '()
+ (define (linear-coeffs-op coeffs-proc coeffs-a coeffs-b)
+  (reduce-coeffs-iter (coeffs-proc coeffs-a coeffs-b) '())
+ )
+
+ ; It's not a simle merge becaouse of the subtraction.
+ ; (See «2.5.3-polynomial-ops.scm».)
+ (define (make-coeffs-proc bi-op a-op b-op)
+
+  ; The iteration goes in forward order from 0, power
+  ; ascending. Iterator stops asking where() on an empty
+  ; list, and we treat this in take().
+  (define (where a b w t)
+   (bi-op (car a) (car b))
+  )
+
+  ; We have «w» #f when b-list is empty, #t — a-list,
+  ; else we have a new coefficient.
+  (define (take a b w t)
+   (cond
+    ((eq? #f w) (cons (a-op (car a)) t))
+    ((eq? #t w) (cons (b-op (car b)) t))
+    (else (cons w t))
+   )
+  )
+
+  (lambda (coeffs-a coeffs-b)
+   (iterate-two coeffs-a coeffs-b where take)
   )
  )
 
- (define (bind-linear-call op)
-  (define coeffs-call (curry linear-coeffs-op op))
-  (lambda (a b) (coeffs-call a b))
+ (define (bind-linear-call bi-op a-op b-op)
+  (define linear-call
+   (curry linear-coeffs-op
+    (make-coeffs-proc bi-op a-op b-op)
+   )
+  )
+
+  (lambda (coeffs-a coeffs-b) (linear-call coeffs-a coeffs-b))
  )
 
  ; We use general arithmetics on the cefficients.
- (define add-dense-coeffs (bind-linear-call add))
- (define sub-dense-coeffs (bind-linear-call sub))
+ (define add-dense-coeffs (bind-linear-call add no-op no-op))
+ (define sub-dense-coeffs (bind-linear-call sub no-op negate))
 
 
  ; Mutiplies coeffs list by single coeff reversing the order.

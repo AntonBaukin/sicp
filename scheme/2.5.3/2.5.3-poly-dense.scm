@@ -22,6 +22,7 @@
  (define TAG  'polynomial) ;<— polynomial generic type
  (define TTAG 'sparse)     ;<— generit type of sparse terms set
  (define DTAG 'dense)      ;<— generit type of dense coeffs list
+ (define DDG1 (list DTAG))
  (define DDG2 (list DTAG DTAG))
  (define SDTG (list 'string DTAG))
 
@@ -80,11 +81,9 @@
   )
  )
 
- ; Takes wrapped dense polynomial list.
+ ; Takes un-wrapped dense polynomial list.
  (define (dense->poly-terms coeffs)
-  (num-tag-set TTAG
-   (dense->terms-iter (apply-generic-unwrap coeffs) 0 '())
-  )
+  (num-tag-set TTAG (dense->terms-iter coeffs 0 '()))
  )
 
 
@@ -108,12 +107,8 @@
  ; Takes variable symbol and unwrapped coeffs list.
  ; Reuses sparse-terms->str() to convert.
  (define (dense-coeffs->str var coeffs)
-  (let* (
-    (dense  (num-tag-set DTAG coeffs))
-    (sparse (dense->poly-terms dense))
-    (terms  (apply-generic-unwrap sparse))
-   )
-   (sparse-terms->str var terms)
+  (sparse-terms->str var
+   (apply-generic-unwrap (dense->poly-terms coeffs))
   )
  )
 
