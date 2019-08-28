@@ -25,36 +25,33 @@
   )
  )
 
- (define (make-triple var order coeff)
-  (cons var (cons order coeff))
- )
-
- (define (make-triple-term var term)
-  (cons var term)
- )
-
- (define (triple-order triple) (cadr triple))
- (define (triple-coeff triple) (cddr triple))
-
- ; For three or more levels of nesting polynomials, we
- ; have to deal with the case when coefficient is not
- ; a scalar, or a triple, but a mul-list of triples.
-
- (define (mul-nested? triple) (eq? '* (car triple)))
-
- (define (mul-nested var order mul-list res)
-  (log " mul-nested " var " o = " order " list: " mul-list )
-  (cons
-   (append
-    (list
-     '*
-     (make-triple var order 1)
-    )
-    (cdr mul-list) ;<— remove leading '*
-   )
-   res
+ ; Creates entry from polynomial term pair (order . coeff).
+ ; Entry is a list of ('* coeff (var . order) ... ). Pairs of
+ ; (var . order) are added while doing nested multiplication.
+ (define (make-entry-from-term var term)
+  (if (= 0 (car term))
+   (list '* (cdr term))
+   (list '* (cdr term) (cons var (car term)))
   )
  )
+
+ (define (make-entry var order coeff)
+  (if (= 0 order)
+   (list '* coeff)
+   (list '* coeff (cons var order))
+  )
+ )
+
+ ; Adds (var . order) to the given entry.
+ (define (mul-entry e var order)
+  (if (= 0 order) e ;<— it's x ^ 0
+   (append e (list (cons var order)))
+  )
+ )
+
+ ; Scalar entry has single variable with 0 order.
+ (define (scalar-entry? e) (= 2 (length e)))
+ (define (scalar-entry-coeff e) (cadr e))
 
  (define (mul-sum var order sum res)
   (log "mul-sum " var " order = " order " sum: " sum)
@@ -66,34 +63,24 @@
    ; term (scalar) — we just append all the triples to the result.
    ((= 0 order) (append res sum))
 
-   ((mul-nested? (car sum))
+;   ((mul-nested? (car sum))
+;    (mul-sum var order (cdr sum)
+;     (mul-nested var order (car sum) res)
+;    )
+;   )
+
+   ; The next entry of the sum is a scalar:
+   ; we just take coeff in resulting entry.
+   ((scalar-entry? (car sum))
     (mul-sum var order (cdr sum)
-     (mul-nested var order (car sum) res)
+     (cons (make-entry var order (scalar-entry-coeff (car sum))) res)
     )
    )
 
-   ; The next triple of the sum is a scalar: we just take
-   ; one's coeff in multiplied triple.
-   ((= 0 (triple-order (car sum)))
-    (mul-sum var order (cdr sum)
-     (cons
-      (make-triple var order (triple-coeff (car sum)))
-      res
-     )
-    )
-   )
-
-   ; In general case we add a multiplication list:
+   ; In general case we add (var . order) pair to the entry.
    (else
     (mul-sum var order (cdr sum)
-     (cons
-      (list
-       '*
-       (make-triple var order 1)
-       (car sum)
-      )
-      res
-     )
+     (cons (mul-entry (car sum) var order) res)
     )
    )
   )
@@ -102,8 +89,8 @@
  (define (split-term res var term)
   (let ((sum (split-safe var (cdr term))))
    (if (eq? void sum) ;<— just add scalar term
-    (cons (make-triple-term var term) res)
-    (mul-sum var (car term) (cdr sum) res)
+    (cons (make-entry-from-term var term) res)
+    (mul-sum var (car term) sum res)
    )
   )
  )
