@@ -35,24 +35,26 @@
   (cddr node)
  )
 
- (define (search tree item)
-  (define (next node)
-   (cond
-    ((null? node) '())
+ (define (search-node node item)
+  (cond
+   ((null? node) '())
 
-    ((smaller? item (get node))
-     (next (get-left node))
-    )
-
-    ((smaller? (get node) item)
-     (next (get-right node))
-    )
-
-    (else (get node)) ;<— found it
+   ((smaller? item (get node))
+    (search-node (get-left node) item)
    )
-  )
 
-  (next tree)
+   ((smaller? (get node) item)
+    (search-node (get-right node) item)
+   )
+
+   (else node) ;<— found it
+  )
+ )
+
+ (define (search tree item)
+  (let ((node (search-node tree item)))
+   (if (null? node) '() (get node))
+  )
  )
 
  (define (set-left node branch)

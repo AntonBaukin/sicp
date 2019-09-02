@@ -21,6 +21,8 @@
 (define tree-a-○c (make-str-node "a" ○ c))
 (define tree-a-b○ (make-str-node "a" b ○))
 
+(log "empty\n" (str-tree->str '()))
+
 (log "a-bc\n" (str-tree->str tree-a-bc))
 (log "a-○c\n" (str-tree->str tree-a-○c))
 (log "a-b○\n" (str-tree->str tree-a-b○))
