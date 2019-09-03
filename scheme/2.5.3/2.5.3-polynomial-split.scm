@@ -1,4 +1,13 @@
 
+; Split is implemented for sparse polynomials in a generic way.
+; Taking terms like 10x² + ((3z² + 5z)y² + (7z + 9)y + 2)x, it
+; produces a sum-list of mul-entries being a lists of form:
+; ('* coeff ('var-x . order-x) ('var-y . order-y)...) with
+; arbitrary variables. The var-order pairs are sorted by
+; the variable name. Entries in the list are sorted by
+; the sum order descending. They are also merged: only
+; one entry with vars-order combination exists.
+;
 (define (install-polynomial-split scope)
  (define TAG  'polynomial) ;<— polynomial generic type
  (define TTAG 'sparse)     ;<— type for sparse tags set
@@ -208,6 +217,15 @@
   )
  )
 
+ (define (merge-entries entries)
+  (reverse
+   (merge-entries-iter
+    (quick-sort entry<? entries)
+    '()
+   )
+  )
+ )
+
  (define (split-sparse-terms-iter res var terms)
   (if (null? terms) res
    (split-sparse-terms-iter
@@ -218,14 +236,7 @@
  )
 
  (define (split-sparse-terms var terms)
-  (reverse
-   (merge-entries-iter
-    (quick-sort entry<?
-     (split-sparse-terms-iter '() var terms)
-    )
-    '()
-   )
-  )
+  (merge-entries (split-sparse-terms-iter '() var terms))
  )
 
  ; Register generic spelit for sparse terms:
@@ -233,5 +244,6 @@
   'split STTG split-sparse-terms
  )
 
- split ;<— resulting function
+ ; Resulting functions:
+ (list split merge-entries)
 )

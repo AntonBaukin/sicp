@@ -41,6 +41,7 @@
 (log-get-range 0 2)
 
 (set 2 'c)
+(set 1 'B)
 (log-sample "Three items")
 (log-get-range 0 3)
 
@@ -49,5 +50,6 @@
 (set 8 'e)
 (set 9 'f)
 (set 11 'j)
+(set 5 'D)
 (log-sample "Seven items")
 (log-get-range 0 12)
