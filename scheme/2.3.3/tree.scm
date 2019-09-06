@@ -111,12 +111,41 @@
   )
  )
 
- ;      0     1        2        3    4     5
- (list get get-left get-right node single leaf?
- ;        6        7       8     9     10
-       set-left set-right set search smaller?
- ;         11         12     13
-       tree->list list->tree Set )
+ (define (iter-right node cb)
+  (let ((res (cb (get node))))
+   ; Invoke callback for the current node:
+   (if (eq? void res)
+    ; Recurse into the right node:
+    (if (null? (get-right node))
+     void ;<— finished the iteration for this node
+     (iter (get-right node) cb)
+    )
+    res ;<— return this result, break the iteration
+   )
+  )
+ )
+
+ (define (iter node cb)
+  (if (null? (get-left node))
+   (iter-right node cb)
+   ; First, go left, then this and right:
+   (let ((res (iter (get-left node) cb)))
+    (if (eq? void res)
+     (iter-right node cb)
+     res ;<— the left had breaked
+    )
+   )
+  )
+ )
+
+ (list
+ ; 0     1        2        3    4     5
+  get get-left get-right node single leaf?
+ ;   6        7       8     9     10
+  set-left set-right set search smaller?
+ ;    11         12      13   14
+  tree->list list->tree iter  Set
+ )
 )
 
 ; Returns the value of the give node.
@@ -190,7 +219,15 @@
  (list-ref treeops 12)
 )
 
+; Iterates over the tree in the order passing
+ ; each node value to the callback. If it returns
+ ; not a void value, stops the iteration and returns
+ ; that value as the iteration result.
+(define (tree-op-iter treeops)
+ (list-ref treeops 13)
+)
+
 ; Returns sorted Set ops «class» with the same comparator.
 (define (tree-op-Set treeops)
- (list-ref treeops 13)
+ (list-ref treeops 14)
 )

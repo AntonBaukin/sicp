@@ -21,11 +21,32 @@
 (define tree-a-○c (make-str-node "a" ○ c))
 (define tree-a-b○ (make-str-node "a" b ○))
 
-(log "empty\n" (str-tree->str '()))
+(define (tree-items->str tree)
+ (define result "")
 
-(log "a-bc\n" (str-tree->str tree-a-bc))
-(log "a-○c\n" (str-tree->str tree-a-○c))
-(log "a-b○\n" (str-tree->str tree-a-b○))
+ ((tree-op-iter StringTree) tree
+  (lambda (s)
+   (set! result (string-append result s))
+   void
+  )
+ )
+
+ result
+)
+
+(define (log-tree tree)
+ (log
+  (if (null? tree) "empty" (tree-items->str tree))
+  "\n"
+  (str-tree->str tree)
+ )
+)
+
+(log-tree '())
+
+(log-tree tree-a-bc)
+(log-tree tree-a-○c)
+(log-tree tree-a-b○)
 
 (define tree-a-bc-defg (make-str-node "a"
  (make-str-node "b" d e)
@@ -47,7 +68,7 @@
  (make-str-node "c" f ○)
 ))
 
-(log "a-bc-defg\n" (str-tree->str tree-a-bc-defg))
-(log "a-b○-de\n" (str-tree->str tree-a-b○-de))
-(log "a-○c-fg\n" (str-tree->str tree-a-○c-fg))
-(log "a-○c-f○\n" (str-tree->str tree-a-○c-f○))
+(log-tree tree-a-bc-defg)
+(log-tree tree-a-b○-de)
+(log-tree tree-a-○c-fg)
+(log-tree tree-a-○c-f○)
