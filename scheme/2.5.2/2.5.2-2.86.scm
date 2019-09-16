@@ -218,7 +218,7 @@
   (if (number? n) (make-number n) n)
  )
  
- (list numbers-scope maxd general-make-number zero?)
+ (list numbers-scope maxd general-make-number make-integer zero?)
 )
 
 (define drop-impl (apply install-drop-package (make-drop-params)))

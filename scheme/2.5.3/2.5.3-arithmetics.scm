@@ -41,18 +41,16 @@
 
  (define zero? (install-zero-package numbers-scope mine))
 
- ; Wraps plain numbers in general ones.
- (define (general-make-number n)
-  (if (number? n) (make-number n) n)
- )
+ (define (make-number n) n)
+ (define (make-integer i) i)
 
- (list numbers-scope maxd general-make-number zero?)
+ (list numbers-scope maxd make-number make-integer zero?)
 )
 
 ; We create parameters for drop function and take
 ; general zero? predicate from them.
 (define drop-params (make-drop-params))
-(define zero? (list-ref drop-params 3))
+(define zero? (list-ref drop-params 4))
 
 ; We install drop package in an ordinary way,
 ; but allow to toggle it on for test purposes.

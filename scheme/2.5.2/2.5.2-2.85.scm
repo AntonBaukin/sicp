@@ -11,6 +11,7 @@
   numbers-scope
   10000
   make-number
+  (lambda (i) i)
   (lambda (n) (< (abs n) 0.0005))
  )
 )

@@ -24,7 +24,7 @@
 ; For «maxd» parameter see make-farey-drop-rat().
 ; This value is related to zero? threshold.
 ;
-(define (install-drop-package scope maxd make-number zero?)
+(define (install-drop-package scope maxd make-number make-integer zero?)
  (define real-part (list-ref complex-package 1))
  (define imag-part (list-ref complex-package 2))
 
