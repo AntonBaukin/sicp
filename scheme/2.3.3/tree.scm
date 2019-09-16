@@ -220,9 +220,9 @@
 )
 
 ; Iterates over the tree in the order passing
- ; each node value to the callback. If it returns
- ; not a void value, stops the iteration and returns
- ; that value as the iteration result.
+; each node value to the callback. If it returns
+; not a void value, stops the iteration and returns
+; that value as the iteration result.
 (define (tree-op-iter treeops)
  (list-ref treeops 13)
 )

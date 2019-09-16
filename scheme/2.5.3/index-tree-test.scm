@@ -1,3 +1,4 @@
+(define (logs . args) (for-each display args))
 (define (log . args) (for-each display args) (newline))
 
 (include "../2.3.3/tree.scm")
@@ -14,35 +15,50 @@
 )
 
 (define sample (make-index-tree))
-(define get (car sample))
-(define set (cadr sample))
+(define get (index-tree-get sample))
+(define set (index-tree-set sample))
 
 (define (log-sample what)
  (log "\n" what ":\n" (index-tree->str ((caddr sample))))
 )
 
 (define (log-get-range from to)
- (if (> from to) void
+ (if (> from to) (newline)
   (begin
-   (log "get " from " := " (get from))
+   (logs from " := " (get from) " ")
    (log-get-range (+ from 1) to)
   )
  )
 )
 
-(log "get 0 := " (get 0))
-(log-get-range 0 0)
+(define (index-tree-items->str itree)
+ (define s "")
 
-(log-sample "Single item")
+ ((index-tree-iter itree)
+  (lambda (k v)
+   (set! s
+    (string-append s
+     "(" (number->string k)
+     " " (symbol->string v)
+     ") "
+    )
+   )
+   void
+  )
+ )
+
+ s
+)
+
 (log-get-range 0 1)
 
 (set 1 'b)
-(log-sample "Two items")
+(log-sample "Single item")
 (log-get-range 0 2)
 
 (set 2 'c)
 (set 1 'B)
-(log-sample "Three items")
+(log-sample "Two items")
 (log-get-range 0 3)
 
 
@@ -51,5 +67,6 @@
 (set 9 'f)
 (set 11 'j)
 (set 5 'D)
-(log-sample "Seven items")
+(log-sample "Six items")
 (log-get-range 0 12)
+(log "Items in order: " (index-tree-items->str sample))
