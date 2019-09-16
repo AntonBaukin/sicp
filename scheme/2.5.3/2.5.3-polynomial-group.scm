@@ -11,7 +11,9 @@
 ; scalar, or nested polynomial for 'y variable, and
 ; so on recursively.
 ;
-(define (install-polynomial-group scope)
+(define (install-polynomial-group polynomial-package split-package scope)
+ (define make-poly (car polynomial-package))
+ (define merge-entries (cadr split-package))
 
  (define (omap-add omap i entry)
   ((cadr omap) i ;<— put to map by i-key
@@ -46,7 +48,7 @@
   (let ((vos (entry-vos-without var (cddr entry) '())))
    (if (null? vos)
     (list '* (cadr entry))
-    (list '* (cadr entry) vos)
+    (append (list '* (cadr entry)) vos)
    )
   )
  )
@@ -54,7 +56,7 @@
  (define (index-entry-iter omap var entries)
   (if (null? entries) omap
    (begin
-    (omap-add omap ;<— add entry to the order mapping:
+    (omap-add omap ;<— add entry to the order mapping
      (entry-order var (car entries))
      (entry-without var (car entries))
     )
@@ -64,8 +66,42 @@
   )
  )
 
+ ; Scalar entry has single variable with 0 order.
+ (define (scalar-entry? e) (= 2 (length e)))
+ (define (scalar-entry-coeff e) (cadr e))
+ (define (single-scalar-entry? entries)
+  (and (null? (cdr entries)) (scalar-entry? (car entries)))
+ )
+
+ ; Creates sparse term coefficient from an entry.
+ (define (make-term vars order entries)
+  (cons order
+   (if (single-scalar-entry? entries)
+    (scalar-entry-coeff (car entries))
+    (group vars entries)
+   )
+  )
+ )
+
+ (define (make-terms vars omap)
+  (define terms '())
+
+  ((index-tree-iter omap)
+   (lambda (order entry)
+    (set! terms (cons (make-term vars order entry) terms))
+    void
+   )
+  )
+
+  terms
+ )
+
  (define (group vars entries)
-  (index-entry-iter (make-index-tree) (car vars) entries)
+  (make-poly (car vars)
+   (make-terms (cdr vars)
+    (index-entry-iter (make-index-tree) (car vars) entries)
+   )
+  )
  )
 
  group ;<— resulting group function

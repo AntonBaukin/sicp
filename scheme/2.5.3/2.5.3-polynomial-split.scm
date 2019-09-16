@@ -8,6 +8,12 @@
 ; the sum order descending. They are also merged: only
 ; one entry with vars-order combination exists.
 ;
+; Returns list of (split, merge). Merge takes arbitrary
+; list of entries and returns sorted entries merged.
+;
+; Note that var-order pairs of an entry have order
+; of the variable->string ascending!
+;
 (define (install-polynomial-split scope)
  (define TAG  'polynomial) ;<— polynomial generic type
  (define TTAG 'sparse)     ;<— type for sparse tags set
@@ -186,9 +192,11 @@
 
  ; We sum coefficients of two same entries.
  (define (sum-same-entries a b)
-  (list
-   '*
-   (add (cadr a) (cadr b))
+  (append
+   (list
+    '*
+    (drop-impl (add (cadr a) (cadr b)))
+   )
    (cddr a) ;<— same list as (cddr b)
   )
  )
