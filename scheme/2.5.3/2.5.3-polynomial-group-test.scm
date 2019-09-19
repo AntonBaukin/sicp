@@ -13,7 +13,8 @@
 )
 
 (define poly-split (car polynomial-split))
-(define poly-group polynomial-group)
+(define poly-group (car polynomial-group))
+(define collect-vars (cadr polynomial-group))
 
 ;(define (log-omap omap)
 ; ((tree-op-iter IndexTree)
@@ -27,14 +28,11 @@
 ;)
 
 (define (log-poly-group p)
- (log
-  (num->str p) " ~>\n"
-  (poly-split p)
+ (let ((s (poly-split p)))
+  (log (num->str p) " ~>\n" s)
+  (log (num->str (poly-group (collect-vars s) s)))
+  (newline)
  )
-
- (log (num->str (poly-group '(x y) (poly-split p))))
-;(log-omap (poly-group '(x y) (poly-split p)))
- (newline)
 )
 
 (log-poly-group (P 'x 3 10 2 5 1 2 0 4))

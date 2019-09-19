@@ -104,5 +104,34 @@
   )
  )
 
- group ;<— resulting group function
+ ; In this set (sorted list) we store the collected symbols.
+ (define SymbolsSet (make-sorted-set
+  (lambda (a b) (string<? (symbol->string a) (symbol->string b)))
+ ))
+
+ (define symbols-set-add (set-op-add SymbolsSet))
+
+ (define (collect-vars-vos set vos)
+  (if (null? vos) set
+   (collect-vars-vos
+    (symbols-set-add set (caar vos))
+    (cdr vos)
+   )
+  )
+ )
+
+ ; For the given list of split entries returns the variable
+ ; symbols list ordered by the name ascending.
+ (define (collect-vars set entries)
+  (if (null? entries) set
+   (collect-vars
+    ; An entry is list ('* coeff (var . order)...).
+    (collect-vars-vos set (cddar entries))
+    (cdr entries)
+   )
+  )
+ )
+
+ ; Resulting group and collect vars functions:
+ (list group (curry collect-vars '()))
 )
