@@ -13,7 +13,6 @@
 ;
 (define (install-polynomial-group polynomial-package split-package scope)
  (define make-poly (car polynomial-package))
- (define merge-entries (cadr split-package))
 
  (define (omap-add omap i entry)
   ((cadr omap) i ;<— put to map by i-key
