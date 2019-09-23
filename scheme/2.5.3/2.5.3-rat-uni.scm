@@ -20,7 +20,7 @@
  (define cut (curry num-call 'cut))
 
  (define (make-rat n d)
-  (cut n d) ;<— pair that we de require
+  (cut n d) ;<— pair that we do require
  )
 
  (define (add-rat a b)
@@ -66,11 +66,49 @@
   )
  )
 
+
+ (define (digit? c)
+  (let ((s (string c)))
+   (and
+    (string>=? s "0")
+    (string<=? s "9")
+   )
+  )
+ )
+
+ (define (needs-braces-iter s i l)
+  (if (= i l) #f
+   (let ((c (string-ref s i)))
+    (if (or (eq? c #\.) (eq? c #\-) (digit? c))
+     (needs-braces-iter s (+ i 1) l)
+     #t
+    )
+   )
+  )
+ )
+
+ (define (needs-braces? s)
+  (needs-braces-iter s 0 (string-length s))
+ )
+
+ (define (wrap-in-braces s)
+  (if (needs-braces? s) (string-append "[" s "]") s)
+ )
+
  (define (rat->str r)
-  (string-append
-   (num->str (drop-safe (car r)))
-   "/"
-   (num->str (drop-safe (cdr r)))
+  (let (
+    (sn (num->str (drop-safe (car r))))
+    (sd (num->str (drop-safe (cdr r))))
+   )
+
+   (string-append
+    (wrap-in-braces sn)
+    (if
+     (or (needs-braces? sn) (needs-braces? sd))
+     " / " "/"
+    )
+    (wrap-in-braces sd)
+   )
   )
  )
 
