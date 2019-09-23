@@ -26,6 +26,14 @@
  )
 )
 
+(define (log-make-rat n d)
+ (log
+  "{" (num->str n) "} / "
+  "{" (num->str d) "} = "
+  (num->str (make-rat n d))
+ )
+)
+
 (define (log-rat-op ops op a b c d)
  (log
   ; Display original number values:

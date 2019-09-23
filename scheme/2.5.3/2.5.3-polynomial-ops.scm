@@ -113,6 +113,7 @@
 
 
  ; Implementation of task 2.91. Returns pair of terms.
+ ; The rest '() means zero — the case of full division.
  (define (div-sparse-terms terms-num terms-den)
   (if (null? terms-num) '()
    (let (
@@ -136,8 +137,8 @@
       (cons
        ; We push the new term to be the first in the recursive
        ; result quotient thus forming the desired descending order.
-       (cons tnew (car next))
-       (cdr next) ;<— the rest stays as is
+       (cons tnew (if (null? next) '() (car next)))
+       (if (null? next) '() (cdr next)) ;<— the rest stays as is
       )
      )
     )
