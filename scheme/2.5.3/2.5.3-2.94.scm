@@ -1,8 +1,8 @@
 (include "2.5.3-rat-base.scm")
 (include "2.5.3-polynomial-rat-cut.0.scm")
 
-; Install task-specific version of cut() for sparse terms:
-(set-sparse-polynomial-cut (car (make-sparse-polynomial-cut)))
+; Install task-2.94 version of cut() for sparse terms:
+(set-sparse-polynomial-cut (car (make-sparse-polynomial-cut-0)))
 
 (define n (P 'x 4 1 3 -1 2 -2 1 2))
 (define d (P 'x 3 1 1 -1))

@@ -1,8 +1,8 @@
 (include "2.5.3-rat-base.scm")
-(include "2.5.3-polynomial-rat-cut.0.scm")
+(include "2.5.3-polynomial-rat-cut.1.scm")
 
-; Install task-2.94 version of cut() for sparse terms:
-(set-sparse-polynomial-cut (car (make-sparse-polynomial-cut-0)))
+; Install task-specific version of cut() for sparse terms:
+(set-sparse-polynomial-cut (car (make-sparse-polynomial-cut-1)))
 
 ; Auto-drop all intermediate results:
 (toggle-drop-on!)
@@ -17,8 +17,7 @@
 (log-poly-mul P1 P2)
 (log-poly-mul P1 P3)
 
-; Here we get the following (we'll get rid of 444 in task 2.96):
-; > [(1859/444)x² + (169/444)] / [(2197/444)x + (845/444)]
+; Prints [11x² + 1] / [13x + 5], i.e. [P2] / [P3]:
 (log-make-rat Q1 Q2)
 
 (log "\nTrace these polynomials GCD:")

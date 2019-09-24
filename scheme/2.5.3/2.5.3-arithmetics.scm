@@ -74,3 +74,13 @@
   (if (null? x) result x)
  )
 )
+
+; Note that «2.5.3-arithmetics.scm» defines toggle-drop-on!
+; to turn on actual drop for generic types. Here we try to
+; reduce integer floats, as 1.0, to integer-only, as 1.
+(define (drop-safe n)
+ (if (apply-generic-tagged? n)
+  (num-call-result n)
+  (if (integer? n) (exact n) n)
+ )
+)

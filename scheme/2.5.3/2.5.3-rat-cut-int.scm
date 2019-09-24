@@ -28,4 +28,6 @@
   'cut '(integer integer) cut-num
   'cut '(number  number ) cut-num
  )
+
+ cut-num ;<— resulting numbers cut
 )

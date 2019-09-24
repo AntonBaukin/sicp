@@ -4,7 +4,7 @@
 
 ; Creates cut() function for sparse polynomials that
 ; reduce the terms as it's in 2.94 task.
-(define (make-sparse-polynomial-cut)
+(define (make-sparse-polynomial-cut-0)
  (define make-poly (list-ref polynomial-package 0))
 
  (define (remainder-terms a b)
@@ -59,23 +59,28 @@
   )
  )
 
- (define (cut-terms terms-a terms-b)
-  (let ((g (gcd-terms terms-a terms-b)))
-   (if (not (terms-poly? g))
-    (cons terms-a terms-b) ;<— do not divide them
-    (cons
-     (div-terms terms-a g)
-     (div-terms terms-b g)
+ (define (make-cut-terms gcd)
+  ; Resulting cut operation:
+  (lambda (terms-a terms-b)
+   (let ((g (gcd terms-a terms-b)))
+    (if (not (terms-poly? g))
+     (cons terms-a terms-b) ;<— do not divide them
+     (cons
+      (div-terms terms-a g)
+      (div-terms terms-b g)
+     )
     )
    )
   )
  )
 
+
  (list ;<— collection of resulting functions
-  cut-terms
-  div-terms
-  remainder-terms
-  gcd-terms
-  terms-poly?
+  (make-cut-terms gcd-terms) ; 0
+  div-terms                  ; 1
+  remainder-terms            ; 2
+  gcd-terms                  ; 3
+  make-cut-terms             ; 4
+  terms-poly?                ; 5
  )
 )
