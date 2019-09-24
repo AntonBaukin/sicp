@@ -64,7 +64,6 @@
 
  ; Applies drop if it exists, or returns '().
  (define (drop-safe n)
-  ;(log "drop " n)
   (if (not (apply-generic-tagged? n)) '()
    (let ((d (get-drop (apply-generic-tag-get n))))
     (if (procedure? d) (d (apply-generic-unwrap n)) '())

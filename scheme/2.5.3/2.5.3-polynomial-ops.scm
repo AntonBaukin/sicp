@@ -78,10 +78,21 @@
  (define sub-sparse-terms (bind-linear-call sub-bi-op no-op neg-b-op))
 
 
+ ; Note that «2.5.3-arithmetics.scm» defines toggle-drop-on!
+ ; to turn on actual drop for generic types. Here we try to
+ ; reduce integer floats, as 1.0, to integer-only, as 1.
+ (define (drop-safe n)
+  (if (apply-generic-tagged? n)
+   (num-call-result n)
+   (if (integer? n) (exact n) n)
+  )
+ )
+
  (define (mul-terms a b)
   (cons
-   (+ (car a) (car b))   ;<— sum the orders
-   (mul (cdr a) (cdr b)) ;<— general mul of the coefficients
+   (+ (car a) (car b)) ;<— sum the orders
+   ; General multiplication of the coefficients:
+   (drop-safe (mul (cdr a) (cdr b)))
   )
  )
 

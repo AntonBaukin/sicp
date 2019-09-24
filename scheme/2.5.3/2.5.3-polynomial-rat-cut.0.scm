@@ -1,4 +1,9 @@
 
+; Set this flag to debug polynomial GCD — see 2.95 task.
+(define trace-sparse-polynomial-cut #f)
+
+; Creates cut() function for sparse polynomials that
+; reduce the terms as it's in 2.94 task.
 (define (make-sparse-polynomial-cut)
  (define make-poly (list-ref polynomial-package 0))
 
@@ -32,7 +37,14 @@
   )
  )
 
+ (define (trace-gcd a b)
+  (if (not trace-sparse-polynomial-cut) void
+   (log "GCD " a " ÷ " b)
+  )
+ )
+
  (define (gcd-terms a b)
+  (trace-gcd a b)
   (if (null? b) a
    (gcd-terms b (remainder-terms a b))
   )
