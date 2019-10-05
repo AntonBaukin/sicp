@@ -17,6 +17,22 @@
  ; Deafult: takes sparse terms and cuts nothing.
  (define terms-cut (lambda (a b) (cons a b)))
 
+ ; Note that the terms list has the power order descending.
+ (define (terms-order terms) (caar terms))
+
+ ; Checks the orders of the terms and invokes generic
+ ; CUT function with the first term being higher than
+ ; the second (but swaps them back in the result).
+ ; This makes a favour for the terms GCD.
+ (define (terms-cut-safe terms-a terms-b)
+  (if (>= (terms-order terms-a) (terms-order terms-b))
+   (terms-cut terms-a terms-b)
+   (let ((res (terms-cut terms-b terms-a)))
+    (cons (cdr res) (car res))
+   )
+  )
+ )
+
  ; Takes two unwrapped polynomials and delegates cut to the terms.
  (define (poly-cut a b)
   (if (not (and (symbol? (car a)) (eq? (car a) (car b))))
@@ -31,7 +47,7 @@
  )
 
  ; Delegates cut operation for sparse terms.
- (define (sparse-terms-cut a b) (terms-cut a b))
+ (define (sparse-terms-cut a b) (terms-cut-safe a b))
 
 
  ((apply-generic-scope-register scope)

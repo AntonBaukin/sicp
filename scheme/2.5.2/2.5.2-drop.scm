@@ -53,7 +53,10 @@
 
  ; Reduces rational number to integer.
  (define (drop-rational r)
-  (if (= 1 (cdr r)) (make-integer (car r)) '())
+  (if (or (equal? 1 (cdr r)) (equal? 1.0 (cdr r)))
+   (make-integer (car r))
+   '()
+  )
  )
 
  (define (get-drop type)

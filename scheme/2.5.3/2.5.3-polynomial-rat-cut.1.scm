@@ -1,7 +1,7 @@
 (include "2.5.3-polynomial-rat-cut.0.scm")
 
 ; Creates cut() function for sparse polynomials that
-; reduce the terms as it's in 2.94 task.
+; reduce the terms as it's in 2.96 task.
 (define (make-sparse-polynomial-cut-1)
  (define make-poly (list-ref polynomial-package 0))
  (define cut-0 (make-sparse-polynomial-cut-0))

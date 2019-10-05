@@ -1,7 +1,11 @@
 
 ; Replaces each ordinary 0..9 digit with Unicode
 ; superscripts ⁰¹²³⁴⁵⁶⁷⁸⁹ leaving else characters.
-; Warning: requires Unicode support in your Schema!
+;
+; Note: your Scheme may not support Unicode, and
+; treat UTF-8 characters in a plain, but it's still
+; able to concatenate them.
+;
 (define (replace-superscript-digits str)
  (define (next s r)
   (if (null? s) r
