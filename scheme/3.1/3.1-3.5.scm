@@ -1,6 +1,7 @@
-(include "random.scm")
 (include "../2.4.3/curry.scm")
 (include "../2.3.3/quick-sort.scm")
+(include "random.scm")
+(include "enumerate-range.scm")
 
 (define (log . args) (for-each display args) (newline))
 
@@ -26,15 +27,6 @@
  (sqrt (/ 6 (monte-carlo trials cesaro-test)))
 )
 
-
-
-(define (enumerate-range a b)
- (define (iter i res)
-  (if (< i a) res (iter (- i 1) (cons i res)))
- )
-
- (iter b '())
-)
 
 (define pi 3.14159265358979323846)
 

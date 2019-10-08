@@ -24,7 +24,12 @@
  (define r (abs (- a b)))
  (define am (* (min a b) m))
 
- (lambda () (/ (+ am (* r (random))) m))
+ (define (next) (/ (+ am (* r (random))) m))
+
+ (if (and (exact-integer?  a) (exact-integer?  b))
+  (lambda () (truncate (next)))
+  next
+ )
 )
 
 (define (make-random-n-bits seed bits)
