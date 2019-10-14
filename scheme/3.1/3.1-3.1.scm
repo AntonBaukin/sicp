@@ -1,7 +1,7 @@
 (include "accumulator.scm")
 (define (log . args) (for-each display args) (newline))
 
-(define A (make-accumulator + 5))
+(define A (make-accumulator 5 +))
 
 (log "A.0 = " (A))
 (log "A.1 = " (A 10))
@@ -10,6 +10,6 @@
 
 
 ; Might be a handy tool instead of string-append():
-(define S (make-accumulator string-append ""))
+(define S (make-concatenator "•"))
 
-(log ((accumulate-each S "Hello" ","  " " "world" "!")))
+(log ((accumulate-each S "Hello," "great" "world!")))
