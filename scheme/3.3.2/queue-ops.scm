@@ -68,14 +68,13 @@
  ; Adds item to be the head of the queue.
  (define (push queue item)
   (define p (cons item (car queue)))
+
   (set-car! queue p)
   (if (empty? queue) (set-cdr! queue p) void)
+
   queue ;<— as in SICP, we return queue from !-op
  )
 
- ; Invokes visitor callback for each item of the queue.
- ; If visitor returns value #f, breaks the iteration and
- ; returns the break item (find behaviour).
  (define (iterate queue visitor)
   (iterate-list (car queue) visitor)
  )

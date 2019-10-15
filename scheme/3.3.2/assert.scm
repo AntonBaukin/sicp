@@ -24,3 +24,7 @@
   (assert-report reporter a b)
  )
 )
+
+(define (assert-true? x . reporter)
+ (if x #t (assert-report reporter x))
+)
