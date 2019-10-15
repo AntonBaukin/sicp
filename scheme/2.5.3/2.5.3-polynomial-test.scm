@@ -12,7 +12,7 @@
 ; Prints -4x² - 2x + 3 extracting «-» top omit «+».
 (log-poly (P 'x 2 (N -4) 1 -2 0 3))
 
-; Prints 10x² + (y² + 2)x + 3 with polynimial coeffs.
+; Prints 10x² + (y² + 2)x + 3 with polynomial coeffs.
 (log-poly (P 'x 2 10 1 (P 'y 2 1 0 2) 0 3))
 
 

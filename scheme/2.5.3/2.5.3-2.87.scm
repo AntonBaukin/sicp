@@ -1,11 +1,11 @@
 (include "2.5.3-base.scm")
 
 
-; Prints 10x² + (y² + 2)x + 3 with polynimial coeffs.
+; Prints 10x² + (y² + 2)x + 3 with polynomial coeffs.
 ;
 ; Making polynomial with poly-coefficient requires
-; testing zero? as wgile making we reduce zero terms.
-; In SICP course the same check goes while doing
+; testing zero? as while making we reduce zero terms.
+; In SICP course the same check goes before doing
 ; arithmetic operations: adjoin-term().
 ;
 ; See «2.5.3-polynomial.scm» for zero? predicate.

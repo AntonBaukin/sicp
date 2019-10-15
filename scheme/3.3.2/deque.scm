@@ -16,7 +16,7 @@
  (list-ref Deque 2)
 )
 
-; Adds item to the tail of the deque and the last to take.
+; Adds item to the tail of the deque and the last to pop.
 (define deque-append!
  (list-ref Deque 3)
 )

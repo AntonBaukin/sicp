@@ -7,7 +7,6 @@
 ; We append items to the tail of the deque, as
 ; it's done in a queue, and we pop items from
 ; the head. We also may push items to the head,
-; 
 ;
 (define (make-deque-ops)
  (include "iterate.scm")
