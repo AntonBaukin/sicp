@@ -16,6 +16,3 @@
 ; More show cases are in «queue-test.scm»
 (define queue (queue-make-from '(a b c d e f)))
 (log "Printing queue " queue " :> " (queue->string queue))
-
-(define queue (queue-make))
-(log "Empty queue: " (queue->string queue))

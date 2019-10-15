@@ -45,7 +45,7 @@
  )
 
  ; Removes the queue's first item and returns it.
- (define (take queue)
+ (define (pop queue)
   (check-empty queue)
   (let ((first (car queue)))
    (set-car! queue (cdr first))
@@ -90,7 +90,7 @@
   make-from    ; 1
   empty?       ; 2
   append       ; 3
-  take         ; 4
+  pop          ; 4
   first        ; 5
   last         ; 6
   push         ; 7

@@ -16,14 +16,14 @@
  (list-ref Queue 2)
 )
 
-; Adds item to the tail of the queue and the last to take.
+; Adds item to the tail of the queue and the last to pop.
 (define queue-append!
  (list-ref Queue 3)
 )
 
 ; Removes the queue's first item and returns it,
 ; Raises an error on the queue is empty.
-(define queue-take!
+(define queue-pop!
  (list-ref Queue 4)
 )
 
@@ -39,7 +39,7 @@
  (list-ref Queue 6)
 )
 
-; Adds item to be the head of the queue and the next to take.
+; Adds item to be the head of the queue and the next to pop.
 (define queue-push!
  (list-ref Queue 7)
 )

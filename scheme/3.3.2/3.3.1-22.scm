@@ -28,7 +28,7 @@
   (if (empty?) (error "The queue is empty") void)
  )
 
- (define (take)
+ (define (pop)
   (check-empty)
   (let ((value (car first)))
    (set! first (cdr first))
@@ -45,7 +45,7 @@
   (cond
    ((eq? method 'empty?)  empty?)
    ((eq? method 'append!) append)
-   ((eq? method 'take!)   take)
+   ((eq? method 'pop!)   pop)
    ((eq? method 'iterate) iterate)
    (else (error "Unknown queue method!" method))
   )
@@ -71,11 +71,11 @@
 (for-each (queue 'append!) '(c d e f))
 (log "More items: " (queue->string queue))
 
-(assert-eq? 'a ((queue 'take!)))
-(log "Took first: " (queue->string queue))
+(assert-eq? 'a ((queue 'pop!)))
+(log "Popped first: " (queue->string queue))
 
-(assert-eq? 'b ((queue 'take!)))
-(log "Took second: " (queue->string queue))
+(assert-eq? 'b ((queue 'pop!)))
+(log "Popped second: " (queue->string queue))
 
-(assert-eq? 'c ((queue 'take!)))
-(log "Took third: " (queue->string queue))
+(assert-eq? 'c ((queue 'pop!)))
+(log "Popped third: " (queue->string queue))
