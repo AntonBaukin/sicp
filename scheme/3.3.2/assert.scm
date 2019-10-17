@@ -28,3 +28,13 @@
 (define (assert-true? x . reporter)
  (if x #t (assert-report reporter x))
 )
+
+; Takes test predicate and single arguments.
+; Allows to print false value instead of plain #f.
+(define (assert-test test x . reporter)
+ (if (test x) #t (assert-report reporter test x))
+)
+
+(define (assert-test-not test x . reporter)
+ (if (not (test x)) #t (assert-report reporter test x))
+)
