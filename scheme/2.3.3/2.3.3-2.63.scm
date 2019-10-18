@@ -18,10 +18,10 @@
 ; Returns list in the order of the tree projected from
 ; the top to the bottom line having the root being the
 ; center of the projection symmetry.
-(define (tree->list-1 treeops tree)
- (define get (tree-op-get treeops))
- (define left (tree-op-get-left treeops))
- (define right (tree-op-get-right treeops))
+(define (tree->list-1 tree-ops tree)
+ (define get (tree-op-get tree-ops))
+ (define left (tree-op-left tree-ops))
+ (define right (tree-op-right tree-ops))
 
  (define (tree2list t)
   (if (null? t) '()
@@ -37,10 +37,10 @@
 
 (log "tree->list-1 := " (tree->list-1 StringTree test-str-tree))
 
-(define (tree->list-2 treeops tree)
- (define get (tree-op-get treeops))
- (define left (tree-op-get-left treeops))
- (define right (tree-op-get-right treeops))
+(define (tree->list-2 tree-ops tree)
+ (define get (tree-op-get tree-ops))
+ (define left (tree-op-left tree-ops))
+ (define right (tree-op-right tree-ops))
 
  (define (copy2list t r)
   (if (null? t) r

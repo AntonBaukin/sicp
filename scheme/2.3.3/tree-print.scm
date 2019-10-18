@@ -6,15 +6,15 @@
 ; not printed; empty branches are blank spaces.
 ;
 ; See «tree-print-str» function.
-(define (make-tree->str-printer treeops item->string)
+(define (make-tree->str-printer tree-ops item->string)
 
  (define (marker) #t)
  (define (novalue) #t)
 
- (define get (tree-op-get treeops))
- (define leaf? (tree-op-leaf? treeops))
- (define left (tree-op-get-left treeops))
- (define right (tree-op-get-right treeops))
+ (define get (tree-op-get tree-ops))
+ (define leaf? (tree-op-leaf? tree-ops))
+ (define left (tree-op-left tree-ops))
+ (define right (tree-op-right tree-ops))
 
  ; Wraps node value to be marked item.
  (define (make-item node)

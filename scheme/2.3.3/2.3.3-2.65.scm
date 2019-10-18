@@ -3,10 +3,10 @@
 (include "tree.scm")
 (include "tree-print.scm")
 
-(define (union-set treeops set-tree-a set-tree-b)
- (define smaller? (tree-op-smaller? treeops))
- (define tree->list (tree-op->list treeops))
- (define list->tree (tree-op<-list treeops))
+(define (union-set tree-ops set-tree-a set-tree-b)
+ (define smaller? (tree-op-smaller? tree-ops))
+ (define tree->list (tree-op->list tree-ops))
+ (define list->tree (tree-op<-list tree-ops))
 
  ; Implementation from «sorted-set.scm» takes o(n + m)
  (define (union seta setb)
@@ -34,10 +34,10 @@
  ))
 )
 
-(define (intersect-set treeops set-tree-a set-tree-b)
- (define smaller? (tree-op-smaller? treeops))
- (define tree->list (tree-op->list treeops))
- (define list->tree (tree-op<-list treeops))
+(define (intersect-set tree-ops set-tree-a set-tree-b)
+ (define smaller? (tree-op-smaller? tree-ops))
+ (define tree->list (tree-op->list tree-ops))
+ (define list->tree (tree-op<-list tree-ops))
 
  ; Implementation from «sorted-set.scm» takes o(n + m)
  (define (intersect seta setb)

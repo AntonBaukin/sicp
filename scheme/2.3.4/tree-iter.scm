@@ -14,9 +14,9 @@
 ; list ('break way node from stack). On else result,
 ; list ('result result node from stack) is returned.
 ; Special way 'root orders to start from the root.
-(define (make-tree-iter treeops)
- (define left (tree-op-get-left treeops))
- (define right (tree-op-get-right treeops))
+(define (make-tree-iter tree-ops)
+ (define left (tree-op-left tree-ops))
+ (define right (tree-op-right tree-ops))
 
  (define (break way node from stack)
   (list 'break way node from stack)
@@ -61,11 +61,11 @@
 ; where «iter» is function taking arguments (node from stack).
 ; When iterator returns void it asks to continue, else value
 ; is treated as overall iteration result, it breaks iteration.
-(define (make-tree-order-iter-ext treeops)
- ; (define get (tree-op-get treeops))
- (define left (tree-op-get-left treeops))
- (define right (tree-op-get-right treeops))
- (define tree-iter (make-tree-iter treeops))
+(define (make-tree-order-iter-ext tree-ops)
+ ; (define get (tree-op-get tree-ops))
+ (define left (tree-op-left tree-ops))
+ (define right (tree-op-right tree-ops))
+ (define tree-iter (make-tree-iter tree-ops))
 
  (define (left? node)
   (not (null? (left node)))
@@ -136,9 +136,9 @@
 
 ; Wrapper around tree order iterator that invokes
 ; the callback with single argument: node item (value).
-(define (make-tree-order-iter treeops)
- (define get (tree-op-get treeops))
- (define order-iter (make-tree-order-iter-ext treeops))
+(define (make-tree-order-iter tree-ops)
+ (define get (tree-op-get tree-ops))
+ (define order-iter (make-tree-order-iter-ext tree-ops))
 
  (lambda (tree iter)
   (order-iter tree (lambda (node from stack) (iter (get node))))
@@ -146,9 +146,9 @@
 )
 
 ; For the given tree finds the minimum (left-most) item.
-(define (make-tree-get-min treeops)
- (define get (tree-op-get treeops))
- (define tree-iter (make-tree-iter treeops))
+(define (make-tree-get-min tree-ops)
+ (define get (tree-op-get tree-ops))
+ (define tree-iter (make-tree-iter tree-ops))
 
  (define (result r)
   (get (caddr r))
@@ -160,9 +160,9 @@
 )
 
 ; For the given tree finds the maximum (right-most) item.
-(define (make-tree-get-max treeops)
- (define get (tree-op-get treeops))
- (define tree-iter (make-tree-iter treeops))
+(define (make-tree-get-max tree-ops)
+ (define get (tree-op-get tree-ops))
+ (define tree-iter (make-tree-iter tree-ops))
 
  (define (result r)
   (get (caddr r))
@@ -176,12 +176,12 @@
 ; For the given (tree item) finds the largest
 ; item that is smaller than the given one, i.e.,
 ; the previous one. The given item may absent.
-(define (make-tree-get-max-smaller treeops)
- (define get (tree-op-get treeops))
- (define left (tree-op-get-left treeops))
- (define smaller? (tree-op-smaller? treeops))
- (define tree-iter (make-tree-iter treeops))
- (define get-max (make-tree-get-max treeops))
+(define (make-tree-get-max-smaller tree-ops)
+ (define get (tree-op-get tree-ops))
+ (define left (tree-op-left tree-ops))
+ (define smaller? (tree-op-smaller? tree-ops))
+ (define tree-iter (make-tree-iter tree-ops))
+ (define get-max (make-tree-get-max tree-ops))
 
  (define (smaller-node? a b)
   (smaller? (get a) (get b))
@@ -239,12 +239,12 @@
 ; For the given (tree item) finds the smallest
 ; item that is greater than the given one, i.e.,
 ; the next one. The given item may absent.
-(define (make-tree-get-min-greater treeops)
- (define get (tree-op-get treeops))
- (define right (tree-op-get-right treeops))
- (define smaller? (tree-op-smaller? treeops))
- (define tree-iter (make-tree-iter treeops))
- (define get-min (make-tree-get-min treeops))
+(define (make-tree-get-min-greater tree-ops)
+ (define get (tree-op-get tree-ops))
+ (define right (tree-op-right tree-ops))
+ (define smaller? (tree-op-smaller? tree-ops))
+ (define tree-iter (make-tree-iter tree-ops))
+ (define get-min (make-tree-get-min tree-ops))
 
  (define (greater-node? a b)
   (smaller? (get b) (get a))
@@ -298,9 +298,9 @@
 ; Returns list of the leafs of the given tree. Each item
 ; of the result is a pair of (node . parents stack) that
 ; allows to navigate back to the top.
-(define (make-tree-get-leafs treeops)
- (define leaf? (tree-op-leaf? treeops))
- (define order-iter (make-tree-order-iter-ext treeops))
+(define (make-tree-get-leafs tree-ops)
+ (define leaf? (tree-op-leaf? tree-ops))
+ (define order-iter (make-tree-order-iter-ext tree-ops))
 
  (lambda (tree)
   (define result '())

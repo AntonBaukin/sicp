@@ -27,8 +27,8 @@
 (log "\nAbc 10 " abc-10 "\n" (huffman-tree->str tree-10))
 
 (define (huffman-tree-depth tree)
- (define left (tree-op-get-left HuffmanTree))
- (define right (tree-op-get-left HuffmanTree))
+ (define left (tree-op-left HuffmanTree))
+ (define right (tree-op-left HuffmanTree))
 
  (define (depth t)
   (if (null? t) 0

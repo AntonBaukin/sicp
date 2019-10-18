@@ -159,7 +159,7 @@
 (define (huffman-encode-dict huffman-tree)
  (define get-leafs (make-tree-get-leafs HuffmanTree))
  (define make-dict (tree-op<-list HuffmanEncodeDict))
- (define left (tree-op-get-left HuffmanTree))
+ (define left (tree-op-left HuffmanTree))
  (define (left? node parent) (eq? node (left parent)))
 
  (define (collect-bits way-up)
