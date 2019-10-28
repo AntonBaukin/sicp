@@ -1,6 +1,6 @@
 (include "defined.scm")
 (include "apply-generic.scm")
-(include "../2.4.3/curry.scm")
+(include "../2.3.3/curry.scm")
 
 ; Returns symbol tagging object wrapped in a tagged pair.
 ; In the following exercises we will overwrite the default

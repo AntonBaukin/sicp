@@ -1,6 +1,6 @@
 (include "deque.scm")
 (include "assert.scm")
-(include "../2.4.3/curry.scm")
+(include "../2.3.3/curry.scm")
 (include "../3.1/accumulator.scm")
 
 (define (log . args) (for-each display args) (newline))

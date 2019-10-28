@@ -1,5 +1,5 @@
 (include "table-ops.scm")
-(include "../2.4.3/curry.scm")
+(include "../2.3.3/curry.scm")
 (include "../3.3.2/assert.scm")
 
 

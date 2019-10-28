@@ -1,4 +1,4 @@
-(include "../2.4.3/curry.scm")
+(include "../2.3.3/curry.scm")
 (include "../2.3.3/quick-sort.scm")
 (include "random.scm")
 (include "enumerate-range.scm")

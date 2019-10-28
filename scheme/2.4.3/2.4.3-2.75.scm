@@ -1,4 +1,4 @@
-(include "curry.scm")
+(include "../2.3.3/curry.scm")
 
 (define (log . args) (for-each display args) (newline))
 
