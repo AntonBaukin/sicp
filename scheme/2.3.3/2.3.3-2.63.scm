@@ -4,14 +4,16 @@
 (include "tree-print.scm")
 
 (define StringTree (make-tree string-ci<?))
-(define make-str-single (tree-op-single StringTree))
-(define make-str-node (tree-op-node StringTree))
+(define sleaf (tree-op-make-root StringTree))
 (define str-tree->str (make-tree->str-printer StringTree (lambda (s) s)))
 
-(define test-str-tree (make-str-node "a"
- (make-str-node "b" (make-str-single "d") (make-str-single "e"))
- (make-str-node "c" (make-str-single "f") (make-str-single "g"))
-))
+
+(define test-str-tree 
+ (make-tree-node "a"
+  (make-tree-node "b" (sleaf "d") (sleaf "e"))
+  (make-tree-node "c" (sleaf "f") (sleaf "g"))
+ )
+)
 
 (log "test string tree\n" (str-tree->str test-str-tree))
 
@@ -56,17 +58,18 @@
 (log "tree->list-2 := " (tree->list-2 StringTree test-str-tree))
 
 (define NumTree (make-tree <))
-(define make-num-single (tree-op-single NumTree))
-(define make-num-node (tree-op-node NumTree))
+(define nleaf (tree-op-make-root NumTree))
 (define num-tree->str (make-tree->str-printer NumTree number->string))
 
 
 ;—————————————————————————————————————————————————————————————————
 
-(define test-num-tree-1 (make-num-node 7
- (make-num-node 3 (make-num-single 1) (make-num-single 5))
- (make-num-node 9 '() (make-num-single 11))
-))
+(define test-num-tree-1
+ (make-tree-node 7
+  (make-tree-node 3 (nleaf 1) (nleaf 5))
+  (make-tree-node 9 '() (nleaf 11))
+ )
+)
 
 (log "\ntest num tree 1\n" (num-tree->str test-num-tree-1))
 
@@ -76,13 +79,15 @@
 
 ;—————————————————————————————————————————————————————————————————
 
-(define test-num-tree-2 (make-num-node 3
- (make-num-single 1)
- (make-num-node 7
-  (make-num-single 5)
-  (make-num-node 9 '() (make-num-single 11))
+(define test-num-tree-2
+ (make-tree-node 3
+  (nleaf 1)
+  (make-tree-node 7
+   (nleaf 5)
+   (make-tree-node 9 '() (nleaf 11))
+  )
  )
-))
+)
 
 (log "\ntest num tree 2\n" (num-tree->str test-num-tree-2))
 
@@ -92,10 +97,12 @@
 
 ;—————————————————————————————————————————————————————————————————
 
-(define test-num-tree-3 (make-num-node 5
- (make-num-node 3 (make-num-single 1) '())
- (make-num-node 9 (make-num-single 7) (make-num-single 11))
-))
+(define test-num-tree-3
+ (make-tree-node 5
+  (make-tree-node 3 (nleaf 1) '())
+  (make-tree-node 9 (nleaf 7) (nleaf 11))
+ )
+)
 
 (log "\ntest num tree 3\n" (num-tree->str test-num-tree-3))
 

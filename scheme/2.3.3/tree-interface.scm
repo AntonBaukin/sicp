@@ -51,19 +51,11 @@
  (list-ref tree-ops 4)
 )
 
-; Creates tree node. Implemented only by trees that do
-; allow direct building (i.e., not balanced trees.)
-; Arguments: (item value, left node, right node).
-; Null list '() means absent child node.
-(define (tree-op-node tree-ops)
- (list-ref tree-ops 5)
-)
-
-; Shortcut for tree-op-node with item and absent branches.
+; Creates root node without the children. Note that you
+; may not use null-list '() to denote empty tree.
 ; Arguments: (item).
-(define (tree-op-single tree-ops)
- (define make-node (tree-op-node tree-ops))
- (lambda (item) (make-node item '() '()))
+(define (tree-op-make-root tree-ops)
+ (list-ref tree-ops 5)
 )
 
 ; Shortcut that tells whether the given node is a leaf.

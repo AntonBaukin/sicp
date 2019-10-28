@@ -4,22 +4,22 @@
 (include "tree-print.scm")
 
 (define StringTree (make-tree string-ci<?))
-(define make-str-single (tree-op-single StringTree))
-(define make-str-node (tree-op-node StringTree))
+(define make-str-root (tree-op-make-root StringTree))
 (define str-tree->str (make-tree->str-printer StringTree (lambda (s) s)))
 
-(define a (make-str-single "a"))
-(define b (make-str-single "b"))
-(define c (make-str-single "c"))
-(define d (make-str-single "d"))
-(define e (make-str-single "e"))
-(define f (make-str-single "f"))
-(define g (make-str-single "g"))
+
+(define a (make-str-root "a"))
+(define b (make-str-root "b"))
+(define c (make-str-root "c"))
+(define d (make-str-root "d"))
+(define e (make-str-root "e"))
+(define f (make-str-root "f"))
+(define g (make-str-root "g"))
 (define ○ '())
 
-(define tree-a-bc (make-str-node "a" b c))
-(define tree-a-○c (make-str-node "a" ○ c))
-(define tree-a-b○ (make-str-node "a" b ○))
+(define tree-a-bc (make-tree-node "a" b c))
+(define tree-a-○c (make-tree-node "a" ○ c))
+(define tree-a-b○ (make-tree-node "a" b ○))
 
 (define (tree-items->str tree)
  (define result "")
@@ -48,24 +48,24 @@
 (log-tree tree-a-○c)
 (log-tree tree-a-b○)
 
-(define tree-a-bc-defg (make-str-node "a"
- (make-str-node "b" d e)
- (make-str-node "c" f g)
+(define tree-a-bc-defg (make-tree-node "a"
+ (make-tree-node "b" d e)
+ (make-tree-node "c" f g)
 ))
 
-(define tree-a-b○-de (make-str-node "a"
- (make-str-node "b" d e)
+(define tree-a-b○-de (make-tree-node "a"
+ (make-tree-node "b" d e)
  ○
 ))
 
-(define tree-a-○c-fg (make-str-node "a"
+(define tree-a-○c-fg (make-tree-node "a"
  ○
- (make-str-node "c" f g)
+ (make-tree-node "c" f g)
 ))
 
-(define tree-a-○c-f○ (make-str-node "a"
+(define tree-a-○c-f○ (make-tree-node "a"
  ○
- (make-str-node "c" f ○)
+ (make-tree-node "c" f ○)
 ))
 
 (log-tree tree-a-bc-defg)
