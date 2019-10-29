@@ -4,14 +4,14 @@
 (include "tree-print.scm")
 
 (define StringTree (make-tree string-ci<?))
-(define sleaf (tree-op-make-root StringTree))
+(define make-str (tree-op-make-node StringTree))
 (define str-tree->str (make-tree->str-printer StringTree (lambda (s) s)))
 
 
 (define test-str-tree 
  (make-tree-node "a"
-  (make-tree-node "b" (sleaf "d") (sleaf "e"))
-  (make-tree-node "c" (sleaf "f") (sleaf "g"))
+  (make-tree-node "b" (make-str "d") (make-str "e"))
+  (make-tree-node "c" (make-str "f") (make-str "g"))
  )
 )
 
@@ -58,7 +58,7 @@
 (log "tree->list-2 := " (tree->list-2 StringTree test-str-tree))
 
 (define NumTree (make-tree <))
-(define nleaf (tree-op-make-root NumTree))
+(define make-num (tree-op-make-node NumTree))
 (define num-tree->str (make-tree->str-printer NumTree number->string))
 
 
@@ -66,8 +66,8 @@
 
 (define test-num-tree-1
  (make-tree-node 7
-  (make-tree-node 3 (nleaf 1) (nleaf 5))
-  (make-tree-node 9 '() (nleaf 11))
+  (make-tree-node 3 (make-num 1) (make-num 5))
+  (make-tree-node 9 '() (make-num 11))
  )
 )
 
@@ -81,10 +81,10 @@
 
 (define test-num-tree-2
  (make-tree-node 3
-  (nleaf 1)
+  (make-num 1)
   (make-tree-node 7
-   (nleaf 5)
-   (make-tree-node 9 '() (nleaf 11))
+   (make-num 5)
+   (make-tree-node 9 '() (make-num 11))
   )
  )
 )
@@ -99,8 +99,8 @@
 
 (define test-num-tree-3
  (make-tree-node 5
-  (make-tree-node 3 (nleaf 1) '())
-  (make-tree-node 9 (nleaf 7) (nleaf 11))
+  (make-tree-node 3 (make-num 1) '())
+  (make-tree-node 9 (make-num 7) (make-num 11))
  )
 )
 

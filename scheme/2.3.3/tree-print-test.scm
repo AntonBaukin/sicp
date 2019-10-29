@@ -4,7 +4,7 @@
 (include "tree-print.scm")
 
 (define StringTree (make-tree string-ci<?))
-(define make-str-root (tree-op-make-root StringTree))
+(define make-str-root (tree-op-make-node StringTree))
 (define str-tree->str (make-tree->str-printer StringTree (lambda (s) s)))
 
 

@@ -54,7 +54,7 @@
 ; Creates root node without the children. Note that you
 ; may not use null-list '() to denote empty tree.
 ; Arguments: (item).
-(define (tree-op-make-root tree-ops)
+(define (tree-op-make-node tree-ops)
  (list-ref tree-ops 5)
 )
 

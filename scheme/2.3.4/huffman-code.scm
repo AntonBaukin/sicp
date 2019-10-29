@@ -14,8 +14,8 @@
 )
 
 (define (make-huffman-tree-leaf weight char)
- (define huffman-tree-single (tree-op-make-root HuffmanTree))
- (huffman-tree-single (make-huffman-leaf weight char))
+ (define make-node (tree-op-make-node HuffmanTree))
+ (make-node (make-huffman-leaf weight char))
 )
 
 (define (make-huffman-node sum-weights chars-set)
