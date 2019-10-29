@@ -112,3 +112,12 @@
 (define (tree-op-iter tree-ops)
  (list-ref tree-ops 9)
 )
+
+; Adds item to the tree and returns new root node.
+; If item was in the tree, replaces it. Balanced
+; trees keep their balance.
+;
+; Arguments: (tree-node, item).
+(define (tree-op-add tree-ops)
+ (list-ref tree-ops 10)
+)

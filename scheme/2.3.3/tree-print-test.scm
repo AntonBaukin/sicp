@@ -2,19 +2,21 @@
 
 (include "tree.scm")
 (include "tree-print.scm")
+(include "return-void.scm")
+(include "../3.1/accumulator.scm")
 
 (define StringTree (make-tree string-ci<?))
-(define make-str-root (tree-op-make-node StringTree))
+(define make-str-node (tree-op-make-node StringTree))
 (define str-tree->str (make-tree->str-printer StringTree (lambda (s) s)))
 
 
-(define a (make-str-root "a"))
-(define b (make-str-root "b"))
-(define c (make-str-root "c"))
-(define d (make-str-root "d"))
-(define e (make-str-root "e"))
-(define f (make-str-root "f"))
-(define g (make-str-root "g"))
+(define a (make-str-node "a"))
+(define b (make-str-node "b"))
+(define c (make-str-node "c"))
+(define d (make-str-node "d"))
+(define e (make-str-node "e"))
+(define f (make-str-node "f"))
+(define g (make-str-node "g"))
 (define ○ '())
 
 (define tree-a-bc (make-tree-node "a" b c))
@@ -22,16 +24,9 @@
 (define tree-a-b○ (make-tree-node "a" b ○))
 
 (define (tree-items->str tree)
- (define result "")
-
- ((tree-op-iter StringTree) tree
-  (lambda (s)
-   (set! result (string-append result s))
-   void
-  )
- )
-
- result
+ (define S (make-concatenator " "))
+ ((tree-op-iter StringTree) tree (return-void S))
+ (S) ;<— returns the string accumulated
 )
 
 (define (log-tree tree)

@@ -24,12 +24,13 @@
  (include "tree-op-search.scm")
  (include "tree-op-list.scm")
  (include "tree-op-iter.scm")
+ (include "tree-op-add.scm")
 
 
  (define Set (make-sorted-set smaller?))
  (define make-set (set-op-make Set))
 
- (define (make-root item)
+ (define (make-node item)
   (cons item (cons '() '()))
  )
 
@@ -37,14 +38,43 @@
   (car node)
  )
 
+ (define (set node item)
+  (set-car! node item)
+ )
+
  (define (get-left node)
   (cadr node)
+ )
+
+ (define (set-left node left)
+  (set-car! (cdr node) left)
  )
 
  (define (get-right node)
   (cddr node)
  )
 
+ (define (set-right node right)
+  (set-cdr! (cdr node) right)
+ )
+
+ (define (trace-root node stack)
+  (if (null? stack) node
+   (trace-root (car stack) (cdr stack))
+  )
+ )
+
+ (define (add-update cmd item node stack)
+  (cond
+   ((eq? 'L cmd) (set-left node (make-node item)))
+   ((eq? 'R cmd) (set-right node (make-node item)))
+   (else (set node item))
+  )
+
+  ; Always return the root node:
+  (trace-root node stack)
+ )
+ 
 
  ; Resulting operations set:
  (compose-list
@@ -54,7 +84,7 @@
    get          ; 2
    get-left     ; 3
    get-right    ; 4
-   make-root    ; 5
+   make-node    ; 5
   )
 
   ; search @ 6
@@ -65,5 +95,8 @@
 
   ; iter @ 9
   make-tree-op-iter
+
+  ; add @ 10
+  (curry make-tree-op-add add-update)
  )
 )
