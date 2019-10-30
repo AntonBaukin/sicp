@@ -1,7 +1,7 @@
 (include "../2.3.3/curry.scm")
 (include "../2.3.3/quick-sort.scm")
 (include "random.scm")
-(include "enumerate-range.scm")
+(include "enumerate.scm")
 
 (define (log . args) (for-each display args) (newline))
 

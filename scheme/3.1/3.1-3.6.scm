@@ -1,4 +1,4 @@
-(include "enumerate-range.scm")
+(include "enumerate.scm")
 (include "random.scm")
 
 (define (log . args) (for-each display args) (newline))
