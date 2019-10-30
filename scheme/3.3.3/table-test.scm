@@ -17,8 +17,8 @@
 
 
 (define table (table-make))
-(assert-test table? table)
-(assert-test-not table? (cons 'table '()))
+(assert-test table table?)
+(assert-test-not (cons 'table '()) table?)
 (assert-eq? 0 (table-size table))
 
 (table-add table 1 'a)
