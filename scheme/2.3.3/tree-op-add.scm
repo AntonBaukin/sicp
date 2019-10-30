@@ -23,6 +23,7 @@
  (define get (tree-op-get tree-ops))
  (define get-left (tree-op-left tree-ops))
  (define get-right (tree-op-right tree-ops))
+ (define make-node (tree-op-make-node tree-ops))
 
 
  (define (navigate node item stack)
@@ -46,7 +47,10 @@
  )
 
  (define (add root-node item)
-  (navigate root-node item '())
+  (if (null? root-node)
+   (make-node item)
+   (navigate root-node item '())
+  )
  )
 
 

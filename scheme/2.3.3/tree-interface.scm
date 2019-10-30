@@ -58,6 +58,12 @@
  (list-ref tree-ops 5)
 )
 
+; Clones the tree structure using the same items.
+; Arguments: (tree-node).
+(define (tree-op-clone tree-ops)
+ (list-ref tree-ops 6)
+)
+
 ; Shortcut that tells whether the given node is a leaf.
 ; Arguments: (tree-node).
 (define (tree-op-leaf? tree-ops)
@@ -69,31 +75,31 @@
  )
 )
 
-; Searches for the given phony item and returns the actual
+; Searches for the given item and returns the actual
 ; item stored in the tree. Returns '() on not found.
 ;
 ; Returning stored item (instead of a boolean) allows
 ; to get whole data when the tree items comparator
 ; uses only the keys. This makes a tree to be like
-; in-memory database.
+; in-memory database (index).
 ;
 ; Arguments: (tree-node, phony item).
 ;
 (define (tree-op-search tree-ops)
- (list-ref tree-ops 6)
+ (list-ref tree-ops 7)
 )
 
 ; Creates sorted list from the given tree.
 ; Arguments: (tree-node).
 (define (tree-op->list tree-ops)
- (list-ref tree-ops 7)
+ (list-ref tree-ops 8)
 )
 
 ; Creates tree from the given list. This list may be any:
 ; not sorted, or contain duplicates (that ares removed).
 ; Arguments: (any list of items).
 (define (tree-op<-list tree-ops)
- (list-ref tree-ops 8)
+ (list-ref tree-ops 9)
 )
 
 ; Iterates over the tree in the cmp-order ascending passing
@@ -110,14 +116,25 @@
 ; the iteration result (you may also return the item).
 ;
 (define (tree-op-iter tree-ops)
- (list-ref tree-ops 9)
+ (list-ref tree-ops 10)
 )
 
 ; Adds item to the tree and returns new root node.
 ; If item was in the tree, replaces it. Balanced
 ; trees keep their balance.
 ;
+; Note that the root may be '() to denote absent tree.
+; In this case a root node is created.
+;
 ; Arguments: (tree-node, item).
 (define (tree-op-add tree-ops)
- (list-ref tree-ops 10)
+ (list-ref tree-ops 11)
+)
+
+; Removes item from the tree and returns new root node.
+; Balanced trees keep their balance.
+;
+; Arguments: (tree-node, item).
+(define (tree-op-delete tree-ops)
+ (list-ref tree-ops 12)
 )
