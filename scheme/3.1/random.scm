@@ -32,6 +32,17 @@
  )
 )
 
+; Wrapper for range random. N is positive integer,
+; P is ± percent (0 .. 100).
+(define (make-random-in-percents random n p)
+ (make-random-in-range
+  random
+  (exact (truncate (- n (* n p 0.01))))
+  (+ 1 (exact (truncate (+ n (* n p 0.01)))))
+ )
+)
+
+
 (define (make-random-n-bits seed bits)
  (make-random-in-range (make-random seed) 0 (expt 2 bits))
 )
