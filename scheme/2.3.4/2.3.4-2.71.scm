@@ -2,6 +2,7 @@
 (define (null-log . args) void)
 
 (include "huffman-code.scm")
+(include "../2.3.3/tree-util-max.scm")
 
 (define (gen-abc-pairs n)
  (define (pair i)

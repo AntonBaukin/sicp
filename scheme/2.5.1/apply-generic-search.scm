@@ -1,4 +1,8 @@
-(include "../2.3.4/tree-iter.scm")
+(include "../2.3.3/curry.scm")
+(include "../2.3.3/tree-util-walk.scm")
+(include "../2.3.3/tree-util-min.scm")
+(include "../2.3.3/tree-util-next.scm")
+
 
 ; Makes scope search function that takes an operation
 ; symbol and variable number of argument type symbols.
@@ -9,7 +13,6 @@
 ; and the function registered.
 ;
 (define (make-apply-generic-search scope)
-
  (define lookup (apply-generic-scope-lookup scope))
 
  ; Dummy function required for a generic key.
@@ -24,9 +27,7 @@
  ; Searches the next registration entry in the tree order.
  ; At the iteration end we reach the tree end, or go to
  ; else operation or arguments list with else types prefix.
- (define search-op-next
-  (make-tree-get-min-greater ApplyGenericScope)
- )
+ (define search-op-next (make-tree-get-next ApplyGenericScope))
 
  (define (types-prefix? prefix types)
   (cond

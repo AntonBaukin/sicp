@@ -1,5 +1,7 @@
 (include "2.3.4-2.67.scm")
 
+((make-tree-get-leafs HuffmanTree) sample-tree)
+
 (log "Sample tree leafs: ")
 (for-each (lambda (l) (log (huffman-tree-node->str (car l))))
  ((make-tree-get-leafs HuffmanTree) sample-tree)

@@ -1,7 +1,10 @@
-(include "../2.3.3/sorted-set.scm")
+(include "../2.3.3/curry.scm")
 (include "../2.3.3/tree.scm")
 (include "../2.3.3/tree-print.scm")
-(include "tree-iter.scm")
+(include "../2.3.3/tree-util-walk.scm")
+(include "../2.3.3/tree-util-iter.scm")
+(include "../2.3.3/tree-util-leafs.scm")
+
 
 ; Set of characters (elements of the dictionary).
 (define CharsSet (make-sorted-set string-ci<?))
@@ -106,7 +109,7 @@
 (define (huffman-decode tree bits)
  (define result '())
  (define leaf? huffman-node-leaf?)
- (define tree-iter (make-tree-iter HuffmanTree))
+ (define walker (make-tree-util-walker HuffmanTree))
  (define (char leaf) (car (get-huffman-tree-chars leaf)))
 
  (define (push leaf res)
@@ -140,7 +143,7 @@
  )
 
  ;~> this iterator first walks then checks
- (tree-iter tree (lambda (node from stack)
+ (walker tree (lambda (node from stack)
   (if (null? bits) (done node) (take node))
  ))
 
