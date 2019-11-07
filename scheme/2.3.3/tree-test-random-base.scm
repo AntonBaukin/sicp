@@ -7,7 +7,7 @@
 (define N 20)
 
 ; Use random seed and report it to console.
-(define seed (exact (truncate (current-second))))
+(define seed 1);(exact (truncate (current-second))))
 (define random (make-random seed))
 
 ; Random N ± 20% selector.

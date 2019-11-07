@@ -12,6 +12,7 @@
 (define num-tree-clone (tree-op-clone NumTree))
 (define num-tree->list (tree-op->list NumTree))
 (define num-tree->str (make-tree->str-printer NumTree number->string))
+(define num-tree-smaller? (tree-op-smaller? NumTree))
 (define num-sort (set-op-make (tree-op-Set NumTree)))
 
 (define (add . nums)
