@@ -4,6 +4,7 @@
 (include "tree-util-min.scm")
 (include "tree-util-prev.scm")
 (include "tree-util-next.scm")
+(include "tree-util-iter.scm")
 
 
 ; Tests number
@@ -13,6 +14,7 @@
 (define tree-max (make-tree-get-max NumTree))
 (define tree-prev (make-tree-get-prev NumTree))
 (define tree-next (make-tree-get-next NumTree))
+(define tree-iter (make-tree-util-iter NumTree))
 
 (define (find-smaller res sorted item)
  (cond
@@ -34,8 +36,32 @@
  )
 )
 
+(define (is-correct-stack tree node stack)
+ (define get-left (tree-op-left NumTree))
+ (define get-right (tree-op-right NumTree))
+
+ (define (is-parent node parent)
+  (or
+   (eq? node (get-left parent))
+   (eq? node (get-right parent))
+  )
+ )
+
+ (define (trace-up node stack)
+  (if (null? stack) node
+   (if (is-parent node (car stack))
+    (trace-up (car stack) (cdr stack))
+    void 
+   )
+  )
+ )
+
+ (eq? tree (trace-up node stack))
+)
+
 (define (test index n source tree add)
  (define sorted (num-sort source))
+ (define all-nodes '()) ;<— will collect them
 
  ; Sub-test that checks prev and next implementation.
  (define (test-prev num)
@@ -114,7 +140,52 @@
    )
  )
 
+ ; Run prev-next tests for each target number in [0; 2N]:
  (map test-prev (enumerate-n (+ 1 (* 2 N))))
+
+ ; Run test for extended in-order iterator:
+ (tree-iter tree
+  (lambda (node stack)
+   (set! all-nodes (cons node all-nodes))
+
+   (assert-true?
+    (is-correct-stack tree node stack)
+    (lambda (check)
+     (log "\n"
+      "Seed: " seed "\n"
+      "Index: " index "\n"
+      "Node: " node "\n"
+      "Stack: " stack "\n"
+      "Tree: " sorted "\n"
+      (num-tree->str tree) "\n"
+     )
+
+     (error "Tree util iteration stack check failed!")
+    )
+   )
+
+   void ;<— always continue the iteration
+  )
+ )
+
+ (assert-equal?
+  sorted
+  ; Take values from the collected nodes:
+  (map num-tree-get (reverse all-nodes))
+
+  (lambda (sorted collected)
+    (log "\n"
+     "Seed: " seed "\n"
+     "Index: " index "\n"
+     "Expected items: " expected "\n"
+     "Collected items: " collected "\n"
+     "Tree: " sorted "\n"
+     (num-tree->str tree) "\n"
+    )
+
+    (error "Tree util iteration order failed!")
+   )
+ )
 )
 
 ; Run the tests:

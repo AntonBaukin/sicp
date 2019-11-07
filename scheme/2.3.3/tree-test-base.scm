@@ -7,6 +7,7 @@
 
 (define NumTree (make-tree <))
 (define make-num-node (tree-op-make-node NumTree))
+(define num-tree-get (tree-op-get NumTree))
 (define num-tree-add (tree-op-add NumTree))
 (define num-tree-delete (tree-op-delete NumTree))
 (define num-tree-clone (tree-op-clone NumTree))
