@@ -6,19 +6,21 @@
 ; not printed; empty branches are blank spaces.
 ;
 ; See «tree-print-str» function.
-(define (make-tree->str-printer tree-ops item->string)
-
+;
+; Raw function converts to string nodes.
+; Ordinary function below converts the items.
+;
+(define (make-tree->str-printer-raw tree-ops node->string)
  (define (marker) #t)
  (define (novalue) #t)
 
- (define get (tree-op-get tree-ops))
  (define leaf? (tree-op-leaf? tree-ops))
- (define left (tree-op-left tree-ops))
- (define right (tree-op-right tree-ops))
+ (define get-left (tree-op-left tree-ops))
+ (define get-right (tree-op-right tree-ops))
 
- ; Wraps node value to be marked item.
+ ; Wraps node to be marked item.
  (define (make-item node)
-  (cons marker (get node))
+  (cons marker node)
  )
 
  ; Is this a marked wrapped node value.
@@ -29,7 +31,7 @@
  ; Prints to string an item: wrapped node value.
  (define (i2s item)
   (if (eq? novalue item) ""
-   (string-append " " (item->string (cdr item)))
+   (string-append " " (node->string (cdr item)))
   )
  )
 
@@ -39,11 +41,11 @@
  (define (convert-tree node)
   (if (leaf? node) (list (make-item node))
    (list (make-item node) (append
-    (if (null? (left node)) (list novalue)
-     (convert-tree (left node))
+    (if (null? (get-left node)) (list novalue)
+     (convert-tree (get-left node))
     )
-    (if (null? (right node)) (list novalue)
-     (convert-tree (right node))
+    (if (null? (get-right node)) (list novalue)
+     (convert-tree (get-right node))
     )
    ))
   )
@@ -54,5 +56,13 @@
   (if (null? tree) ""
    (tree-print-str (convert-tree tree) item? i2s)
   )
+ )
+)
+
+(define (make-tree->str-printer tree-ops item->string)
+ (define get (tree-op-get tree-ops))
+ (make-tree->str-printer-raw
+  tree-ops
+  (lambda (node) (item->string (get node)))
  )
 )
