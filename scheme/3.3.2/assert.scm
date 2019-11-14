@@ -14,7 +14,7 @@
 )
 
 (define (assert-true? x . reporter)
- (if x #t (assert-report reporter x))
+ (if x #t (assert-report reporter))
 )
 
 ; Takes test predicate and single argument.

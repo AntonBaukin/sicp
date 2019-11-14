@@ -150,7 +150,7 @@
 
    (assert-true?
     (is-correct-stack tree node stack)
-    (lambda (check)
+    (lambda ()
      (log "\n"
       "Seed: " seed "\n"
       "Index: " index "\n"
