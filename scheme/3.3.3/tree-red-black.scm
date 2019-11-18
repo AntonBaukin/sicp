@@ -94,13 +94,52 @@
   )
  )
 
- (define (make-tree-node-op-list item left right)
-  (list item 'black left
-   (if (and (not (null? right)) (null? left))
-    (set-red right)
-    right
+ (define (make-tree-node-op-list item left right build)
+  (let ((node (list item 'black left right)))
+   ; As we count black-length, we must also treat nodes that
+   ; has single child — as null-nodes are treated black.
+   (if (or (null? left) (null? right))
+    (begin
+     ; We save pairs (level . semi-leaf) to build structure.
+     ; With them we are able to mark dangling red nodes.
+     (set-cdr! build
+      (cons (cons (car build) node) (cdr build))
+     )
+     node
+    )
+    node
    )
   )
+ )
+
+ ; Takes (level . semi-leaf) pairs of list->tree build,
+ ; and marks red nodes that do break the black-length rule.
+ (define (red-dangling-leafs lns)
+  (let* (
+    (lengths (map car lns))
+    (mi (apply min lengths))
+    (ma (apply max lengths))
+   )
+
+   (if (or (= 0 ma) (= mi ma))
+    void
+    (for-each
+     (lambda (ln)
+      (if
+       (= ma (car ln))
+       (set-red (cdr ln))
+       void
+      )
+     )
+     lns
+    )
+   )
+  )
+ )
+
+ (define (post-build-op-list build tree-node)
+  (red-dangling-leafs (cdr build))
+  tree-node
  )
 
 ; (define (trace-root node stack)
@@ -127,7 +166,11 @@
   make-tree-op-search
 
   ; tree->list @ 8, list->tree @ 9
-  (curry make-tree-op-list make-tree-node-op-list)
+  (curry
+   make-tree-op-list
+   make-tree-node-op-list
+   post-build-op-list
+  )
 
   ; iter @ 10
   make-tree-op-iter

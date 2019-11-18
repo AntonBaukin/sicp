@@ -138,3 +138,23 @@
 (define (tree-op-delete tree-ops)
  (list-ref tree-ops 12)
 )
+
+; Returns length of the tree.
+; Arguments: (tree-node).
+(define (tree-op-length tree-ops)
+ (define get-left (tree-op-left tree-ops))
+ (define get-right (tree-op-right tree-ops))
+
+ (define (tree-length node)
+  (if (null? node) 0
+   (+ 1
+    (max
+     (tree-length (get-left node))
+     (tree-length (get-right node))
+    )
+   )
+  )
+ )
+
+ tree-length
+)

@@ -19,6 +19,7 @@
 (define num-tree-add (tree-op-add NumTree))
 (define num-tree-delete (tree-op-delete NumTree))
 (define num-tree-clone (tree-op-clone NumTree))
+(define num-tree-length (tree-op-length NumTree))
 (define num-tree->list (tree-op->list NumTree))
 (define num-tree<-list (tree-op<-list NumTree))
 (define num-tree->str (make-tree->str-printer NumTree number->string))

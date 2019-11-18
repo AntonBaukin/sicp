@@ -3,17 +3,17 @@
 (include "../3.1/enumerate.scm")
 
 
-; Average tree size of the random tests.
+; Average tree size of the random tests: 0.5*N.
 (define-value-if-not 'N 20)
 
 ; Use random seed and report it to console.
 (define-value-if-not 'seed (exact (truncate (current-second))))
 (define random (make-random seed))
 
-; Random N ± 20% selector.
-(define random-N (make-random-in-percents random N 20))
+; Random [1 N] selector.
+(define random-N (make-random-in-range random 1 (+ N 1)))
 
-; Random numbers of the tree in [0 .. 2N] range.
+; Random numbers of the tree in [0 .. 2N) range.
 ; Warning! Numbers range must be larger than N
 ; because we generate unique numbers.
 (define random-num (make-random-in-range random 0 (* 2 N)))

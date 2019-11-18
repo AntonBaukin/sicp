@@ -137,6 +137,14 @@
    )
   )
  )
+
+ (define (make-tree-node-op-list item left right build)
+  (make-tree-node item left right)
+ )
+
+ (define (post-build-op-list build root-node)
+  root-node
+ )
  
 
  ; Resulting operations set:
@@ -155,7 +163,11 @@
   make-tree-op-search
 
   ; tree->list @ 8, list->tree @ 9
-  (curry make-tree-op-list make-tree-node)
+  (curry
+   make-tree-op-list
+   make-tree-node-op-list
+   post-build-op-list
+  )
 
   ; iter @ 10
   make-tree-op-iter
