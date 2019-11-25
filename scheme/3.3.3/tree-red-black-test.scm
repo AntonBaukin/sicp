@@ -1,6 +1,7 @@
 ;(define seed 1)
 
 (include "tree-red-black.scm")
+(include "counters.scm")
 (include "../2.3.3/curry.scm")
 (include "../3.1/enumerate.scm")
 
@@ -62,8 +63,8 @@
       (black? (num-tree-right node))
      )
     )
-    (num-tree-left node)
-    (num-tree-right node)
+    (red-black? (num-tree-left node))
+    (red-black? (num-tree-right node))
    )
   )
  )
@@ -116,12 +117,52 @@
 )
 
 ; Run make-from-list tests:
-(run-test-gen-cycles T
- (lambda (index n source)
-  (assert-balanced index (num-tree<-list source))
- )
-)
+;(run-test-gen-cycles T
+; (lambda (index n source)
+;  (assert-balanced index (num-tree<-list source))
+; )
+;)
 
-;(define sample (num-tree<-list (enumerate-n 5)))
-;(log-sample "initial tree")
-;(assert-balanced 0 sample)
+(add 10)
+(log-sample "initial tree")
+(assert-balanced 10 sample)
+
+(add 4)
+(log-sample "added 4")
+(assert-balanced 4 sample)
+
+(add 15)
+(log-sample "added 15")
+(assert-balanced 15 sample)
+
+(add 3)
+(log-sample "added 3")
+(assert-balanced 3 sample)
+
+(add 20)
+(log-sample "added 20")
+(assert-balanced 20 sample)
+
+(add 23)
+(log-sample "added 23")
+(assert-balanced 23 sample)
+
+(add 1)
+(log-sample "added 1")
+(assert-balanced 1 sample)
+
+(add 0)
+(log-sample "added 0")
+(assert-balanced 0 sample)
+
+(add 8)
+(log-sample "added 8")
+(assert-balanced 8 sample)
+
+(add 6)
+(log-sample "added 6")
+(assert-balanced 6 sample)
+
+(add 5)
+(log-sample "added 5")
+(assert-balanced 5 sample)

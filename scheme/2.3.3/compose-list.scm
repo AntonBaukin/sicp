@@ -1,7 +1,7 @@
 
 ; Composes a list taking the initial list and passing it to
 ; the following makers. Each maker takes current version
-; of this list and produces item list to append.
+; of this list and produces list with items to append.
 (define (compose-list initial . makers)
  (define (iter result makers)
   (if (null? makers) result

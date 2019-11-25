@@ -23,8 +23,9 @@
  (include "../2.3.3/tree-op-search.scm")
  (include "../2.3.3/tree-op-list.scm")
  (include "../2.3.3/tree-op-iter.scm")
-; (include "../2.3.3/tree-op-add.scm")
+ (include "../2.3.3/tree-op-add.scm")
 ; (include "../2.3.3/tree-op-delete.scm")
+ (include "tree-rb-balance-add.scm")
 
 
  (define Set (make-sorted-set smaller?))
@@ -32,6 +33,10 @@
 
  (define (make-node item)
   (list item 'black '() '())
+ )
+
+ (define (make-red-node item)
+  (list item 'red '() '())
  )
 
  (define (get node)
@@ -49,22 +54,12 @@
   (cadr node)
  )
 
- (define (red? node)
-  (eq? 'red (get-color node))
- )
-
  (define (set-red node)
   (set-car! (cdr node) 'red)
-  node
  )
 
  (define (black? node)
   (eq? 'black (get-color node))
- )
-
- (define (set-black node)
-  (set-car! (cdr node) 'black)
-  node
  )
 
  (define (get-left node)
@@ -112,8 +107,8 @@
   )
  )
 
- ; Takes (level . semi-leaf) pairs of list->tree build,
- ; and marks red nodes that do break the black-length rule.
+ ; Takes (level . semi-leaf) pairs of list->tree build, and
+ ; marks as red nodes that do break the black-length rule.
  (define (red-dangling-leafs lns)
   (let* (
     (lengths (map car lns))
@@ -142,13 +137,42 @@
   tree-node
  )
 
-; (define (trace-root node stack)
-;  (if (null? stack) node
-;   (trace-root (car stack) (cdr stack))
-;  )
-; )
+ (define balance-add
+  (make-rb-tree-balance-add
+   get-left set-left get-right set-right
+  )
+ )
 
- 
+ (define (add-update cmd item node stack)
+  (if (or (eq? 'L cmd) (eq? 'R cmd))
+   ; Create read leaf node to append:
+   (let ((leaf (make-red-node item)))
+    (if (eq? 'L cmd)
+     (set-left node leaf)
+     (set-right node leaf)
+    )
+
+    ; If we added red leaf to black node, we must
+    ; simply return the existing root, as RB-rules
+    ; are not violated in this case.
+    (if (black? node)
+     (trace-root node stack)
+     (balance-add (cons leaf (cons node stack)))
+    )
+   )
+   (begin
+    (set node item)
+    (trace-root node stack)
+   )
+  )
+ )
+
+ (define (trace-root node stack)
+  (if (null? stack) node
+   (trace-root (car stack) (cdr stack))
+  )
+ )
+
 
  ; Resulting operations set:
  (compose-list
@@ -176,8 +200,7 @@
   make-tree-op-iter
 
   ; add @ 11
-  ;(curry make-tree-op-add add-update)
-  (lambda (l) (list '()))
+  (curry make-tree-op-add add-update)
 
   ; delete @ 12
   ;(curry make-tree-op-delete delete)
