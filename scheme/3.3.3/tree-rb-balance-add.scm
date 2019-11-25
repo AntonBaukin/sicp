@@ -81,8 +81,6 @@
  )
 
  (define (balance stack)
-  (log "Balance " (map car stack))
-
   (cond
    ; Has only (root)?
    ((null? (cdr stack))
@@ -145,8 +143,6 @@
   (define g (si 2 stack)) ; <— grandpa
   (define p (si 1 stack)) ; <— pa (it's red)
   (define n (si 0 stack)) ; <— target child (it's also red)
-
-  (log "Balance black uncle " (map car (list n p g)))
 
   (cond
    ((rr? stack)

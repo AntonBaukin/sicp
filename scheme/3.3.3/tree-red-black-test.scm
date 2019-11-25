@@ -8,7 +8,7 @@
 ; Use red-black tree as the test target:
 (define make-tree-ops (curry make-rb-tree <))
 
-(include "../2.3.3/tree-test-random-run.scm")
+(include "../2.3.3/tree-test-random-base.scm")
 
 
 ; Tests number
@@ -116,13 +116,6 @@
  )
 )
 
-; Run make-from-list tests:
-;(run-test-gen-cycles T
-; (lambda (index n source)
-;  (assert-balanced index (num-tree<-list source))
-; )
-;)
-
 (add 10)
 (log-sample "initial tree")
 (assert-balanced 10 sample)
@@ -166,3 +159,18 @@
 (add 5)
 (log-sample "added 5")
 (assert-balanced 5 sample)
+
+
+; Run make-from-list tests:
+(run-test-gen-cycles T
+ (lambda (index n source)
+  (assert-balanced index (num-tree<-list source))
+ )
+)
+
+(run-test-cycles T
+ (lambda (index n source tree add)
+  ;(log "Tree \n" (num-tree->str tree))
+  (assert-balanced index tree)
+ )
+)
