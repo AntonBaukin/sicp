@@ -38,7 +38,7 @@
  )
 
  (define (black-length sel node)
-  (if (null? node) 0
+  (if (null? node) 1
    (+
     (if (black? node) 1 0)
     (sel
@@ -161,16 +161,41 @@
 (assert-balanced 5 sample)
 
 
-; Run make-from-list tests:
-(run-test-gen-cycles T
- (lambda (index n source)
-  (assert-balanced index (num-tree<-list source))
- )
-)
+;; Test creating tree from list:
+;(run-test-gen-cycles T
+; (lambda (index n source)
+;  (assert-balanced index (num-tree<-list source))
+; )
+;)
+;
+;; Test creating tree by adding items:
+;(run-test-cycles T
+; (lambda (index n source tree add)
+;  ;(log "Tree \n" (num-tree->str tree))
+;  (assert-balanced index tree)
+; )
+;)
 
-(run-test-cycles T
- (lambda (index n source tree add)
-  ;(log "Tree \n" (num-tree->str tree))
-  (assert-balanced index tree)
- )
-)
+(delete 0)
+(log-sample "delete 0")
+(assert-balanced 0 sample)
+
+(delete 1)
+(log-sample "delete 1")
+(assert-balanced 1 sample)
+
+(delete 8)
+(log-sample "delete 8")
+(assert-balanced 8 sample)
+
+(delete 23)
+(log-sample "delete 23")
+(assert-balanced 23 sample)
+
+(delete 10)
+(log-sample "delete 10")
+(assert-balanced 10 sample)
+
+(delete 5)
+(log-sample "delete 5")
+(assert-balanced 5 sample)

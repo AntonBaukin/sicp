@@ -6,6 +6,10 @@
  (define set-right (list-ref ops 3))
 
 
+ (define (make-red-node item)
+  (list item 'red '() '())
+ )
+
  (define (si i stack)
   (list-ref stack i)
  )
@@ -197,5 +201,35 @@
   )
  )
 
- balance ;<— resulting balance function
+ (define (trace-root node stack)
+  (if (null? stack) node
+   (trace-root (car stack) (cdr stack))
+  )
+ )
+
+ (define (add-update cmd item node stack)
+  (if (or (eq? 'L cmd) (eq? 'R cmd))
+   ; Create read leaf node to append:
+   (let ((leaf (make-red-node item)))
+    (if (eq? 'L cmd)
+     (set-left node leaf)
+     (set-right node leaf)
+    )
+
+    ; If we added red leaf to black node, we must
+    ; simply return the existing root, as RB-rules
+    ; are not violated in this case.
+    (if (black? node)
+     (trace-root node stack)
+     (balance (cons leaf (cons node stack)))
+    )
+   )
+   (begin
+    (set node item)
+    (trace-root node stack)
+   )
+  )
+ )
+
+ add-update ;<— resulting add-update function
 )

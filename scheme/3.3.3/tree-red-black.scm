@@ -8,7 +8,8 @@
 ;
 ; 1) root node is black;
 ; 2) red node has black children;
-; 3) each root-leaf path has the same number of black nodes.
+; 3) each root-leaf path has the same number of black
+; nodes, and terminating nulls are counted black.
 ;
 ; A new node is first inserted as a leaf in proper order
 ; position (as it's for every ordered binary tree). It's
@@ -24,8 +25,9 @@
  (include "../2.3.3/tree-op-list.scm")
  (include "../2.3.3/tree-op-iter.scm")
  (include "../2.3.3/tree-op-add.scm")
-; (include "../2.3.3/tree-op-delete.scm")
+ (include "../2.3.3/tree-op-delete.scm")
  (include "tree-rb-balance-add.scm")
+ (include "tree-rb-balance-delete.scm")
 
 
  (define Set (make-sorted-set smaller?))
@@ -33,10 +35,6 @@
 
  (define (make-node item)
   (list item 'black '() '())
- )
-
- (define (make-red-node item)
-  (list item 'red '() '())
  )
 
  (define (get node)
@@ -143,36 +141,11 @@
   )
  )
 
- (define (add-update cmd item node stack)
-  (if (or (eq? 'L cmd) (eq? 'R cmd))
-   ; Create read leaf node to append:
-   (let ((leaf (make-red-node item)))
-    (if (eq? 'L cmd)
-     (set-left node leaf)
-     (set-right node leaf)
-    )
-
-    ; If we added red leaf to black node, we must
-    ; simply return the existing root, as RB-rules
-    ; are not violated in this case.
-    (if (black? node)
-     (trace-root node stack)
-     (balance-add (cons leaf (cons node stack)))
-    )
-   )
-   (begin
-    (set node item)
-    (trace-root node stack)
-   )
+ (define balance-delete
+  (make-rb-tree-balance-delete
+   get-left set-left get-right set-right
   )
  )
-
- (define (trace-root node stack)
-  (if (null? stack) node
-   (trace-root (car stack) (cdr stack))
-  )
- )
-
 
  ; Resulting operations set:
  (compose-list
@@ -200,10 +173,9 @@
   make-tree-op-iter
 
   ; add @ 11
-  (curry make-tree-op-add add-update)
+  (curry make-tree-op-add balance-add)
 
   ; delete @ 12
-  ;(curry make-tree-op-delete delete)
-  (lambda (l) (list '()))
+  (curry make-tree-op-delete balance-delete)
  )
 )
