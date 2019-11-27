@@ -18,6 +18,45 @@
 ; because we generate unique numbers.
 (define random-num (make-random-in-range random 0 (* 2 N)))
 
+; This index is assigned on each test:
+(define global-test-index -1)
+
+; Assign this to failed index to make ilog() working.
+(define log-index -1)
+
+; This special trace logger is intended to trace
+; 
+(define (ilog . args)
+ (if (eq? global-test-index log-index)
+  (apply log args) void
+ )
+)
+
+(define (run-test-guard index test)
+ (set! global-test-index index)
+
+ (if (eq? global-test-index log-index)
+  ; Run target test directly to see the error details:
+  (test index)
+
+  ; Run test guarded:
+  (let ((result
+    (with-exception-catcher
+     (lambda (e) e)
+     (lambda () (test index) void)
+    )
+   ))
+
+   (if (eq? void result) void
+    (begin
+     (log "Break test on error @index: " index)
+     (raise result)
+    )
+   )
+  )
+ )
+)
+
 (define (run-test-gen test index)
  ; Generate test tree size:
  (define n (assert-test (random-N) (list > - 0)))
@@ -28,7 +67,9 @@
   (list = n length) ;<— predicate (= n (length source))
  ))
 
- (test index n source)
+ (run-test-guard index
+  (lambda (index) (test index n source))
+ )
 )
 
 (define (run-test-gen-cycles T test)

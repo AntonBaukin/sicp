@@ -12,6 +12,17 @@
  (next 0 '() lst)
 )
 
+(define (delete-value lst value)
+ (define (next head tail)
+  (if (eq? (car tail) value)
+   (append (reverse head) (cdr tail))
+   (next (cons (car tail) head) (cdr tail))
+  )
+ )
+
+ (next '() lst)
+)
+
 (define (run-test test index)
  ; Target test tree:
  (define tree '())
