@@ -116,12 +116,15 @@
 
   (cond
    ((red? s)
-    (log "Balance left: red sibling")
-    (trace-root stack)
+    (ilog "Balance left: red sibling")
+    (set-red p)
+    (set-black s)
+    (set! stack (rotate-left stack))
+    (balance-left (cons p stack))
    )
 
    ((red? r)
-    (log "Balance left: red right")
+    (ilog "Balance left: red right")
     (copy-color s p)
     (set-black p)
     (set-black r)
@@ -129,22 +132,22 @@
    )
 
    ((red? l)
-    (log "Balance left: red left")
+    (ilog "Balance left: red left")
     (set-red s)
     (set-black l)
     (set! stack (rotate-right (cons s stack)))
-    (balance-left (cdr stack))
+    (balance-select #t (cdr stack))
    )
 
    (else
-    (log "Balance left: both black " (car s))
+    (ilog "Balance left: both black " (car s))
     (set-red s)
     (if (red? p)
      (begin
       (set-black p)
       (trace-root stack)
      )
-     (balance-stack stack)
+     (balance-select void stack)
     )
    )
   )
@@ -158,12 +161,15 @@
 
   (cond
    ((red? s)
-    (log "Balance right: red sibling")
-    (trace-root stack)
+    (ilog "Balance right: red sibling")
+    (set-red p)
+    (set-black s)
+    (set! stack (rotate-right stack))
+    (balance-right (cons p stack))
    )
 
    ((red? l)
-    (log "Balance right: red left")
+    (ilog "Balance right: red left")
     (copy-color s p)
     (set-black p)
     (set-black l)
@@ -172,37 +178,42 @@
    )
 
    ((red? r)
-    (log "Balance right: red right")
+    (ilog "Balance right: red right")
     (set-red s)
     (set-black r)
     (set! stack (rotate-left (cons s stack)))
-    (balance-right (cdr stack))
+    (balance-select #f (cdr stack))
    )
 
    (else
-    (log "Balance right: both black " (car s))
+    (ilog "Balance right: both black " (car s))
     (set-red s)
     (if (red? p)
      (begin
       (set-black p)
       (trace-root stack)
      )
-     (balance-stack stack)
+     (balance-select void stack)
     )
    )
   )
  )
 
- (define (balance-select stack left?)
-  ((if left? balance-left balance-right) stack)
- )
+ (define (balance-select l? stack)
+  (ilog "Balance select left? " l? " " (map car stack))
+  (cond
+   ((null? stack) '())
+   ;((null? (cdr stack)) (car stack))
+   (else
+    (if (eq? void l?)
+     (begin 
+      (set! l? (left? (car stack) (cadr stack)))
+      (set! stack (cdr stack))
+     )
+     void
+    )
 
- (define (balance-stack stack)
-  ; Only the root is left?
-  (if (null? (cdr stack))
-   (car stack) ;<— return this root
-   (balance-select stack
-    (left? (car stack) (cadr stack))
+    ((if l? balance-left balance-right) stack)
    )
   )
  )
@@ -210,7 +221,7 @@
  (define (delete status node stack next-node next-stack)
   ; Balance behaviour alters by left-right position of the
   ; removed node relative to it's parent. Save it ahead:
-  (define left? (sleft? node stack))
+  (define l? (sleft? node stack))
 
   (cond
    ((eq? '0 status)
@@ -220,7 +231,7 @@
     (if (red? node)
      (trace-root stack) ;<— simply exit on removing red
      ; But removing black leaf may alter black-length:
-     (balance-select stack left?)
+     (balance-select l? stack)
     )
    )
 

@@ -1,3 +1,6 @@
+; Tests number
+(define T 10000)
+
 ;(define seed 1)
 
 (include "tree-red-black.scm")
@@ -9,10 +12,12 @@
 (define make-tree-ops (curry make-rb-tree <))
 
 (include "../2.3.3/tree-test-random-base.scm")
+(include "../2.3.3/tree-util-walk.scm")
+(include "../2.3.3/tree-util-iter.scm")
+(include "../2.3.3/tree-util-leafs.scm")
 
 
-; Tests number
-(define T 10000)
+(define num-tree-get-leafs (make-tree-get-leafs NumTree))
 
 ; Use raw printer to display the nodes color:
 (define num-tree->str
@@ -116,86 +121,64 @@
  )
 )
 
-(add 10)
-(log-sample "initial tree")
-(assert-balanced 10 sample)
+(define (assert-equal-tree index source tree)
+ (assert-equal?
+  (num-sort source)
+  (num-tree->list tree)
 
-(add 4)
-(log-sample "added 4")
-(assert-balanced 4 sample)
+  (lambda (sorted back)
+   (log "\n"
+    "Seed: " seed "\n"
+    "Index: " index "\n"
+    "Sorted list: " sorted "\n"
+    "Back list: " back "\n"
+    (num-tree->str tree) "\n"
+   )
 
-(add 15)
-(log-sample "added 15")
-(assert-balanced 15 sample)
+   (error "Tree equality had failed!")
+  )
+ )
+)
 
-(add 3)
-(log-sample "added 3")
-(assert-balanced 3 sample)
+; Test creating tree from list.
+(run-test-gen-cycles T
+ (lambda (index n source)
+  (define tree (num-tree<-list source))
 
-(add 20)
-(log-sample "added 20")
-(assert-balanced 20 sample)
+  (assert-equal-tree index source tree)
+  (assert-balanced index tree)
+ )
+)
 
-(add 23)
-(log-sample "added 23")
-(assert-balanced 23 sample)
+; Set failed index to see i-logging.
+;(set! log-index error-index)
 
-(add 1)
-(log-sample "added 1")
-(assert-balanced 1 sample)
+; Test creating tree by adding items, then
+; remove a leaf node.
+(run-test-cycles T
+ (lambda (index n source tree add)
+  (define leafs (map caar (num-tree-get-leafs tree)))
+  (define deli ((make-random-in-range random 0 (length leafs))))
+  (define delnum (list-ref leafs deli))
+  (define sourcex (delete-value source delnum))
 
-(add 0)
-(log-sample "added 0")
-(assert-balanced 0 sample)
+  (assert-equal-tree index source tree)
+  (assert-balanced index tree)
 
-(add 8)
-(log-sample "added 8")
-(assert-balanced 8 sample)
+  (ilog "Removing leaf " delnum " from\n" (num-tree->str tree))
 
-(add 6)
-(log-sample "added 6")
-(assert-balanced 6 sample)
+  ; Delete selected leaf item:
+  (set! tree (num-tree-delete tree delnum))
 
-(add 5)
-(log-sample "added 5")
-(assert-balanced 5 sample)
+  (assert-equal-tree index sourcex tree)
+  (assert-balanced index tree)
+ )
+)
 
-
-;; Test creating tree from list:
-;(run-test-gen-cycles T
-; (lambda (index n source)
-;  (assert-balanced index (num-tree<-list source))
-; )
-;)
+;(apply add (enumerate-n 11))
+;(log-sample "initial")
+;(assert-balanced 0 sample)
 ;
-;; Test creating tree by adding items:
-;(run-test-cycles T
-; (lambda (index n source tree add)
-;  ;(log "Tree \n" (num-tree->str tree))
-;  (assert-balanced index tree)
-; )
-;)
-
-(delete 0)
-(log-sample "delete 0")
-(assert-balanced 0 sample)
-
-(delete 1)
-(log-sample "delete 1")
-(assert-balanced 1 sample)
-
-(delete 8)
-(log-sample "delete 8")
-(assert-balanced 8 sample)
-
-(delete 23)
-(log-sample "delete 23")
-(assert-balanced 23 sample)
-
-(delete 10)
-(log-sample "delete 10")
-(assert-balanced 10 sample)
-
-(delete 5)
-(log-sample "delete 5")
-(assert-balanced 5 sample)
+;(delete 4)
+;(log-sample "deleted 4")
+;(assert-balanced 4 sample)
