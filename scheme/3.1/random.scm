@@ -3,18 +3,32 @@
 ; The same as java.util.Random() does.
 ; Returns value in [0 .. 4294967295].
 ;
+; Random takes optional argument:
+;  – if it's symbol 'reset, does reset to initial seed;
+;  – else it's a new integer value of seed.
+;
 (define (make-random seed)
+ (define n seed)
  (define a 25214903917)
  (define c 11)
  (define m 281474976710656)
 
- (lambda ()
-  (set! seed (modulo (+ c (* seed a)) m))
+ (define (random . cmd)
+  (if (null? cmd) void
+   (if (eq? 'reset (car cmd))
+    (set! n seed)
+    (set! n (car seed))
+   )
+  )
+
+  (set! n (modulo (+ c (* n a)) m))
   (modulo
-   (truncate-quotient seed 65536) ; <— shift 16 bits
+   (truncate-quotient n 65536) ; <— shift 16 bits
    4294967296 ; <— and with 32 bits
   )
  )
+
+ random
 )
 
 ; Takes random returning 32-bit integer and

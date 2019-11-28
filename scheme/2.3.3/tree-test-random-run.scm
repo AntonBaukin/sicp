@@ -10,6 +10,30 @@
 (define-value-if-not 'seed (exact (truncate (current-second))))
 (define random (make-random seed))
 
+; Does reset the random generator depending on the argument:
+;  – without argument, resets to the initial seed;
+;  – 'time symbol, takes new seed by current time millisecond;
+;  – else treats the value as the new seed.
+;
+; Running reset makes sequential tests independent.
+; This simplifies debugging
+;
+(define (random-reset . arg)
+ (cond
+  ((null? arg) (random 'reset))
+
+  ((eq? 'time (car arg))
+   (set! seed (exact (truncate (* 1000 (current-second)))))
+   (random seed)
+  )
+
+  (else
+   (set! seed (car arg))
+   (random seed)
+  )
+ )
+)
+
 ; Random [1 N] selector.
 (define random-N (make-random-in-range random 1 (+ N 1)))
 
