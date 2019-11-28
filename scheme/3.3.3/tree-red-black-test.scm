@@ -4,7 +4,6 @@
 ;(define seed 1)
 
 (include "tree-red-black.scm")
-(include "counters.scm")
 (include "../2.3.3/curry.scm")
 (include "../3.1/enumerate.scm")
 
@@ -30,6 +29,32 @@
    )
   )
  )
+)
+
+; Returns list of children that have single child.
+(define (find-soles tree)
+ (define iter (make-tree-util-iter NumTree))
+ (define result '())
+
+ (define (sole? node)
+  (define l? (null? (num-tree-left node)))
+  (define r? (null? (num-tree-right node)))
+  (or (and l? (not r?)) (and (not l?) r?))
+ )
+
+ (iter tree
+  (lambda (node stack)
+   (cond
+    ((sole? node)
+     (set! result (cons node result))
+     void ;<— request the next
+    )
+    (else void)
+   )
+  )
+ )
+
+ (reverse result)
 )
 
 (define (assert-balanced index tree)
@@ -131,7 +156,7 @@
     "Seed: " seed "\n"
     "Index: " index "\n"
     "Sorted list: " sorted "\n"
-    "Back list: " back "\n"
+    "Tree list: " back "\n"
     (num-tree->str tree) "\n"
    )
 
@@ -139,6 +164,7 @@
   )
  )
 )
+
 
 ; Test creating tree from list.
 (run-test-gen-cycles T
@@ -150,11 +176,13 @@
  )
 )
 
+(random-reset)
+
 ; Set failed index to see i-logging.
 ;(set! log-index error-index)
 
-; Test creating tree by adding items, then
-; remove a leaf node.
+
+; Test creating tree by adding items, then remove a leaf node.
 (run-test-cycles T
  (lambda (index n source tree add)
   (define leafs (map caar (num-tree-get-leafs tree)))
@@ -165,9 +193,7 @@
   (assert-equal-tree index source tree)
   (assert-balanced index tree)
 
-  (ilog "Removing leaf " delnum " from\n" (num-tree->str tree))
-
-  ; Delete selected leaf item:
+  (ilog "Removing leaf " delnum "\n" (num-tree->str tree))
   (set! tree (num-tree-delete tree delnum))
 
   (assert-equal-tree index sourcex tree)
@@ -175,10 +201,42 @@
  )
 )
 
-;(apply add (enumerate-n 11))
+(random-reset)
+
+; Set failed index to see i-logging.
+;(set! log-index error-index)
+
+
+; Create tree by adding items, then remove a sole node.
+(run-test-cycles T
+ (lambda (index n source tree add)
+  (define soles (map car (find-soles tree)))
+
+  (assert-equal-tree index source tree)
+  (assert-balanced index tree)
+
+  ; Has no sole nodes? Just skip this test:
+  (if (null? soles) void
+   (let* (
+     (deli ((make-random-in-range random 0 (length soles))))
+     (delnum (list-ref soles deli))
+     (sourcex (delete-value source delnum))
+    )
+
+    (ilog "Removing sole " delnum "\n" (num-tree->str tree))
+    (set! tree (num-tree-delete tree delnum))
+
+    (assert-equal-tree index sourcex tree)
+    (assert-balanced index tree)
+   )
+  )
+ )
+)
+
+;(apply add (enumerate-n 6))
 ;(log-sample "initial")
 ;(assert-balanced 0 sample)
-;
+
 ;(delete 4)
 ;(log-sample "deleted 4")
 ;(assert-balanced 4 sample)

@@ -6,6 +6,10 @@
  (define set-right (list-ref ops 3))
 
 
+ (define (get-same left? node)
+  ((if left? get-left get-right) node)
+ )
+
  (define (left? node parent)
   (eq? node (get-left parent))
  )
@@ -235,9 +239,26 @@
     )
    )
 
+   ; Removed node has only one child — replace it.
    ((or (eq? 'L status) (eq? 'R status))
-    ;(replace-child stack node (get-left node))
-    (trace-root stack)
+    (let ((child (get-same (eq? 'L status) node)))
+     ;(ilog "replace " (car node) " with " (car child))
+     (replace-child stack node child)
+
+     (cond
+      ; Simply exit on removing red?
+      ((red? node) (trace-root stack))
+
+      ; Child to replace removed black is red?
+      ((red? child)
+       (set-black child)    ;<— just color it black
+       (trace-root (cons child stack)) ;<— and exit
+      )
+
+      ; So, we have double-black node, and balance up...
+      (else (balance-select l? stack))
+     )
+    )
    )
 
    (else

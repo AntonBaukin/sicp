@@ -1,6 +1,7 @@
 (include "../2.3.3/sorted-set.scm")
 (include "../2.3.3/tree-interface.scm")
 
+
 ; This package implements red-black balanced binary tree.
 ; It produces the same interface ops as «2.3.3/tree.scm».
 ;
@@ -8,7 +9,7 @@
 ;
 ; 1) root node is black;
 ; 2) red node has black children;
-; 3) each root-leaf path has the same number of black
+; 3) each root->leaf path has the same number of black
 ; nodes, and terminating nulls are counted black.
 ;
 ; A new node is first inserted as a leaf in proper order
@@ -16,8 +17,6 @@
 ; assigned red color. Then in the case of rule 2) violation,
 ; the sub-tree is rotated on the way up.
 ;
-
-
 (define (make-rb-tree smaller?)
  (include "../2.3.3/curry.scm")
  (include "../2.3.3/compose-list.scm")
