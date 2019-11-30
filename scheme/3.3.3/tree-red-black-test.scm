@@ -233,10 +233,10 @@
  )
 )
 
-;(apply add (enumerate-n 6))
+;(apply add (enumerate-n 11))
 ;(log-sample "initial")
 ;(assert-balanced 0 sample)
-
-;(delete 4)
-;(log-sample "deleted 4")
-;(assert-balanced 4 sample)
+;
+;(delete 5)
+;(log-sample "deleted 9")
+;(assert-balanced 7 sample)

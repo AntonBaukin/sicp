@@ -120,7 +120,7 @@
 
   (cond
    ((red? s)
-    (ilog "Balance left: red sibling")
+    ;(ilog "Balance left: red sibling")
     (set-red p)
     (set-black s)
     (set! stack (rotate-left stack))
@@ -128,7 +128,7 @@
    )
 
    ((red? r)
-    (ilog "Balance left: red right")
+    ;(ilog "Balance left: red right")
     (copy-color s p)
     (set-black p)
     (set-black r)
@@ -136,7 +136,7 @@
    )
 
    ((red? l)
-    (ilog "Balance left: red left")
+    ;(ilog "Balance left: red left")
     (set-red s)
     (set-black l)
     (set! stack (rotate-right (cons s stack)))
@@ -144,7 +144,7 @@
    )
 
    (else
-    (ilog "Balance left: both black " (car s))
+    ;(ilog "Balance left: both black " (car s))
     (set-red s)
     (if (red? p)
      (begin
@@ -165,7 +165,7 @@
 
   (cond
    ((red? s)
-    (ilog "Balance right: red sibling")
+    ;(ilog "Balance right: red sibling")
     (set-red p)
     (set-black s)
     (set! stack (rotate-right stack))
@@ -173,7 +173,7 @@
    )
 
    ((red? l)
-    (ilog "Balance right: red left")
+    ;(ilog "Balance right: red left")
     (copy-color s p)
     (set-black p)
     (set-black l)
@@ -182,7 +182,7 @@
    )
 
    ((red? r)
-    (ilog "Balance right: red right")
+    ;(ilog "Balance right: red right")
     (set-red s)
     (set-black r)
     (set! stack (rotate-left (cons s stack)))
@@ -190,7 +190,7 @@
    )
 
    (else
-    (ilog "Balance right: both black " (car s))
+    ;(ilog "Balance right: both black " (car s))
     (set-red s)
     (if (red? p)
      (begin
@@ -204,7 +204,7 @@
  )
 
  (define (balance-select l? stack)
-  (ilog "Balance select left? " l? " " (map car stack))
+  ;(ilog "Balance select " l? " " (map car stack))
   (cond
    ((null? stack) '())
    ;((null? (cdr stack)) (car stack))
@@ -222,64 +222,119 @@
   )
  )
 
+ (define (delete-leaf l? node stack)
+  (replace-child stack node '())
+
+  (if (red? node)
+   ; We are free to delete leaf red node:
+   (trace-root stack)
+   ; But removing black leaf may alter black-length:
+   (balance-select l? stack)
+  )
+ )
+
+ (define (delete-sole l? node stack)
+  (define child
+   (if (null? (get-left node))
+    (get-right node) (get-left node)
+   )
+  )
+
+  (replace-child stack node child)
+  
+  (cond
+   ; Simply exit on removing red?
+   ((red? node) (trace-root stack))
+
+   ; Child to replace removed black is red?
+   ((red? child)
+    (set-black child)    ;<— just color it black
+    (trace-root (cons child stack)) ;<— and exit
+   )
+
+   ; So, we have double-black node, and balance up...
+   (else (balance-select l? stack))
+  )
+ )
+
+ (define (delete-inner l? node stack next-node next-stack)
+  (define next-right (get-right next-node))
+
+  ; As the next node has no left child, we first
+  ; assign it as the left child of the removed one:
+  (set-left next-node (get-left node))
+
+  ; If next node has parent being the deleted node,
+  ; we just replace it. Else, we first detach the
+  ; next node from it's parent, then swap them
+  ; Next node is a child of deleted one?
+  (if (null? next-stack)
+   ; We just replace deleted with it's child:
+   (replace-child stack node next-node)
+   (begin
+    ; We first detach the next node from it's parent:
+    (replace-child next-stack next-node next-right)
+    ; Attach right branch to the next node:
+    (set-right next-node (get-right node))
+    ; And attach next to the new parent:
+    (replace-child stack node next-node)
+   )
+  )
+
+  ;(ilog "Color node: " (cadr node) " next: " (cadr next-node))
+
+  ; Now treat 4 variants of removed and next colors.
+  ; When both nodes are red, nothing can happen.
+  ; When next node is red (removed is black), we
+  ; just color next to black...
+  (if (red? next-node)
+   (begin
+    (if (red? node) void (set-black next-node))
+    (trace-root stack)
+   )
+   ; When removed node is black, next one is,
+   ; or both, we need to balance-up.
+   (balance-select
+    ; We always balance on right child, if has it:
+    void ; (if (null? next-stack) l? #f)
+    ; Next node is [right] child of removed?
+    (if (null? next-stack)
+     ; Balance stack starts with next node that
+     ; replaced the removed one:
+     (cons next-node stack)
+     (append
+      ; Start balance from initial right child of next node:
+      (if (null? next-right) '() (list next-right))
+      ; Way up from next to the replaced:
+      next-stack
+      ; Next node that replaced the removed:
+      (list next-node)
+      ; This is the way up to the root:
+      stack
+     )
+    )
+   )
+  )
+ )
+
  (define (delete status node stack next-node next-stack)
   ; Balance behaviour alters by left-right position of the
   ; removed node relative to it's parent. Save it ahead:
   (define l? (sleft? node stack))
 
   (cond
+   ; Removed node is a leaf?
    ((eq? '0 status)
-    ; We are free to delete leaf red node:
-    (replace-child stack node '())
-
-    (if (red? node)
-     (trace-root stack) ;<— simply exit on removing red
-     ; But removing black leaf may alter black-length:
-     (balance-select l? stack)
-    )
+    (delete-leaf l? node stack)
    )
 
-   ; Removed node has only one child — replace it.
+   ; Removed node has only one child?
    ((or (eq? 'L status) (eq? 'R status))
-    (let ((child (get-same (eq? 'L status) node)))
-     ;(ilog "replace " (car node) " with " (car child))
-     (replace-child stack node child)
-
-     (cond
-      ; Simply exit on removing red?
-      ((red? node) (trace-root stack))
-
-      ; Child to replace removed black is red?
-      ((red? child)
-       (set-black child)    ;<— just color it black
-       (trace-root (cons child stack)) ;<— and exit
-      )
-
-      ; So, we have double-black node, and balance up...
-      (else (balance-select l? stack))
-     )
-    )
+    (delete-sole l? node stack)
    )
 
-   (else
-    (trace-root stack)
-
-;    ; As the next node has no left child, we first
-;    ; assign it as the left child of the removed one:
-;    (set-left next-node (get-left node))
-;
-;    ; If next node has parent being the deleted node,
-;    ; we just replace it. Else, we first detach the
-;    ; next node from it's parent, then swap them
-;    (if (null? next-stack)
-;     (replace-child stack node next-node)
-;     (begin
-;      (replace-child next-stack next-node (get-right next-node))
-;      (set-right next-node (get-right node))
-;      (replace-child stack node next-node)
-;     )
-;    )
-   )
+   ; Remove node having both children:
+   (else (delete-inner l? node stack next-node next-stack))
   )
  )
 
