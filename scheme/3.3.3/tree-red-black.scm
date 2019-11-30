@@ -134,17 +134,6 @@
   tree-node
  )
 
- (define balance-add
-  (make-rb-tree-balance-add
-   get-left set-left get-right set-right
-  )
- )
-
- (define balance-delete
-  (make-rb-tree-balance-delete
-   get-left set-left get-right set-right
-  )
- )
 
  ; Resulting operations set:
  (compose-list
@@ -172,9 +161,9 @@
   make-tree-op-iter
 
   ; add @ 11
-  (curry make-tree-op-add balance-add)
+  (curry make-tree-op-add (make-rb-tree-balance-add))
 
   ; delete @ 12
-  (curry make-tree-op-delete balance-delete)
+  (curry make-tree-op-delete (make-rb-tree-balance-delete))
  )
 )

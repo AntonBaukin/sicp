@@ -233,10 +233,20 @@
  )
 )
 
-;(apply add (enumerate-n 11))
-;(log-sample "initial")
-;(assert-balanced 0 sample)
-;
-;(delete 5)
-;(log-sample "deleted 9")
-;(assert-balanced 7 sample)
+; Test creating tree by adding items, then remove node.
+(run-test-cycles T
+ (lambda (index n source tree add)
+  (define deli ((make-random-in-range random 0 (length source))))
+  (define delnum (list-ref source deli))
+  (define sourcex (delete-value source delnum))
+
+  (assert-equal-tree index source tree)
+  (assert-balanced index tree)
+
+  (ilog "Removing " delnum "\n" (num-tree->str tree))
+  (set! tree (num-tree-delete tree delnum))
+
+  (assert-equal-tree index sourcex tree)
+  (assert-balanced index tree)
+ )
+)

@@ -1,11 +1,29 @@
 
-(define (make-rb-tree-balance-delete . ops)
- (define get-left (list-ref ops 0))
- (define set-left (list-ref ops 1))
- (define get-right (list-ref ops 2))
- (define set-right (list-ref ops 3))
+(define (make-rb-tree-balance-delete)
+ (define (get node)
+  (car node)
+ )
 
+ (define (set node item)
+  (set-car! node item)
+ )
 
+ (define (get-left node)
+  (caddr node)
+ )
+
+ (define (set-left node left)
+  (set-car! (cddr node) left)
+ )
+
+ (define (get-right node)
+  (cadddr node)
+ )
+
+ (define (set-right node right)
+  (set-car! (cdddr node) right)
+ )
+ 
  (define (get-same left? node)
   ((if left? get-left get-right) node)
  )
@@ -257,63 +275,19 @@
   )
  )
 
- (define (delete-inner l? node stack next-node next-stack)
-  (define next-right (get-right next-node))
+ (define (delete-inner node stack next-node next-stack)
+  ; This is the full way up to the root from next node:
+  (define full-stack (append next-stack (list node) stack))
+  (define l? (sleft? next-node full-stack))
 
-  ; As the next node has no left child, we first
-  ; assign it as the left child of the removed one:
-  (set-left next-node (get-left node))
+  ; Copy the item of the next node, but leave the color
+  ; as-is, because we are going to remove the next.
+  (set node (get next-node))
 
-  ; If next node has parent being the deleted node,
-  ; we just replace it. Else, we first detach the
-  ; next node from it's parent, then swap them
-  ; Next node is a child of deleted one?
-  (if (null? next-stack)
-   ; We just replace deleted with it's child:
-   (replace-child stack node next-node)
-   (begin
-    ; We first detach the next node from it's parent:
-    (replace-child next-stack next-node next-right)
-    ; Attach right branch to the next node:
-    (set-right next-node (get-right node))
-    ; And attach next to the new parent:
-    (replace-child stack node next-node)
-   )
-  )
-
-  ;(ilog "Color node: " (cadr node) " next: " (cadr next-node))
-
-  ; Now treat 4 variants of removed and next colors.
-  ; When both nodes are red, nothing can happen.
-  ; When next node is red (removed is black), we
-  ; just color next to black...
-  (if (red? next-node)
-   (begin
-    (if (red? node) void (set-black next-node))
-    (trace-root stack)
-   )
-   ; When removed node is black, next one is,
-   ; or both, we need to balance-up.
-   (balance-select
-    ; We always balance on right child, if has it:
-    void ; (if (null? next-stack) l? #f)
-    ; Next node is [right] child of removed?
-    (if (null? next-stack)
-     ; Balance stack starts with next node that
-     ; replaced the removed one:
-     (cons next-node stack)
-     (append
-      ; Start balance from initial right child of next node:
-      (if (null? next-right) '() (list next-right))
-      ; Way up from next to the replaced:
-      next-stack
-      ; Next node that replaced the removed:
-      (list next-node)
-      ; This is the way up to the root:
-      stack
-     )
-    )
-   )
+  ; Next node may have only a right child, and we remove
+  ; it using previously resolved two cases.
+  ((if (null? (get-right next-node)) delete-leaf delete-sole)
+   l? next-node full-stack
   )
  )
 
@@ -334,7 +308,7 @@
    )
 
    ; Remove node having both children:
-   (else (delete-inner l? node stack next-node next-stack))
+   (else (delete-inner node stack next-node next-stack))
   )
  )
 

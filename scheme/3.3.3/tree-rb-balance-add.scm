@@ -1,13 +1,23 @@
 
-(define (make-rb-tree-balance-add . ops)
- (define get-left (list-ref ops 0))
- (define set-left (list-ref ops 1))
- (define get-right (list-ref ops 2))
- (define set-right (list-ref ops 3))
-
-
+(define (make-rb-tree-balance-add)
  (define (make-red-node item)
   (list item 'red '() '())
+ )
+
+ (define (get-left node)
+  (caddr node)
+ )
+
+ (define (set-left node left)
+  (set-car! (cddr node) left)
+ )
+
+ (define (get-right node)
+  (cadddr node)
+ )
+
+ (define (set-right node right)
+  (set-car! (cdddr node) right)
  )
 
  (define (si i stack)
