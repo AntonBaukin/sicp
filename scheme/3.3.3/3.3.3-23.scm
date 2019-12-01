@@ -1,15 +1,15 @@
-(include "table-ops.scm")
+(include "table.scm")
 (include "../2.3.3/curry.scm")
 (include "../3.3.2/assert.scm")
 
 
 ; This implementation takes minimal subset of operations
-; implemented in «table-ops.scm» with functions taking
+; implemented in «table.scm» with functions taking
 ; table as the first argument. Here we dispatch them.
 ; Complete showcase of them is in «table-test.scm».
-(define (make-table same-key?)
+(define (make-simple-table same-key?)
  ; Operations set for the given keys comparator:
- (define Table (make-table-ops same-key?))
+ (define Table (make-table same-key?))
 
  ; Create table instance:
  (define table ((table-op-make Table)))
@@ -28,7 +28,7 @@
 )
 
 
-(define table (make-table eq?))
+(define table (make-simple-table eq?))
 
 ((table 'insert!) 1 'a)
 ((table 'insert!) 2 'b)

@@ -1,11 +1,11 @@
-(include "table-ops.scm")
+(include "table.scm")
 (include "../3.3.2/assert.scm")
 (include "../3.1/accumulator.scm")
 
 (define (log . args) (for-each display args) (newline))
 
 ; Create table with default eq? keys equality test.
-(define Table (make-table-ops eq?))
+(define Table (make-table eq?))
 
 (define table-make    (table-op-make Table))
 (define table?        (table-op-table? Table))
