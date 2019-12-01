@@ -38,21 +38,14 @@
 ; according to some exercises, such as not wrapping numbers.
 ;
 (define (apply-generic-make tag-get unwrap apply-fallback result)
- (define scope->list (tree-op->list ApplyGenericScope))
- (define scope<-list (tree-op<-list ApplyGenericScope))
+ (define tree-add (tree-op-add ApplyGenericScope))
  (define scope-search (tree-op-search ApplyGenericScope))
 
  ; Local scope tree instance.
  (define scope '())
 
- ; Recreates scope tree on each insert.
  (define (put key)
-  (let* (
-    (old (scope->list scope))
-    (new (scope<-list (cons key old)))
-   )
-   (set! scope new)
-  )
+  (set! scope (tree-add scope key))
  )
 
  (define (msg-key)

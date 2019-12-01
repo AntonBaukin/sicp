@@ -1,4 +1,4 @@
-(include "../2.3.3/tree.scm")
+(include "../3.3.3/tree-red-black.scm")
 
 ; Incapsulates building of ApplyGenericScope tree [type].
 ; This makes some functions of §2.4.3 not visible.
@@ -33,7 +33,7 @@
  )
 
  ; Creates the scope tree for functions lookup.
- (make-tree op-key<?)
+ (make-rb-tree op-key<?)
 )
 
 ; Checks that the given object is a tag wrapping pair

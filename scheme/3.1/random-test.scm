@@ -1,5 +1,5 @@
 (include "random.scm")
-(include "../2.3.3/tree.scm")
+(include "../3.3.3/tree-red-black.scm")
 (include "../2.5.3/index-tree.scm")
 
 (define (log . args) (for-each display args) (newline))

@@ -1,7 +1,7 @@
 (define (logs . args) (for-each display args))
 (define (log . args) (for-each display args) (newline))
 
-(include "../2.3.3/tree.scm")
+(include "../3.3.3/tree-red-black.scm")
 (include "../2.3.3/tree-print.scm")
 (include "index-tree.scm")
 
