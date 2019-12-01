@@ -24,7 +24,7 @@
   (set-car! (cdddr node) right)
  )
  
- (define (get-same left? node)
+ (define (get-child left? node)
   ((if left? get-left get-right) node)
  )
 
@@ -34,13 +34,6 @@
 
  (define (sleft? node stack)
   (if (null? stack) void (left? node (car stack)))
- )
-
- (define (black? node)
-  (or
-   (null? node) ;<— also treated as black
-   (eq? 'black (cadr node))
-  )
  )
 
  (define (red? node)
@@ -130,39 +123,40 @@
   (set-g-child n stack)
  )
 
- (define (balance-left stack)
+ (define (rotate l? stack)
+  ((if l? rotate-left rotate-right) stack)
+ )
+
+ (define (balance l? stack)
   (define p (car stack))
-  (define s (get-right p))
-  (define l (get-left s))
-  (define r (get-right s))
+  (define s (get-child (not l?) p))
+  (define w (if l? (get-left s) (get-right s)))
+  (define o (if l? (get-right s) (get-left s)))
 
   (cond
    ((red? s)
-    ;(ilog "Balance left: red sibling")
     (set-red p)
     (set-black s)
-    (set! stack (rotate-left stack))
-    (balance-left (cons p stack))
+    (set! stack (rotate l? stack))
+    (balance l? (cons p stack))
    )
 
-   ((red? r)
-    ;(ilog "Balance left: red right")
+   ((red? o)
     (copy-color s p)
     (set-black p)
-    (set-black r)
-    (trace-root (rotate-left stack)) ;<— rotate left and exit
+    (set-black o)
+    (set! stack (rotate l? stack))
+    (trace-root stack) ;<— rotate and exit
    )
 
-   ((red? l)
-    ;(ilog "Balance left: red left")
+   ((red? w)
     (set-red s)
-    (set-black l)
-    (set! stack (rotate-right (cons s stack)))
-    (balance-select #t (cdr stack))
+    (set-black w)
+    (set! stack (rotate (not l?) (cons s stack)))
+    (balance-select l? (cdr stack))
    )
 
    (else
-    ;(ilog "Balance left: both black " (car s))
     (set-red s)
     (if (red? p)
      (begin
@@ -175,58 +169,12 @@
   )
  )
 
- (define (balance-right stack)
-  (define p (car stack))
-  (define s (get-left p))
-  (define l (get-left s))
-  (define r (get-right s))
-
-  (cond
-   ((red? s)
-    ;(ilog "Balance right: red sibling")
-    (set-red p)
-    (set-black s)
-    (set! stack (rotate-right stack))
-    (balance-right (cons p stack))
-   )
-
-   ((red? l)
-    ;(ilog "Balance right: red left")
-    (copy-color s p)
-    (set-black p)
-    (set-black l)
-    (set! stack (rotate-right stack))
-    (trace-root stack) ;<— rotate right and exit
-   )
-
-   ((red? r)
-    ;(ilog "Balance right: red right")
-    (set-red s)
-    (set-black r)
-    (set! stack (rotate-left (cons s stack)))
-    (balance-select #f (cdr stack))
-   )
-
-   (else
-    ;(ilog "Balance right: both black " (car s))
-    (set-red s)
-    (if (red? p)
-     (begin
-      (set-black p)
-      (trace-root stack)
-     )
-     (balance-select void stack)
-    )
-   )
-  )
- )
-
+ ; Does balance-up by the direction l? — left | right
+ ; given; or it's auto-selected by 0th and 1th node
+ ; in the stack (then 0th node is removed from it).
  (define (balance-select l? stack)
-  ;(ilog "Balance select " l? " " (map car stack))
-  (cond
-   ((null? stack) '())
-   ;((null? (cdr stack)) (car stack))
-   (else
+  (if (null? stack) '()
+   (begin
     (if (eq? void l?)
      (begin 
       (set! l? (left? (car stack) (cadr stack)))
@@ -235,7 +183,7 @@
      void
     )
 
-    ((if l? balance-left balance-right) stack)
+    (balance l? stack)
    )
   )
  )
