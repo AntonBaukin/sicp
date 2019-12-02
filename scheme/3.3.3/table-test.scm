@@ -75,6 +75,10 @@
 (table-add table 5 'e)
 
 (log "a-e table " (table->string table))
+(assert-equal?
+ "{ e: 5, d: 4, c: 3, b: 2, a: 1 }"
+ (table->string table)
+)
 
 ; Square all existing items of the table.
 ; This is done without any overhead (re-inserts).
@@ -87,3 +91,5 @@
 (assert-eq? 25 (table-add table 5 'e))
 (assert-eq? 5 (table-lookup table 'e))
 (log "a-e table again " (table->string table))
+
+
