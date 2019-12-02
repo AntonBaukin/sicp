@@ -41,10 +41,10 @@
 )
 
 ; Iterates over the table.
-; Arguments: (table visitor), where visitor takes
-; Visitor takes two arguments: key, and value.
+; Arguments: (table visitor),
+; where visitor takes: (key value).
 ; You may change the value returning not #f or void.
-; Returning #f you break the iteration.
+; By returning #f you break the iteration.
 (define (table-op-iterate table-ops)
  (list-ref table-ops 6)
 )

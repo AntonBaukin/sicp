@@ -16,7 +16,7 @@
  )
 
  (define (save table key value)
-  (cons (cons key value) (cdr table))
+  (cons (cons key value) table)
  )
 
  (define (rewrite table kv value)

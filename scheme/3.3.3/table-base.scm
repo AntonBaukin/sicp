@@ -72,7 +72,7 @@
    (if (eq? void kv) ;<— key is absent?
     (begin
      ; Add new (key . value) pair to the table list:
-     (set-cdr! table (save table key value))
+     (set-cdr! table (save (cdr table) key value))
      void ;<— return absent previous value
     )
     (let ((old (cdr kv)))

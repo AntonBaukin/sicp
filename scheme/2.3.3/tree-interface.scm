@@ -139,7 +139,7 @@
  (list-ref tree-ops 12)
 )
 
-; Returns length of the tree.
+; Returns length of the tree (longest root-node way).
 ; Arguments: (tree-node).
 (define (tree-op-length tree-ops)
  (define get-left (tree-op-left tree-ops))
@@ -157,4 +157,22 @@
  )
 
  tree-length
+)
+
+; Returns size of the tree (number of nodes).
+; Arguments: (tree-node).
+(define (tree-op-size tree-ops)
+ (define get-left (tree-op-left tree-ops))
+ (define get-right (tree-op-right tree-ops))
+
+ (define (tree-size node)
+  (if (null? node) 0
+   (+ 1
+    (tree-size (get-left node))
+    (tree-size (get-right node))
+   )
+  )
+ )
+
+ tree-size
 )
