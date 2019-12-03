@@ -23,6 +23,27 @@
   (set-cdr! kv value)
   table
  )
+
+ (define (delete-key key head tail)
+  (cond
+   ((null? tail) void)
+
+   ((keys-eq? (caar tail) key) ;<— key match
+    (append (reverse head) (cdr tail))
+   )
+
+   (else
+    (delete-key key (cons (car tail) head) (cdr tail))
+   )
+  )
+ )
+
+ (define (without table key)
+  (let ((r (delete-key key '() table)))
+   ; If key was not found — return source table:
+   (if (eq? void r) table r)
+  )
+ )
  
  (define (iter table visitor)
   (iterate-list table
@@ -38,5 +59,5 @@
   )
  )
 
- (make-table-base make search save rewrite length iter)
+ (make-table-base make search save rewrite without length iter)
 )

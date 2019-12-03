@@ -28,16 +28,23 @@
  (list-ref table-ops 3)
 )
 
+; Removes keys from the table and returns the value,
+; or void if the keys were not found.
+; Arguments: (table key-0 ...).
+(define (table-op-remove table-ops)
+ (list-ref table-ops 4)
+)
+
 ; Returns the size of the table.
 ; Has single argument: (table).
 (define (table-op-size table-ops)
- (list-ref table-ops 4)
+ (list-ref table-ops 5)
 )
 
 ; Clears the table and returns it back.
 ; Has single argument: (table).
 (define (table-op-clear table-ops)
- (list-ref table-ops 5)
+ (list-ref table-ops 6)
 )
 
 ; Iterates over the table.
@@ -46,5 +53,5 @@
 ; You may change the value returning not #f or void.
 ; By returning #f you break the iteration.
 (define (table-op-iterate table-ops)
- (list-ref table-ops 6)
+ (list-ref table-ops 7)
 )

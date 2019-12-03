@@ -15,6 +15,8 @@
 ; (key . value) pair was previously returned by search.
 ; Rewrite returns new storage.
 ;
+; Without takes (storage key) and removes the record.
+;
 ; Note: we split save-rewrite to allow directly update
 ; storage (key . value) pair without altering storage.
 ;
@@ -24,7 +26,7 @@
 ; (key value) and returns one of: #f — to break;
 ; void — to continue; else — the new value to assign.
 ;
-(define (make-table-base make search save rewrite length iter)
+(define (make-table-base make search save rewrite without length iter)
  ; Hidden marker of a table.
  (define (marker) void)
 
@@ -84,21 +86,29 @@
   )
  )
 
- (define (nest-tables table value keys)
-  ; We have only one key left? Insert the value
+ ; Goes by inner tables and invokes operation
+ ; on the last one passing: (last-table last-key).
+ ; If create? flag is given intermediate tables
+ ; are created on demand; else void is returned.
+ (define (do-nested create? table keys op)
+  ; We have only one key left? Invoke op...
   (if (null? (cdr keys))
-   (add-key-value table (car keys) value)
+   (op table (car keys))
    (let ((sub (search-table table (car keys))))
     (cond
      ; Continue with found sub-table?
      ((and (pair? sub) (table? (cdr sub)))
-      (nest-tables (cdr sub) value (cdr keys))
+      (do-nested create? (cdr sub) (cdr keys) op)
+     )
+
+     ((and (eq? void sub) (not create?))
+      void ;<— do nothing 
      )
 
      ((eq? void sub) ; Sub-table is not yet created?
       (set! sub (make-table))
       (add-key-value table (car keys) sub)
-      (nest-tables sub value (cdr keys))
+      (do-nested #t sub (cdr keys) op)
      )
 
      (else (error "Got not a nested table by the key!" (car keys)))
@@ -107,8 +117,35 @@
   )
  )
 
+ (define (nest-tables table value keys)
+  (do-nested #t table keys
+   (lambda (table key)
+    (add-key-value table key value)
+   )
+  )
+ )
+
  (define (add table value . keys)
   (nest-tables table value keys)
+ )
+
+ (define (remove-key table key)
+  (let ((kv (search-table table key)))
+   (if (eq? void kv) void ;<— key is absent
+    (let ((old (cdr kv)))
+     (set-cdr! table (without (cdr table) key))
+     old ;<— return removed value
+    )
+   )
+  )
+ )
+
+ (define (remove-nested table keys)
+  (do-nested #f table keys remove-key)
+ )
+
+ (define (remove table . keys)
+  (remove-nested table keys)
  )
 
  (define (size table)
@@ -141,8 +178,9 @@
   table?         ; 1
   lookup         ; 2
   add            ; 3
-  size           ; 4
-  clear          ; 5
-  iterate        ; 6
+  remove         ; 4
+  size           ; 5
+  clear          ; 6
+  iterate        ; 7
  )
 )

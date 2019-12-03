@@ -14,6 +14,7 @@
 
  (define tree-search (tree-op-search TreeOps))
  (define tree-add (tree-op-add TreeOps))
+ (define tree-delete (tree-op-delete TreeOps))
  (define tree-iter (tree-op-iter TreeOps))
  (define tree-size (tree-op-size TreeOps))
 
@@ -34,6 +35,10 @@
   tree
  )
 
+ (define (without tree key)
+  (tree-delete tree (cons key '()))
+ )
+
  (define (iter tree visitor)
   (tree-iter tree
    (lambda (kv)
@@ -48,5 +53,5 @@
   )
  )
 
- (make-table-base make search save rewrite tree-size iter)
+ (make-table-base make search save rewrite without tree-size iter)
 )

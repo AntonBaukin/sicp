@@ -9,9 +9,11 @@
 (define table?        (table-op-table? Table))
 (define table-size    (table-op-size Table))
 (define table-add     (table-op-add Table))
+(define table-remove  (table-op-remove Table))
 (define table-lookup  (table-op-lookup Table))
 (define table-iterate (table-op-iterate Table))
 
+(define table (table-make))
 
 (define (table->string table)
  (define S (make-concatenator ", "))
@@ -37,7 +39,6 @@
 )
 
 
-(define table (table-make))
 (table-add table 1 'a)
 (assert-eq? 1 (table-size table))
 (assert-eq? 1 (table-lookup table 'a))
@@ -74,4 +75,12 @@
 (assert-eq? 4 (table-lookup table 'b 'e 'f 'g))
 (assert-eq? 5 (table-lookup table 'b 'e 'f 'h))
 
-(log "Resulting table " (table->string table))
+(log "Created table " (table->string table))
+
+(assert-eq? 5 (table-remove table 'b 'e 'f 'h))
+(assert-eq? 1 (table-size (table-lookup table 'b 'e 'f)))
+(log "Removed befh " (table->string table))
+
+(table-remove table 'b 'e 'f)
+(assert-eq? 0 (table-size (table-lookup table 'b 'e)))
+(log "Removed bef " (table->string table))

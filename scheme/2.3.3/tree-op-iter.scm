@@ -29,13 +29,19 @@
  )
 
  (define (iter node cb)
-  (if (null? (get-left node))
-   (iter-right node cb)
-   ; First, go left, then this and right:
-   (let ((res (iter (get-left node) cb)))
-    (if (eq? void res)
-     (iter-right node cb)
-     res ;<— the left had breaked
+  (cond
+   ((null? node) void)
+
+   ((null? (get-left node))
+    (iter-right node cb)
+   )
+
+   (else ; First, go left, then this and right:
+    (let ((res (iter (get-left node) cb)))
+     (if (eq? void res)
+      (iter-right node cb)
+      res ;<— the left had breaked
+     )
     )
    )
   )
