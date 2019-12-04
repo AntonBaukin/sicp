@@ -17,9 +17,12 @@
 (define sample (make-index-tree))
 (define get (index-tree-get sample))
 (define set (index-tree-set sample))
+(define del (index-tree-del sample))
 
 (define (log-sample what)
- (log "\n" what ":\n" (index-tree->str ((caddr sample))))
+ (log "\n" what ":\n"
+  (index-tree->str ((index-tree-root sample)))
+ )
 )
 
 (define (log-get-range from to)
@@ -70,3 +73,6 @@
 (log-sample "Six items")
 (log-get-range 0 12)
 (log "Items in order: " (index-tree-items->str sample))
+
+(del 8)
+(log-sample "Removed 8")

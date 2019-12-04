@@ -7,8 +7,9 @@
 
 (define (index-tree-get itree) (list-ref itree 0))
 (define (index-tree-set itree) (list-ref itree 1))
-(define (index-tree-root itree) (list-ref itree 2))
-(define (index-tree-iter itree) (list-ref itree 3))
+(define (index-tree-del itree) (list-ref itree 2))
+(define (index-tree-root itree) (list-ref itree 3))
+(define (index-tree-iter itree) (list-ref itree 4))
 
 ; Creates index tree instance and returns ops set for this
 ; particular instnace. Index tree has numbers as the keys.
@@ -18,8 +19,9 @@
 ; Resulting operations list is:
 ;  0 — get value by number key;
 ;  1 — set value by number key;
-;  2 — getter of the tree root;
-;  3 - iterator by index-order.
+;  2 — delete value by number key;
+;  3 — getter of the tree root;
+;  4 - iterator by index-order.
 ;
 ; Get returns '() when value is not found.
 ;
@@ -29,6 +31,9 @@
 ;
 (define (make-index-tree)
  (define tree-add (tree-op-add IndexTree))
+ (define tree-del (tree-op-delete IndexTree))
+ (define tree-iter (tree-op-iter IndexTree))
+
  (define instance '()) ;<— tree instance
 
  (define (get-kv key)
@@ -53,14 +58,18 @@
   )
  )
 
+ (define (del key)
+  (set! instance (tree-del instance (cons key '())))
+ )
+
  (define (tree) instance)
 
  (define (iter cb)
-  (((tree-op-iter IndexTree) instance
+  ((tree-iter instance
    (lambda (kv) (cb (car kv) (cdr kv)))
   ))
  )
 
  ; Resulting instance bound operations:
- (list get set tree iter)
+ (list get set del tree iter)
 )
