@@ -65,9 +65,9 @@
  (define (tree) instance)
 
  (define (iter cb)
-  ((tree-iter instance
+  (tree-iter instance
    (lambda (kv) (cb (car kv) (cdr kv)))
-  ))
+  )
  )
 
  ; Resulting instance bound operations:
