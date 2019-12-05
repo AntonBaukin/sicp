@@ -76,14 +76,16 @@
   (assert-eq? limit (cache-size cache))
 
   ; Touch all key except key = limit:
-  (for-each
-   (lambda (i)
-    (assert-true?
-     (not (cache-add cache i (number->string i)))
-     "Item was not touched in cache!" i
+  (if (= 1 limit) void
+   (for-each
+    (lambda (i)
+     (assert-true?
+      (not (cache-add cache i (number->string i)))
+      "Item was not touched in cache!" i
+     )
     )
+    (enumerate-range (+ limit 1) (- (* limit 2) 1))
    )
-   (enumerate-range (+ limit 1) (- (* limit 2) 1))
   )
 
   (test-content cache limit (* limit 2))
@@ -149,5 +151,4 @@
 )
 
 ; Run tests for limit [1 ... 100]
-;(map test (enumerate-range 1 100))
-(test 10)
+(map test (enumerate-range 1 100))

@@ -98,9 +98,10 @@
   )
  )
 
+ ; Returns pair (uid . key) of the oldest index.
  (define (make-ifirst itree)
   (define iter (index-tree-iter itree))
-  (define (break uid kv) (car kv))
+  (define (break uid kv) (cons uid (car kv)))
   (lambda () (iter break))
  )
 
@@ -117,10 +118,6 @@
  (define (cache-lookup cache key)
   (define vu (lookup (table (check cache)) key))
   (if (eq? void vu) void (car vu))
- )
-
- (define (limited? cache)
-  (>= (size cache) (limit cache))
  )
 
  ; Touch existing (value . uid) record by generating
@@ -154,29 +151,26 @@
  )
 
  (define (replace-oldest cache key value)
-  ; Find the first uid in the index, it's the smallest
-  ; value, and the oldest added or touched:
-  (define xuid ((ifirst cache)))
-
-  ; Get key of (key . value) mapped by this uid:
-  (define xkey (car ((iget cache) xuid)))
+  ; Find the first (uid . key) in the index, it's
+  ; the smallest index — the oldest added or touched:
+  (define xuk ((ifirst cache)))
 
   ; And the value by this key:
-  (define xvu (assert-vu cache xkey xuid))
+  (define xvu (assert-vu cache (cdr xuk) (car xuk)))
 
   ; Generate new uid:
   (define uid (next-uid cache))
 
   ; Remove oldest record:
-  ((idel cache) xuid) ;<— from the index
-  (remove (table cache) xkey) ;<— from the table
+  ((idel cache) (car xuk)) ;<— from the index
+  (remove (table cache) (cdr xuk)) ;<— from the table
 
   ; Add the new one:
   ((iadd cache) uid (cons key value))
   (add (table cache) (cons value uid) key)
 
   ; Invoke prune callback:
-  (on-prune cache xkey (car xvu))
+  (on-prune cache (cdr xuk) (car xvu))
   #f ;<— result of the same size
  )
 
@@ -187,6 +181,10 @@
   ((iadd cache) uid (cons key value))
   (add (table cache) (cons value uid) key)
   #t ;<— result of real add
+ )
+
+ (define (limited? cache)
+  (>= (size cache) (limit cache))
  )
 
  (define (cache-add cache key value)
