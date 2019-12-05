@@ -15,7 +15,7 @@
 
 ; For the given table searches the value by the given keys.
 ; If more that one key is given, treates leading keys as
-; the keys of the nested tables.
+; the keys of the nested tables. Result void means abcense.
 ; Arguments: (table key-0 ...).
 (define (table-op-lookup table-ops)
  (list-ref table-ops 2)
