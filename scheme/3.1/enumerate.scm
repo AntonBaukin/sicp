@@ -1,8 +1,12 @@
 
-; Produces list of integers a .. b.
+; Produces list of integers [a .. b], where
+; «a» may be smaller or greater than «b».
 (define (enumerate-range a b)
+ (define s (if (< a b) -1 +1))
+ (define v (if (< a b) < >))
+
  (define (iter i res)
-  (if (< i a) res (iter (- i 1) (cons i res)))
+  (if (v i a) res (iter (+ i s) (cons i res)))
  )
 
  (iter b '())
