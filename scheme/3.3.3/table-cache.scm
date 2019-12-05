@@ -80,8 +80,8 @@
  (define (make-cache limit on-prune)
 
   ; Index tree used to store the priorities. It stores
-  ; (uid —> key), where uid is cache-unique integer number
-  ; incremented on each priority change of the related key.
+  ; (uid —> (key . value)), where uid is integer number
+  ; incremented on each touch of the related key.
   (define itree (make-index-tree))
 
   (list
@@ -100,7 +100,7 @@
 
  (define (make-ifirst itree)
   (define iter (index-tree-iter itree))
-  (define (break uid key) key)
+  (define (break uid kv) (car kv))
   (lambda () (iter break))
  )
 
@@ -132,7 +132,7 @@
   ((idel cache) (cdr vu))
 
   ; Add greater index (to be the last):
-  ((iadd cache) uid key)
+  ((iadd cache) uid (cons key value))
 
   ; Update value, uid directly in the record:
   (set-car! vu value)
@@ -158,8 +158,8 @@
   ; value, and the oldest added or touched:
   (define xuid ((ifirst cache)))
 
-  ; Get the key mapped by this uid:
-  (define xkey ((iget cache) xuid))
+  ; Get key of (key . value) mapped by this uid:
+  (define xkey (car ((iget cache) xuid)))
 
   ; And the value by this key:
   (define xvu (assert-vu cache xkey xuid))
@@ -172,7 +172,7 @@
   (remove (table cache) xkey) ;<— from the table
 
   ; Add the new one:
-  ((iadd cache) uid key) ;<— to the index
+  ((iadd cache) uid (cons key value))
   (add (table cache) (cons value uid) key)
 
   ; Invoke prune callback:
@@ -184,7 +184,7 @@
   (define uid (next-uid cache))
 
   (inc-size cache)
-  ((iadd cache) uid key)
+  ((iadd cache) uid (cons key value))
   (add (table cache) (cons value uid) key)
   #t ;<— result of real add
  )
@@ -236,12 +236,8 @@
  )
 
  (define (cache-iterate cache visitor)
-  (define t (table (check cache)))
-
   ((iiter cache)
-   (lambda (uid key)
-    (visitor key (car (lookup t key)))
-   )
+   (lambda (uid kv) (visitor (car kv) (cdr kv)))
   )
  )
 
