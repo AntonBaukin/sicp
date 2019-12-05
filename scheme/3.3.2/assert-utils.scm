@@ -3,25 +3,40 @@
 ; arguments. Note that reporter may be not a plain
 ; function, but a list of (function ...args).
 (define (assert-report reporter . vals)
- (cond
-  ((null? reporter)
-   (apply
-    error
-    (cons
-     "Assertion failed!"
-     (assert-format-vals vals)
-    )
-   )
+ (define single
+  (if (and (pair? reporter) (= 1 (length reporter)))
+   (car reporter) void
   )
+ )
 
-  ((procedure? reporter)
+ ; In Scheme «void» may be defined as a procedure.
+ (define (proc? x)
+  (and (procedure? x) (not (eq? void x)))
+ )
+
+ (cond
+  ((proc? reporter)
    (apply reporter vals)
   )
 
-  (else
+  ((proc? single)
+   (apply single vals)
+  )
+
+  ((string? single)
+   (apply error (cons single (assert-format-vals vals)))
+  )
+
+  ((and (pair? reporter) (proc? (car reporter)))
    (apply
     (car reporter)
     (append (cdr reporter) vals)
+   )
+  )
+
+  (else
+   (apply error
+    (cons "Assertion failed!" (assert-format-vals vals))
    )
   )
  )
