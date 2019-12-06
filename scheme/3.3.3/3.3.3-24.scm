@@ -1,18 +1,44 @@
-(include "3.3.3-23.scm")
+(include "table.scm")
+(include "../2.3.3/curry.scm")
+(include "../3.3.2/assert.scm")
 
-; Continue with the previous implementation that already
-; supports nested tables. Full showcase for them is placed
-; into separate test file «table-test-nested.scm».
 
-; Create two nested tables 'e and 'f:
-((table 'insert!) 5 'e 'f 'g)
-(assert-eq? 5 ((table 'lookup) 'e 'f 'g))
+; This implementation takes minimal subset of operations
+; implemented in «table.scm» with functions taking
+; table as the first argument. Here we dispatch them.
+; Complete showcase of them is in «table-test.scm».
+(define (make-simple-table same-key?)
+ ; Operations set for the given keys comparator:
+ (define Table (make-table same-key?))
 
-; Still, we may not address the lookup to the nested
-; table as it's not wrapped into our dispatch, but in
-; SICP §3.3.3 the same is not possible either...
-; (assert-eq? 5 ((((table 'lookup) 'e 'f) 'lookup) 'g))
+ ; Create table instance:
+ (define table ((table-op-make Table)))
 
-((table 'insert!) 6 'e 'h)
-(assert-eq? 5 ((table 'lookup) 'e 'f 'g))
-(assert-eq? 6 ((table 'lookup) 'e 'h))
+ ; Curried operations of interest:
+ (define table-lookup (curry (table-op-lookup Table) table))
+ (define table-add (curry (table-op-add Table) table))
+
+ (lambda (method)
+  (cond
+   ((eq? method 'lookup) table-lookup)
+   ((eq? method 'insert!) table-add)
+   (else (error "Unknown table method" method))
+  )
+ )
+)
+
+
+(define table (make-simple-table eq?))
+
+((table 'insert!) 1 'a)
+((table 'insert!) 2 'b)
+((table 'insert!) 3 'c)
+((table 'insert!) 4 'd)
+
+(assert-eq? 1 ((table 'lookup) 'a))
+(assert-eq? 2 ((table 'lookup) 'b))
+(assert-eq? 3 ((table 'lookup) 'c))
+(assert-eq? 4 ((table 'lookup) 'd))
+
+; Returns void on absent:
+(assert-eq? void ((table 'lookup) 'e))
