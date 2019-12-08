@@ -45,7 +45,7 @@
   (for-each
    (lambda (i)
     (assert-true?
-     (cache-add cache i (number->string i))
+     (cache-add cache (number->string i) i)
      "Item was not added to cache!" i
     )
    )
@@ -58,7 +58,7 @@
   (for-each
    (lambda (i)
     (assert-true?
-     (not (cache-add cache i (number->string i)))
+     (not (cache-add cache (number->string i) i))
      "Item was not prune-added to cache!" i
     )
    )
@@ -72,7 +72,7 @@
   (assert-eq? (- limit 1) (cache-size cache))
 
   ; Add it back:
-  (assert-true? (cache-add cache limit (number->string limit)))
+  (assert-true? (cache-add cache (number->string limit) limit))
   (assert-eq? limit (cache-size cache))
 
   ; Touch all key except key = limit:
@@ -80,7 +80,7 @@
    (for-each
     (lambda (i)
      (assert-true?
-      (not (cache-add cache i (number->string i)))
+      (not (cache-add cache (number->string i) i))
       "Item was not touched in cache!" i
      )
     )

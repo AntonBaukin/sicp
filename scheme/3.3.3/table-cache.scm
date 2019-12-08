@@ -194,7 +194,7 @@
   (>= (size cache) (limit cache))
  )
 
- (define (cache-add cache key value)
+ (define (cache-add cache value key)
   (define vu (lookup (table (check cache)) key))
 
   (if (eq? void vu)
