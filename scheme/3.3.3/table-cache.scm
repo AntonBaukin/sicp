@@ -77,7 +77,14 @@
  )
 
  ; Create cache instance.
- (define (make-cache limit on-prune)
+ (define (make-cache limit . args)
+  (define on-prune
+   (cond
+    ((null? args) '())
+    ((= 1 (length args)) (car args))
+    (else (error "Wrong arguments of cache make!" args))
+   )
+  )
 
   ; Index tree used to store the priorities. It stores
   ; (uid —> (key . value)), where uid is integer number

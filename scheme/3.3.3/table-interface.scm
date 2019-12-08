@@ -1,7 +1,8 @@
 ; Interface operations of a table.
 
 ; Creates empty table of the given table ops set.
-; Has no arguments.
+; Has no arguments, but special tables may have:
+; see «table-cache.scm».
 (define (table-op-make table-ops)
  (list-ref table-ops 0)
 )
