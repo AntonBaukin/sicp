@@ -1,6 +1,7 @@
 
 ; Produces list of integers [a .. b], where
 ; «a» may be smaller or greater than «b».
+; Note: «b» is the last item of the result.
 (define (enumerate-range a b)
  (define s (if (< a b) -1 +1))
  (define v (if (< a b) < >))
