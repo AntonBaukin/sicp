@@ -31,7 +31,7 @@
    ((eq? name 'inverter-delay) (list-ref params 0))
    ((eq? name 'and-gate-delay) (list-ref params 1))
    ((eq? name 'or-gate-delay) (list-ref params 2))
-   (else (error "Unknown agenda parameter!" name))
+   (else void)
   )
  )
 
@@ -112,10 +112,6 @@
  agenda ;<— resulting ops is agenda itself
 )
 
-(define (agenda-param agenda name)
- ((list-ref agenda 1) name)
-)
-
 ; Agenda is always 1th of the item's list.
 ; Call has two forms: (item), (type item).
 ; Type is a symbol to check, or void.
@@ -142,6 +138,10 @@
   ((and (pair? item) (eq? 'agenda (car item))) item)
   (else (error "Not an agenda bound item!" item))
  )
+)
+
+(define (agenda-param item name)
+ ((list-ref (get-agenda item) 1) name)
 )
 
 ; Returns current time of agenda or it's item.
@@ -194,7 +194,11 @@
   (error "Register not a function on wire action!" action)
  )
 
+ ; Add action to the wire's queue:
  (queue-append! (list-ref wire 3) action)
+
+ ; Run action now — see task SICP 3.31 in §3.3.4:
+ (action wire)
  wire
 )
 
