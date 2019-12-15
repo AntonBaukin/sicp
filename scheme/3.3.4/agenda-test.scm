@@ -6,14 +6,26 @@
 (define agenda (make-agenda '(2 3 5)))
 
 (define wire (make-wire agenda))
-(define wire-set? #f)
+(define wire-set? void)
 
 (on-wire
  wire
  (lambda (w)
-  (assert-eq? #f wire-set?)
-  (assert-eq? #t (get-signal w))
-  (set! wire-set? #t)
+  (assert-eq? w wire)
+  (if (eq? void wire-set?)
+   ; Invoked immediately on wire listen:
+   (begin
+    (set! wire-set? #f)
+    (assert-eq? #f (get-signal w))
+   )
+
+   ; Invoked on each signal alter:
+   (begin
+    (assert-eq? #f wire-set?)
+    (assert-eq? #t (get-signal w))
+    (set! wire-set? #t)
+   )
+  )
  )
 )
 

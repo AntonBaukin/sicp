@@ -7,14 +7,24 @@
 ; The result of the call is the list of instance ops.
 ; They are available via call to agenda-param.
 ;
-; Parameters are the list of:
+; Required parameters of the list:
 ;  0 inverter-delay
 ;  1 and-gate-delay
 ;  2 or-gate-delay
 ;
+; Optional parameters (default: #t):
+;  3 immediate, required for task 3.31
+;  4 queue, required for task 3.32.
+;
 ; Agenda incapsulates wire implementation via make-wire.
-; Wire is a list of defined leading items:
-; ('wire agenda signal ...), where signal is #f or #t.
+; Wire is list of: ('wire agenda signal ...),
+; where signal is #f or #t.
+;
+; Immediate is a wire parameter that tells to invoke
+; on-wire callback when attaching to that wire.
+;
+; Queue parameter tells to store segment actions as
+; a FIFO queue, or as a LIFO-stack (see task 3.32).
 ;
 (define (make-agenda params)
  (define time 0)
@@ -28,9 +38,26 @@
 
  (define (param name)
   (cond
-   ((eq? name 'inverter-delay) (list-ref params 0))
-   ((eq? name 'and-gate-delay) (list-ref params 1))
-   ((eq? name 'or-gate-delay) (list-ref params 2))
+   ((eq? name 'inverter-delay)
+    (list-ref params 0)
+   )
+
+   ((eq? name 'and-gate-delay)
+    (list-ref params 1)
+   )
+
+   ((eq? name 'or-gate-delay)
+    (list-ref params 2)
+   )
+
+   ((eq? name 'immediate)
+    (if (> (length params) 3) (list-ref params 3) #t)
+   )
+
+   ((eq? name 'queue)
+    (if (> (length params) 4) (list-ref params 4) #t)
+   )
+
    (else void)
   )
  )
@@ -63,10 +90,15 @@
  )
 
  (define (after-delay delay action)
+  (define queue? (param 'queue))
   (define q (segment-queue (+ time (check-delay delay))))
 
   (if (procedure? action)
-   (queue-append! q action)
+   (if queue?
+    (queue-append! q action)
+    (queue-push! q action)
+   )
+
    (error "Register not a function on delayed agenda action!" action)
   )
  )
@@ -197,8 +229,11 @@
  ; Add action to the wire's queue:
  (queue-append! (list-ref wire 3) action)
 
- ; Run action now — see task SICP 3.31 in §3.3.4:
- (action wire)
+ ; Run action now? — see task SICP 3.31 in §3.3.4:
+ (let ((i (agenda-param wire 'immediate)))
+  (if i (action wire))
+ )
+
  wire
 )
 
