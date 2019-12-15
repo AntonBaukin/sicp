@@ -49,12 +49,16 @@
  )
 )
 
+(define (signal->str wire)
+ (if (get-signal wire) "1" "0")
+)
+
 (define (probe wire name)
  (on-wire wire
   (lambda (w)
    (log
     "[" name "] " "@" (get-time wire)
-    " ~> " (if (get-signal wire) "1" "0")
+    " ~> " (signal->str wire)
    )
   )
  )
