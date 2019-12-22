@@ -32,3 +32,26 @@
   (assert-report reporter (assert-format-test test) x)
  )
 )
+
+; Invoke body lambda and checks whether it produces error:
+; if so, optional (may be void or null) catch lambda is invoked
+; with arguments: (message error-parameters-list).
+; Else, it reports assertion error.
+(define (assert-error body catch . reporter)
+ (define got #f)
+
+ (with-exception-catcher
+  (lambda (e)
+   (set! got #t)
+   (if (and (procedure? catch) (not (eq? void catch)))
+    (catch
+     (error-exception-message e)
+     (error-exception-parameters e)
+    )
+   )
+  )
+  body
+ )
+
+ (if got #t (assert-report reporter))
+)
