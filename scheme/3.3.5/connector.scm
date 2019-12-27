@@ -94,32 +94,25 @@
   )
  )
 
- (define (reset-constraints connector except tail)
-  (if (not (null? tail))
+ (define (reset-value connector retractor)
+  (if (eq? retractor (get-informant connector))
    (begin
-    (if (not (eq? except (car tail)))
-     (reset-constraint (car tail) connector)
+    (set-value connector void)
+    (set-informant connector void)
+
+    (for-each
+     (lambda (c) (reset-constraint c connector))
+     (get-constraints connector)
     )
-    (reset-constraints connector except (cdr tail))
    )
   )
  )
 
- (define (reset-value c retractor)
-  (if (eq? retractor (get-informant c))
-   (begin
-    (set-value c void)
-    (set-informant c void)
-    (reset-constraints c retractor (get-constraints c))
-   )
-  )
- )
+ (define (connect connector constraint)
+  (add-constraint (check connector) constraint)
 
- (define (connect c constraint)
-  (add-constraint (check c) constraint)
-
-  (if (has-value? c)
-   (notify-constraint constraint)
+  (if (has-value? connector)
+   (notify-constraint constraint connector)
   )
  )
 
@@ -144,10 +137,10 @@
  )
 )
 
-(define (notify-constraint c connector)
- (if (constraint? c)
-  ((cadr c) connector)
-  (error "Notify not a constraint!" c)
+(define (notify-constraint constraint connector)
+ (if (constraint? constraint)
+  ((cadr constraint) connector)
+  (error "Notify not a constraint!" constraint)
  )
 )
 
