@@ -139,3 +139,5 @@
 
  me ;<— resulting instance
 )
+
+(define (constraint-noop v) void)
