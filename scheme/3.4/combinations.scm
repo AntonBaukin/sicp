@@ -103,6 +103,15 @@
  (reverse result)
 )
 
+(define (for-each-op ops)
+ (if (not (null? ops))
+  (let ((r ((car ops))))
+   (if (not (eq? 'break r))
+    (for-each-op (cdr ops))
+   )
+  )
+ )
+)
 
 ; Makes permutations tests of ops as follows.
 ; Argument «ops» is a list of ops being procedures
@@ -113,7 +122,7 @@
  (for-each
   (lambda (ops)
    (reset)
-   (for-each (lambda (op) (op)) ops)
+   (for-each-op ops)
    (done)
   )
   (permutations ops)
@@ -129,7 +138,7 @@
  (for-each
   (lambda (ops)
    (reset)
-   (for-each (lambda (op) (op)) ops)
+   (for-each-op ops)
    (done)
   )
   (order-shuffle ops)

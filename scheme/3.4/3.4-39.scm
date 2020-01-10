@@ -69,7 +69,7 @@
 ; Test AB demonstrates results of absent synchronization:
 ; values are: 11 100 101 110 121, — and only 101 and 121
 ; are valid in the case of full serialization.
-(log "Test AB five results: " test-ab "\n\n")
+(log "Test AB five results: " test-ab)
 
 
 (define test-cd '())
@@ -108,4 +108,4 @@
 )
 
 ; Here we only see phenomenon of lost save (value 100):
-(log "Test CD five results: " test-cd)
+(log "Test CD three results: " test-cd)
