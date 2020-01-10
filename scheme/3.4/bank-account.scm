@@ -100,20 +100,38 @@
    result
   )
 
+  ; Turns ops list into a list of single op:
   (list single)
  )
 
  make-single
 )
 
-; Rewrites the last op of the given ops list: invokes this
-; last op and gives the result to the given op.
-(define (ops-join ops op)
- (define rops (reverse ops))
- (define (newop) (op ((car rops))))
- (reverse (cons newop (cdr rops)))
-)
+; Takes two lists of ops and returns joined list
+; having then-ops wrapped with guard: if the last
+; op of before-list returns #f, every of then-ops
+; is not invoked.
+(define (ops-join before then)
+ ; This latch is shared across the ops call, but
+ ; in out case this is not an issue, as ops chains
+ ; may not be invoked recursively or in parallel.
+ (define failed void) ;<— initial value is irrelevant
 
-(define (break-fail-op success)
- (if (eq? #f success) 'break)
+ (define (guard op)
+  (lambda () (if (not (eq? #f failed)) (op)))
+ )
+
+ (define (last op)
+  (lambda () (set! failed (op)) failed)
+ )
+
+ (append
+  (reverse
+   (cons
+    (last (car (reverse before)))
+    (cdr (reverse before))
+   )
+  )
+  (map guard then)
+ )
 )

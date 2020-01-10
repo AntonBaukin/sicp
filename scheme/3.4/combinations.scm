@@ -104,13 +104,7 @@
 )
 
 (define (for-each-op ops)
- (if (not (null? ops))
-  (let ((r ((car ops))))
-   (if (not (eq? 'break r))
-    (for-each-op (cdr ops))
-   )
-  )
- )
+ (for-each (lambda (op) (op)) ops)
 )
 
 ; Makes permutations tests of ops as follows.
