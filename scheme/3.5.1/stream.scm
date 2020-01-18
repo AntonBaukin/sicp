@@ -1,6 +1,6 @@
 
-; This implementation is specific for Gambit
-; Scheme that has no special form cons-stream.
+; This implementation is specific for Gambit Scheme,
+; that has no special form «cons-stream».
 (define-macro (cons-stream item delayed-expr)
  `(cons ,item (delay ,delayed-expr))
 )
@@ -43,6 +43,25 @@
    (stream-car s)
    (stream->list (stream-cdr s))
   )
+ )
+)
+
+(define (sub-stream->list n s)
+ (cond
+  ((stream-null? s) '())
+  ((= 0 n) '())
+  (else
+   (cons
+    (stream-car s)
+    (sub-stream->list (- n 1) (stream-cdr s))
+   )
+  )
+ )
+)
+
+(define (list->stream l)
+ (if (null? l) the-empty-stream
+  (cons-stream (car l) (list->stream (cdr l)))
  )
 )
 
