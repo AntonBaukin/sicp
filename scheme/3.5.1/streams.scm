@@ -27,10 +27,31 @@
  (apply stream-map (cons + streams))
 )
 
+; Used for tests to overwrite meaning of addition.
+(define (add-streams-with op . streams)
+ (apply stream-map (cons op streams))
+)
+
 (define (mul-streams . streams)
  (apply stream-map (cons * streams))
 )
 
+(define (mul-streams-with op . streams)
+ (apply stream-map (cons op streams))
+)
+
 (define (scale-stream number stream)
  (mul-streams (stream-of number) stream)
+)
+
+(define (scale-stream-with op number stream)
+ (mul-streams-with op (stream-of number) stream)
+)
+
+(define (sub-streams a b)
+ (apply stream-map (list - a b))
+)
+
+(define (div-streams n d)
+ (apply stream-map (list / n d))
 )
