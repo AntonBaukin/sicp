@@ -63,3 +63,30 @@
 
  inv
 )
+
+(define (euler-transform series)
+ (define Sn- (stream-car series))
+ (define s   (stream-cdr series))
+ (define Sn  (stream-car s))
+ (define Sn+ (stream-car (stream-cdr s)))
+
+ (cons-stream
+  (-
+   Sn+
+   (/
+    (square (- Sn+ Sn))
+    (+ Sn+ (* -2 Sn) Sn-)
+   )
+  )
+
+  (euler-transform s)
+ )
+)
+
+(define (make-tableau transform series)
+ (cons-stream series (make-tableau transform (transform series)))
+)
+
+(define (accelerated-series transform series)
+ (stream-map stream-car (make-tableau transform series))
+)
