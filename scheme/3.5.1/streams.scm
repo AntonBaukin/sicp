@@ -20,8 +20,19 @@
 
 (define (stream-of value)
  (define s (cons-stream value s))
- s
+ s ;<— resulting stream
 )
+
+(define (stream-of-list l)
+ (define s (cons-stream (car l) (sol (cdr l))))
+
+ (define (sol l)
+  (if (null? l) s (cons-stream (car l) (sol (cdr l))))
+ )
+
+ s ;<— resulting stream
+)
+
 
 (define (add-streams . streams)
  (apply stream-map (cons + streams))

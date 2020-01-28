@@ -84,6 +84,16 @@
  )
 )
 
+(define (stream-find-index stream predicate)
+ (define (next i s)
+  (if (predicate (stream-car s)) i
+   (next (+ i 1) (stream-cdr s))
+  )
+ )
+
+ (next 0 stream)
+)
+
 (define (stream-map mapper . streams)
  (if (stream-null? (car streams))
   the-empty-stream
