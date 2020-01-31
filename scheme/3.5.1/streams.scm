@@ -72,7 +72,7 @@
 ; It takes two arguments: (a-item b-item).
 ;
 ; The order of pairs is defined by the selector that takes
-; three streams of pairs and must return one of that streams.
+; 3 streams of pairs and must return one of that streams.
 ;
 (define (pair-streams-selected a b make-pair selector)
  (define (interleave u v w)
@@ -142,4 +142,111 @@
  )
 
  (stream-map cdr (pair-streams-weighted ia ib make-pair car))
+)
+
+; Like «pair-streams-selected», creates triples from 3 streams.
+; Selector takes multiple arguments being streams of triples,
+; it must select and return one of these streams.
+(define (triple-streams-selected a b c make-triple selector)
+ (define (find->interleave s head tail)
+  (if (not (eq? s (car tail)))
+   (find->interleave s (cons (car tail) head) (cdr tail))
+   (cons-stream
+    (stream-car s)
+    (apply interleave
+     (append
+      (reverse head)
+      (list (stream-cdr s))
+      (cdr tail)
+     )
+    )
+   )
+  )
+ )
+
+ (define (interleave . streams)
+  (find->interleave (apply selector streams) '() streams)
+ )
+
+ (define (triple-Xyz X y z)
+  (pair-streams-selected y z
+   (lambda (Y Z) (make-triple X Y Z))
+   selector
+  )
+ )
+
+ (define (triple-xYz x Y z)
+  (pair-streams-selected x z
+   (lambda (X Z) (make-triple X Y Z))
+   selector
+  )
+ )
+
+ (define (triple-xyZ x y Z)
+  (pair-streams-selected x y
+   (lambda (X Y) (make-triple X Y Z))
+   selector
+  )
+ )
+
+ (define (triple-XYz X Y z)
+  (stream-map (lambda (Z) (make-triple X Y Z)) z)
+ )
+
+ (define (triple-XyZ X y Z)
+  (stream-map (lambda (Y) (make-triple X Y Z)) y)
+ )
+
+ (define (triple-xYZ x Y Z)
+  (stream-map (lambda (X) (make-triple X Y Z)) x)
+ )
+
+ (define (nest x y z)
+  (cons-stream
+   (make-triple (stream-car x) (stream-car y) (stream-car z))
+   (interleave
+    (triple-Xyz (stream-car x) (stream-cdr y) (stream-cdr z))
+    (triple-xYz (stream-cdr x) (stream-car y) (stream-cdr z))
+    (triple-xyZ (stream-cdr x) (stream-cdr y) (stream-car z))
+    (triple-XYz (stream-car x) (stream-car y) (stream-cdr z))
+    (triple-XyZ (stream-car x) (stream-cdr y) (stream-car z))
+    (triple-xYZ (stream-cdr x) (stream-car y) (stream-car z))
+    (nest (stream-cdr x) (stream-cdr y) (stream-cdr z))
+   )
+  )
+ )
+
+ (nest a b c)
+)
+
+(define (triple-streams-weighted a b c make-triple weight)
+ (define (selector . streams)
+  (define weights (map weight (map stream-car streams)))
+  (define minw (apply min weights))
+
+  (define (find ws s)
+   (if (= minw (car ws)) (car s)
+    (find (cdr ws) (cdr s))
+   )
+  )
+
+  (find weights streams)
+ )
+
+ (triple-streams-selected a b c make-triple selector)
+)
+
+(define (triple-streams a b c)
+ (define ia (stream-map cons integers a))
+ (define ib (stream-map cons integers b))
+ (define ic (stream-map cons integers c))
+
+ (define (make-triple ix iy iz)
+  (cons
+   (+ (car ix) (car iy) (car iz))
+   (list (cdr ix) (cdr iy) (cdr iz))
+  )
+ )
+
+ (stream-map cdr (triple-streams-weighted ia ib ic make-triple car))
 )
