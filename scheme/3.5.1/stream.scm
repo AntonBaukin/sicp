@@ -65,21 +65,45 @@
  )
 )
 
-(define (stream-filter predicate stream)
- (cond
-  ((stream-null? stream)
-   the-empty-stream
+; Concatenates finite «first» stream
+; with «then» one that may be infinite.
+(define (stream-concat first then)
+ (if (stream-null? first) then
+  (cons-stream
+   (stream-car first)
+   (stream-concat (stream-cdr first) then)
   )
+ )
+)
 
-  ((predicate (stream-car stream))
-   (cons-stream
-    (stream-car stream)
-    (stream-filter predicate (stream-cdr stream))
+; Advanced version of a stream filter.
+; If check predicate returns #t — passes item
+; to the resulting stream. If check transform
+; returns a list — passes all items to result.
+;
+(define (stream-filter check stream)
+ (if (stream-null? stream) the-empty-stream
+  (let ((x (check (stream-car stream))))
+   (cond
+    ((eq? #t x)
+     (cons-stream
+      (stream-car stream)
+      (stream-filter check (stream-cdr stream))
+     )
+    )
+
+    ((list? x)
+     (cons-stream
+      (car x)
+      (stream-concat
+       (list->stream (cdr x))
+       (stream-filter check (stream-cdr stream))
+      )
+     )
+    )
+
+    (else (stream-filter check (stream-cdr stream)))
    )
-  )
-
-  (else
-   (stream-filter predicate (stream-cdr stream))
   )
  )
 )

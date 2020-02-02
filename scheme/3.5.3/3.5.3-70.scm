@@ -10,7 +10,7 @@
 ; Pairs (i . j) having i <= j and ordered by i + j ascending.
 ; This is the same diagonal order as in 67 task, but there
 ; was full square, not the top triangle i <= j.
-(define int-triangle
+(define ij-lower
  (pair-streams-weighted
   integers integers cons
   (lambda (ij)
@@ -32,7 +32,7 @@
 )
 
 (define S (make-concatenator " " ij->s))
-(map S (sub-stream->list 32 int-triangle))
+(map S (sub-stream->list 32 ij-lower))
 (log (S))
 
 ; (1 1) (1 2) (1 3) (2 2) (1 4) (2 3) (1 5) (2 4) (3 3)

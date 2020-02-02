@@ -31,19 +31,22 @@
 (assert-eq? 10 (stream-length r10))
 (assert-equal? '(1 2 3 4 5 6 7 8 9 10) (stream->list r10))
 
-(define is (integers-stream 1))
-(assert-equal? '(1 2 3 4 5 6 7 8 9 10) (sub-stream->list 10 is))
+(define integers (integers-stream 1))
+(assert-equal? '(1 2 3 4 5 6 7 8 9 10) (sub-stream->list 10 integers))
 
 (define ones (stream-of 1))
 (assert-equal? '(1 1 1 1 1) (sub-stream->list 5 ones))
 
-(define isAgain (cons-stream 1 (add-streams ones isAgain)))
-(assert-equal? '(1 2 3 4 5 6 7 8 9 10) (sub-stream->list 10 isAgain))
+(define integers-again (cons-stream 1 (add-streams ones integers-again)))
+(assert-equal? '(1 2 3 4 5 6 7 8 9 10) (sub-stream->list 10 integers-again))
 
 (define fibs (cons-stream 0 (cons-stream 1 (add-streams fibs (stream-cdr fibs)))))
 (assert-equal? '(0 1 1 2 3 5 8 13 21 34) (sub-stream->list 10 fibs))
 
-(define is2 (scale-stream 2 is))
-(assert-equal? '(2 4 6 8 10) (sub-stream->list 5 is2))
+(define integers*2 (scale-stream 2 integers))
+(assert-equal? '(2 4 6 8 10) (sub-stream->list 5 integers*2))
 
 (assert-equal? '(1 2 3 4 5) (stream->list (list->stream '(1 2 3 4 5))))
+
+(define integers-even (stream-filter even? integers))
+(assert-equal? '(2 4 6 8 10) (sub-stream->list 5 integers-even))
