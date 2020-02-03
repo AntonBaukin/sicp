@@ -118,8 +118,16 @@
  (next 0 stream)
 )
 
+(define (any-stream-null? streams)
+ (cond
+  ((null? streams) #f)
+  ((stream-null? (car streams)) #t)
+  (else (any-stream-null? (cdr streams)))
+ )
+)
+
 (define (stream-map mapper . streams)
- (if (stream-null? (car streams))
+ (if (any-stream-null? streams)
   the-empty-stream
   (cons-stream
    (apply mapper (map stream-car streams))
