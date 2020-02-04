@@ -25,3 +25,20 @@
   (stream-map cons (integers-stream 0) signal)
  )
 )
+
+(define (noize-signal random amplitude)
+ (define a (exact->inexact amplitude))
+ (define r (make-random-in-range random (- a) a))
+ (produced-stream r)
+)
+
+; Creates stream that takes average of two neighbour values.
+(define (average-signal zero-value signal)
+ (scale-stream
+  0.5
+  (add-streams
+   signal
+   (cons-stream zero-value signal)
+  )
+ )
+)

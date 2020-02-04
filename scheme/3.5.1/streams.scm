@@ -33,6 +33,13 @@
  s ;<— resulting stream
 )
 
+(define (produced-stream producer)
+ (cons-stream
+  (producer)
+  (produced-stream producer)
+ )
+)
+
 
 (define (add-streams . streams)
  (apply stream-map (cons + streams))
