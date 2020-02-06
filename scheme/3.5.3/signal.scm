@@ -13,6 +13,21 @@
  integrated
 )
 
+; This definition is from SICP §3.5.4.
+(define (delayed-integral dt Const delayed-signal)
+ (define integrated
+  (cons-stream
+   Const
+   (add-streams
+    (scale-stream dt (force delayed-signal))
+    integrated
+   )
+  )
+ )
+
+ integrated
+)
+
 ; Returns stream of pairs (i . value @i),
 ; where «i» steps from 0 by any of «ns».
 (define (sample-signal signal . ns)
