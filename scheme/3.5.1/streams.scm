@@ -257,3 +257,26 @@
 
  (stream-map cdr (triple-streams-weighted ia ib ic make-triple car))
 )
+
+; Creates stream from the source stream with
+; each nth item starting from index 0.
+; Step is expected to be > 1.
+; With 2 it's: 0 2 4 6 8...
+(define (stream-nth step stream)
+ (define (inc i)
+  (if (< (+ i 1) step) (+ i 1) 0)
+ )
+
+ (define indices
+  (cons-stream 0
+   (stream-map inc indices)
+  )
+ )
+
+ (stream-map cdr
+  (stream-filter
+   (lambda (ix) (= 0 (car ix)))
+   (stream-map cons indices stream)
+  )
+ )
+)

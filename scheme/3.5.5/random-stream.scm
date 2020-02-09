@@ -12,7 +12,7 @@
 
  (define result
   (cons-stream
-   (next n)
+   (next seed)
    (stream-map next result)
   )
  )
@@ -40,8 +40,4 @@
  )
 
  (stream-map range random-stream)
-)
-
-(define (make-random-stream-n-bits seed bits)
- (make-random-stream-in-range (make-random-stream seed) 0 (expt 2 bits))
 )
