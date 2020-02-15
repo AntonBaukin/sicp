@@ -1,6 +1,4 @@
-; Depends on «../3.3.3/tree-red-black.scm», if
-; created with <? predicate instead of tree ops.
-
+; Depends on «../3.3.3/tree-red-black.scm».
 (include "table-base.scm")
 
 ; Table map is a bridge between a tree and table:
