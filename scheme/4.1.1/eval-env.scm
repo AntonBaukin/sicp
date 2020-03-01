@@ -16,7 +16,8 @@
 ;
 ; 0) 'environment tag;
 ; 1) list of frames used as a stack;
-; 2) enclosing environment, or null.
+; 2) enclosing environment, or null;
+; 3) debug-related info, see «eval-env-make-info».
 ;
 ; File «eval-impl.scm» contains all helping functions related
 ; to environments. This file is included on the eval level,
@@ -35,14 +36,14 @@
 
  (for-each
   (lambda (nv)
-   ; Arguments (table value keys...):
+   ; Arguments are (table value keys...):
    (frame-add frame (cdr nv) (car nv))
   )
   definitions
  )
 
  ; Resulting environment object:
- (list 'environment (list frame) '())
+ (list 'environment (list frame) '() '(0))
 )
 
 ; Adds variable to the top frame of the environment.

@@ -33,7 +33,7 @@
  )
 )
 
-; Invoke body lambda and checks whether it produces error:
+; Invoke body lambda and checks whether it produces an error:
 ; if so, optional (may be void or null) catch lambda is invoked
 ; with arguments: (message error-parameters-list).
 ; Else, it reports assertion error.

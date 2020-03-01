@@ -43,3 +43,6 @@
 
 ; Basic evaluator: inner definition.
 ;(assert-eq? 'XYZ (eval-basic (define xyz 'XYZ) xyz))
+
+; Basic evaluator: local scope of inner definitions.
+;(assert-error (lambda () (eval-basic xyz)) void)

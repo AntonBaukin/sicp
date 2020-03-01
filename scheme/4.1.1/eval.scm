@@ -12,6 +12,7 @@
 (define-value-if-not 'underlying-eval eval)
 (define-value-if-not 'underlying-apply apply)
 
+
 ; This implements special Eval-Apply procedure as it's started
 ; in SICP §4.1.1. Make eval function takes delayed expression
 ; that is invoked in the context of local definitions of lang
