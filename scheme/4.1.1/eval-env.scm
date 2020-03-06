@@ -17,7 +17,7 @@
 ; 0) 'environment tag;
 ; 1) list of frames used as a stack;
 ; 2) enclosing environment, or null;
-; 3) debug-related info, see «eval-env-make-info».
+; 3) additional info (mostly for debug), see «eval-env-info».
 ;
 ; File «eval-impl.scm» contains all helping functions related
 ; to environments. This file is included on the eval level,
@@ -43,7 +43,66 @@
  )
 
  ; Resulting environment object:
- (list 'environment (list frame) '() '(0))
+ (list 'environment (list frame) '() (list 0 (eval-env-gen-uid)))
+)
+
+; Extends environment. Integer level starts with 0 for the
+; root environment. When extending, level is incremeneted.
+; All procedures in the info-list are invoked passing info
+; as single argument, resulting info is expected.
+(define (eval-extend-env env)
+ (define frame ((table-op-make EvalEnvFrame)))
+
+ ; Resulting environment object:
+ (list 'environment (list frame) env (eval-extend-env-info env))
+)
+
+; Stores incremented index of environments created.
+(define eval-env-uid 0)
+
+; Generates string env-uid-${index}.
+(define (eval-env-gen-uid)
+ (define uid (string-append "env-uid-" (number->string eval-env-uid)))
+ (set! eval-env-uid (+ 1 eval-env-uid)) ;<— increment the index
+ uid
+)
+
+(define (eval-extend-env-info env)
+ (define info0 (list-ref env 3))
+ (define info1 (list (+ 1 (car info0)) (eval-env-gen-uid)))
+
+ (define (next info0 info1)
+  (cond
+   ((null? info0) info1)
+   ((procedure? (car info0))
+    (next (cdr info0) ((car info0) info1))
+   )
+   (else (next (cdr info0) info1))
+  )
+ )
+
+ (next info0 info1)
+)
+
+; Debug info assigned to each environment is a list
+; of: (level ... other data ...). Integer level starts
+; with 0 for the root environment. When extending, level
+; is incremeneted, see «eval-extend-env».
+(define (eval-env-info env)
+ (if (null? env) '() (list-ref env 3))
+)
+
+(define (eval-env-info-set env info)
+ (if (not (list? info))
+  (error "Eval set environment info got not a list" info)
+ )
+
+ (if (not (number? (car info)))
+  (error "Eval set environment info without the level" info)
+ )
+
+ (set-car! (cdddr env) info)
+ env ;<— return same environment
 )
 
 ; Adds variable to the top frame of the environment.

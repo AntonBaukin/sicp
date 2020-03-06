@@ -9,13 +9,6 @@
  )
 )
 
-(define (eval-extend-env env)
- (define frame ((table-op-make EvalEnvFrame)))
-
- ; Resulting environment object:
- (list 'environment (list frame) env)
-)
-
 (define (enclosing-environment env)
  (list-ref env 2)
 )
@@ -26,6 +19,25 @@
 
 (define (first-frame env)
  (car (list-ref (check-env env) 1))
+)
+
+; Invokes iterator for each frame of the given environment.
+; It takes: (frame index size); where «size» is the number
+; of frames in the environment, «index» of top one is 0.
+(define (for-each-frame env iter)
+ (define frames (list-ref (check-env env) 1))
+ (define size (length frames))
+
+ (define (next frames index)
+  (if (not (null? frames))
+   (begin
+    (iter (car frames) index size)
+    (next (cdr frames) (+ 1 index))
+   )
+  )
+ )
+
+ (next frames 0)
 )
 
 (define (env-frame-lookup var-name-symbol env)
@@ -39,7 +51,6 @@
  (if (null? env)
   (error "Unbound variable name" var-name-symbol)
   (let ((v (env-frame-lookup var-name-symbol env)))
-   ;(log "LOOK " var-name-symbol " @ " (first-frame env))
    (if (not (eq? void v)) v
     (lookup-variable
      var-name-symbol
@@ -68,13 +79,11 @@
 )
 
 (define (define-variable var-name-symbol value env)
- ;(log "DEF " var-name-symbol " = " value)
  (env-frame-table-add
   (first-frame env)
   value
   var-name-symbol
  )
- ;(log "FRAME " (first-frame env))
 )
 
 ; Special for defining primitives. Here definitions
@@ -104,6 +113,26 @@
  value ;<— and return this value, not 'ok as in SICP
 )
 
-(define (eval-in-nested-env evaluator exp env)
- (evaluator exp (eval-extend-env env))
+; Here we evaluate the script line-by-line that allows
+; us to mix top-level expressions in any order, just as
+; any script file is executed.
+(define (eval-in-nested-env evaluator script env)
+ (define nested (eval-extend-env env))
+ (define result void)
+
+ (if-debug
+  (env-info-add nested 'eval-private-scope)
+  (if (env-info-miss? env 'global)
+   (env-info-add env 'global)
+  )
+ )
+
+ (for-each
+  (lambda (exp)
+   (set! result (evaluator exp nested))
+  )
+  script
+ )
+
+ result ;<— last evaluated expression
 )

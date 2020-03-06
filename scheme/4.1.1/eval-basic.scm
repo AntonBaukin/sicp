@@ -1,15 +1,20 @@
 (include "eval.scm")
 
+; Define this variable before importing «eval-basic.scm»
+; to enable the debug mode.
+(define-value-if-not 'basic-evaluator-debug? #f)
+
 ; Basic evaluator core files:
 (define-value-if-not 'eval-basic-includes
-  '(
-    "../4.1.1/eval-impl-env.scm"
-    "../4.1.1/eval-impl-defs.scm"
-    "../4.1.1/eval-impl-apply.scm"
-    "../4.1.1/eval-impl-basic.scm"
-    "../4.1.1/eval-impl-debug.scm"
-    "../4.1.1/eval-impl-primes.scm"
-   )
+ (list
+  "../4.1.1/eval-impl-env.scm"
+  "../4.1.1/eval-impl-defs.scm"
+  "../4.1.1/eval-impl-apply.scm"
+  "../4.1.1/eval-impl-basic.scm"
+  "../4.1.1/eval-impl-debug.scm"
+  "../4.1.1/eval-impl-primes.scm"
+  "../4.1.1/eval-impl-set.scm"
+ )
 )
 
 
@@ -21,7 +26,10 @@
  (make-eval
   basic-evaluator-env
   eval-basic-includes
-  (eval-in-nested-env eval-basic exp env)
+  (begin
+   (debug-set basic-evaluator-debug?)
+   (eval-in-nested-env eval-basic exp env)
+  )
  )
 )
 
@@ -29,21 +37,5 @@
 ; being expressions then quoted. Using it allows you
 ; to write code as-is. See «eval-test.scm».
 (define-macro (eval-basic . script)
- `(eval-basic-impl '(,@script))
-)
-
-; Here we evaluate the script line-by-line that allows
-; us to mix top-level expressions in any way, just any
-; script is executed.
-(define (eval-basic-impl script)
- (cond
-  ((null? script) '())
-  ((null? (cdr script))
-   (basic-evaluator (car script))
-  )
-  (else
-   (basic-evaluator (car script))
-   (eval-basic-impl (cdr script))
-  )
- )
+ `(basic-evaluator '(,@script))
 )

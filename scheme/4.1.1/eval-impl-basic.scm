@@ -17,8 +17,6 @@
 ; included — this file is the first of them.
 ;
 (define (eval-basic exp env)
- ;(log "EVAL " exp)
-
  (cond
   ((self-evaluating? exp)
    exp
@@ -34,6 +32,10 @@
 
   ((definition? exp)
    (eval-definition exp env)
+  )
+
+  ((debug-command? exp)
+   (if debug-mode? (debug-call env exp))
   )
 
   ((application? exp)

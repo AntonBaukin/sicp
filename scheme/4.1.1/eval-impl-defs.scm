@@ -1,5 +1,31 @@
 ; By default, debug mode is off.
-(define eval-debug-mode #f)
+(define debug-mode? #f)
+
+(define (debug-set on?)
+ (set! debug-mode? on?)
+)
+
+(define-macro (if-debug . script)
+ `(if debug-mode? (begin ,@script))
+)
+
+; Evaluator reference to use in recursive calls.
+(define eval-impl eval-basic)
+
+; Applicator reference to use in recursive calls.
+(define apply-impl apply-basic)
+
+; Entry point of debug commands evaluation.
+; Here is null-implementation, real one is in
+; «eval-impl-debug.scm», or else script you use.
+;
+; Command is a symbol followed by the arguments.
+; Well known commands are:
+;
+; + log-env  prints current environment, takes optional
+;   message arguments to log before the output.
+;
+(define debug-impl void)
 
 ; More than in SICP: number, boolean, string, character.
 (define (self-evaluating? exp)
@@ -86,3 +112,10 @@
  (list-ref exp 3)
 )
 
+(define (debug-command? exp)
+ (tagged-list? exp 'debug)
+)
+
+(define (debug-call env exp)
+ (apply debug-impl (cons env (cdr exp)))
+)

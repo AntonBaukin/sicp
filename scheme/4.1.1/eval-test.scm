@@ -1,5 +1,7 @@
 (define (log . args) (for-each display args) (newline))
 
+(define basic-evaluator-debug? #t)
+
 (include "../3.3.2/assert.scm")
 (include "eval-basic.scm")
 
@@ -42,7 +44,13 @@
 (assert-eq? 'ABC (eval-basic abc))
 
 ; Basic evaluator: inner definition.
-;(assert-eq? 'XYZ (eval-basic (define xyz 'XYZ) xyz))
+(assert-eq? 'XYZ
+ (eval-basic
+  (define xyz 'XYZ)
+  (debug log-env "—— Env after defining of xyz = 'XYZ ——")
+  xyz
+ )
+)
 
 ; Basic evaluator: local scope of inner definitions.
-;(assert-error (lambda () (eval-basic xyz)) void)
+(assert-error (lambda () (eval-basic xyz)) void)
