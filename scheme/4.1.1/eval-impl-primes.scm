@@ -19,6 +19,11 @@
   '-       -
   '*       *
   '/       /
+  '=       =
+  '<       <
+  '>       >
+  '<=      <=
+  '>=      >=
   'car     car
   'cdr     cdr
   'cons    cons
@@ -30,5 +35,7 @@
   'map     map
   'eval    eval-impl
   'apply   apply-impl
+  'eq?     eq?
+  'equal?  equal?
  )
 )

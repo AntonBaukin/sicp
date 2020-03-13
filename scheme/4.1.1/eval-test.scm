@@ -43,7 +43,7 @@
 (eval-env-define basic-evaluator-env 'abc 'ABC)
 (assert-eq? 'ABC (eval-basic abc))
 
-; Basic evaluator: inner definition.
+; Basic evaluator: simple definition.
 (assert-eq? 'XYZ
  (eval-basic
   (define xyz 'XYZ)
@@ -54,3 +54,21 @@
 
 ; Basic evaluator: local scope of inner definitions.
 (assert-error (lambda () (eval-basic xyz)) void)
+
+; Basic evaluator: function definition.
+(assert-eq? 123
+ (eval-basic
+  (define (plus a b) (+ a b))
+  (plus 100 23)
+ )
+)
+
+;; Basic evaluator: recursive function.
+;(assert-eq? 24
+; (eval-basic
+;   (define (factorial n)
+;    (if (= n 1) 1 (* n (factorial (- n 1))))
+;   )
+;   (factorial 2)
+; )
+;)

@@ -34,8 +34,14 @@
 ; Entry point of debug commands evaluation.
 (define (debug-eval-cmd env cmd . args)
  (cond
+  ((eq? cmd 'log)
+   (apply debug-log args)
+  )
   ((eq? cmd 'log-env)
    (apply debug-log-env (cons env args))
+  )
+  ((eq? cmd 'log-stack)
+   (apply debug-log-stack (cons env args))
   )
 
   (else (error "Unknown debug command" cmd))
@@ -58,6 +64,15 @@
  )
 
  (next env)
+)
+
+(define (debug-log-stack env . msgs)
+ (if (not (null? msgs))
+  (apply debug-log msgs)
+ )
+
+ 
+ 
 )
 
 (define (debug-log-print-env env)
@@ -91,8 +106,35 @@
  ((table-op-iterate EvalEnvFrame)
   frame
   (lambda (name value)
-   (debug-log "   " name " .... " value)
+   (debug-log-print-env-frame-var name value)
    void
   )
+ )
+)
+
+(define (debug-log-print-env-frame-var name value)
+ (debug-log "   " name " .... " (debug-log-describe-var-value value))
+)
+
+(define (debug-log-describe-var-value value)
+ (cond
+  ((procedure? value) "#<procedure>")
+
+  ((compound-procedure? value)
+   (apply string-append
+    (append
+     '("#<compound-procedure ( ")
+     (map
+      (lambda (p)
+       (string-append (symbol->string p) " ")
+      )
+      (procedure-parameters value)
+     )
+     '(")>")
+    )
+   )
+  )
+
+  (else value)
  )
 )

@@ -27,12 +27,13 @@
 ;
 (define debug-impl void)
 
-; More than in SICP: number, boolean, string, character.
+; More than in SICP: number, boolean, string, character, or void
 (define (self-evaluating? exp)
  (or
   (number? exp)
   (eq? #t exp)
   (eq? #f exp)
+  (eq? void exp)
   (string? exp)
   (char? exp)
  )
@@ -100,16 +101,20 @@
  (tagged-list? p 'procedure)
 )
 
+(define (make-procedure parameters body env)
+ (list 'procedure parameters body env)
+)
+
 (define (procedure-parameters p)
- (list-ref exp 1)
+ (list-ref p 1)
 )
 
 (define (procedure-body p)
- (list-ref exp 2)
+ (list-ref p 2)
 )
 
 (define (procedure-environment p)
- (list-ref exp 3)
+ (list-ref p 3)
 )
 
 (define (debug-command? exp)
@@ -118,4 +123,43 @@
 
 (define (debug-call env exp)
  (apply debug-impl (cons env (cdr exp)))
+)
+
+(define (lambda? exp)
+ (tagged-list? exp 'lambda)
+)
+
+(define (make-lambda parameters body)
+ (cons 'lambda (cons parameters body))
+)
+
+(define (lambda-parameters exp)
+ (cadr exp)
+)
+
+(define (lambda-body exp)
+ (cddr exp)
+)
+
+(define (if? exp)
+ (tagged-list? exp 'if)
+)
+
+(define (make-if prediciate consequent alternative)
+ (list 'if predicate consequent alternative)
+)
+
+(define (if-predicate exp) (cadr exp))
+
+(define (if-consequent exp) (caddr exp))
+
+(define (if-alternative exp)
+ (if (null? (cdddr exp)) void (cadddr exp))
+)
+
+(define (eval-if exp env)
+ (if (eval-impl (if-predicate exp) env)
+  (eval-impl (if-consequent exp) env)
+  (eval-impl (if-alternative exp) env)
+ )
 )

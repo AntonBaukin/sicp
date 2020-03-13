@@ -57,6 +57,16 @@
  (list 'environment (list frame) env (eval-extend-env-info env))
 )
 
+; Creates a copy of the given environmant placing additional
+; frame to the top of stack.
+(define (eval-nest-env env)
+ (define frame ((table-op-make EvalEnvFrame)))
+ (define result (append '() env))
+
+ (set-car! (cdr result) (cons frame (list-ref env 1)))
+ result ;<— resulting environment object
+)
+
 ; Stores incremented index of environments created.
 (define eval-env-uid 0)
 

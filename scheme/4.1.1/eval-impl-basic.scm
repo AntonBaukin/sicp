@@ -34,6 +34,18 @@
    (eval-definition exp env)
   )
 
+  ((if? exp)
+   (eval-if exp env)
+  )
+
+  ((lambda? exp)
+   (make-procedure
+    (lambda-parameters exp)
+    (lambda-body exp)
+    env
+   )
+  )
+
   ((debug-command? exp)
    (if debug-mode? (debug-call env exp))
   )

@@ -107,6 +107,24 @@
  (next definitions)
 )
 
+; Adds or sets (replaces) variables of the top frame
+; of the environment. Variables are a list of
+; (name . value) pairs.
+(define (assign-variables env pairs)
+ (define frame (first-frame env))
+
+ (define (next tail)
+  (if (not (null? tail))
+   (begin
+    (env-frame-table-add frame (cdar tail) (caar tail))
+    (next (cdr tail))
+   )
+  )
+ )
+
+ (next pairs)
+)
+
 (define (eval-definition exp env)
  (define value (eval-impl (define-get-value exp) env))
  (define-variable (define-get-variable exp) value env)
@@ -135,4 +153,21 @@
  )
 
  result ;<— last evaluated expression
+)
+
+(define (extend-environment vars vals base-env)
+ (cond
+  ((= (length vars) (length vals))
+   (let ((env (eval-nest-env base-env)))
+    (assign-variables env (map cons vars vals))
+    env ;<— resulting environment object
+   )
+  )
+
+  ((< (length vars) (length vals))
+   (error "Too many arguments supplied" vars vals)
+  )
+
+  (else (error "Too few arguments supplied" vars vals))
+ )
 )
