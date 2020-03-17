@@ -8,4 +8,4 @@
 
 (set! debug-impl debug-eval-cmd)
 
-(apply define-variables eval-primes)
+(apply define-primitives eval-primes)

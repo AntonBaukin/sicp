@@ -5,7 +5,7 @@
 (include "../3.3.2/assert.scm")
 (include "eval-basic.scm")
 
-; This simplest form just returns the evaluated expression.
+; This form just returns the evaluated expression.
 (define eval-exp (make-eval void '() exp))
 (assert-eq? 123 (eval-exp 123))
 (assert-eq? #t (eval-exp #t))
@@ -73,7 +73,7 @@
    (factorial 4)
  )
 )
-
+;
 ; Factorial print. As we see, we reuse the same procedure
 ; environmant for recursive calls of it.
 ;
@@ -91,3 +91,35 @@
 ; ~> Frame [0 of 1]
 ;    factorial .... #<compound-procedure ( n )>
 ;
+
+; Basic evaluator: basic lambda
+(assert-eq? 5
+ (eval-basic
+  (define sum (lambda (a b) (+ a b)))
+  (sum 2 3)
+ )
+)
+
+; Basic evaluator: lambda clojure
+(assert-eq? 5
+ (eval-basic
+  (define (make-sum a)
+   (lambda (b) (+ a b))
+  )
+
+  (define sum (make-sum 2))
+  (sum 3)
+ )
+)
+
+; Basic evaluator: assignment
+(assert-eq? 10
+ (eval-basic
+  (define (make-acc n)
+   (lambda (v) (set! n (+ n v)))
+  )
+
+  (define acc (make-acc 0))
+  (acc 2) (acc 3) (acc 5) ;<— set! returns the value
+ )
+)

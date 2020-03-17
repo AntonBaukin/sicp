@@ -114,6 +114,8 @@
   value
   var-name-symbol
  )
+
+ value ;<— return the value
 )
 
 ; Special for defining primitives. Here definitions
@@ -122,7 +124,7 @@
 ; Warning: only new names are added,
 ; existing are not overwritten!
 ;
-(define (define-variables env . definitions)
+(define (define-primitives env . definitions)
  (define frame (first-frame env))
 
  (define (next tail)
@@ -137,10 +139,28 @@
  (next definitions)
 )
 
+; Works like lookup, but replaces the variable, and returns
+; the given value. Demands the variable to be defined.
+(define (assign-variable env var-name-symbol value)
+ (if (null? env)
+  (error "Unbound variable name" var-name-symbol)
+  (let ((v (env-frame-lookup var-name-symbol env)))
+   (if (not (eq? void v))
+    (begin
+     (env-frame-table-add (first-frame env) value var-name-symbol)
+     value ;<— return the new value
+    )
+
+    (assign-variable (enclosing-environment env) var-name-symbol value)
+   )
+  )
+ )
+)
+
 ; Adds or sets (replaces) variables of the top frame
 ; of the environment. Variables are a list of
 ; (name . value) pairs.
-(define (assign-variables env pairs)
+(define (define-variables env pairs)
  (define frame (first-frame env))
 
  (define (next tail)
@@ -189,7 +209,7 @@
  (cond
   ((= (length vars) (length vals))
    (let ((env (extend-environment-impl base-env nest?)))
-    (assign-variables env (map cons vars vals))
+    (define-variables env (map cons vars vals))
     env ;<— resulting environment object
    )
   )

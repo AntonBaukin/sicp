@@ -167,3 +167,23 @@
   (eval-impl (if-alternative exp) env)
  )
 )
+
+(define (assignment? exp)
+ (tagged-list? exp 'set!)
+)
+
+(define (assignment-variable exp)
+ (cadr exp)
+)
+
+(define (assignment-value exp)
+ (caddr exp)
+)
+
+(define (eval-assignment exp env)
+ (assign-variable
+  env
+  (assignment-variable exp)
+  (eval-impl (assignment-value exp) env)
+ )
+)

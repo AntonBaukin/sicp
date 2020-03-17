@@ -1,11 +1,19 @@
 ; Default implementation of the logging utility.
 (define (debug-log . args) (for-each display args) (newline))
 
+; Extended logger that treats each item as an expression
+; to evaluate, thus it treats each symbol as a variable.
+(define (debug-log-eval env . args)
+ (apply debug-log
+  (map (lambda (exp) (eval-impl exp env)) args)
+ )
+)
+
 ; Entry point of debug commands evaluation.
 (define (debug-eval-cmd env cmd . args)
  (cond
   ((eq? cmd 'log)
-   (apply debug-log args)
+   (apply debug-log-eval (cons env args))
   )
   ((eq? cmd 'log-env)
    (apply debug-log-env (append (list #t env) args))
@@ -39,7 +47,7 @@
  )
 
  (if (not (null? msgs))
-  (apply debug-log msgs)
+  (apply debug-log-eval (cons env msgs))
  )
 
  (next env)
@@ -47,11 +55,10 @@
 
 (define (debug-log-stack env . msgs)
  (if (not (null? msgs))
-  (apply debug-log msgs)
+  (apply debug-log-eval (cons env msgs))
  )
 
- 
- 
+ (debug-log-print-env-frames env)
 )
 
 (define (debug-log-print-env env)

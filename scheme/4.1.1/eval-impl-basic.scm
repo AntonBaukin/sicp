@@ -38,6 +38,10 @@
    (eval-if exp env)
   )
 
+  ((assignment? exp)
+   (eval-assignment exp env)
+  )
+
   ((lambda? exp)
    (make-procedure
     (lambda-parameters exp)
