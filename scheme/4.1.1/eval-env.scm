@@ -58,7 +58,7 @@
 )
 
 ; Creates a copy of the given environmant placing additional
-; frame to the top of stack.
+; frame to the top of the stack.
 (define (eval-nest-env env)
  (define frame ((table-op-make EvalEnvFrame)))
  (define result (append '() env))

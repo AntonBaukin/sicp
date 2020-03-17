@@ -54,6 +54,8 @@
    (apply-impl
     (eval-impl (operator exp) env)
     (list-of-values (operands exp) env)
+    env
+    exp
    )
   )
  )

@@ -22,8 +22,12 @@
 ; Command is a symbol followed by the arguments.
 ; Well known commands are:
 ;
-; + log-env  prints current environment, takes optional
-;   message arguments to log before the output.
+; + log  prints message of the given arguments;
+;
+; + log-env  prints environments stack except the global,
+;   takes optional message arguments to log before the output;
+;
+; + log-stack  prints current stack.
 ;
 (define debug-impl void)
 

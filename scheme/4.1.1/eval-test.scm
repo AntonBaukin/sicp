@@ -63,12 +63,31 @@
  )
 )
 
-;; Basic evaluator: recursive function.
-;(assert-eq? 24
-; (eval-basic
-;   (define (factorial n)
-;    (if (= n 1) 1 (* n (factorial (- n 1))))
-;   )
-;   (factorial 2)
-; )
-;)
+; Basic evaluator: recursive function.
+(assert-eq? 24
+ (eval-basic
+   (define (factorial n)
+    (if (= n 1) (debug log-env "\n—— Factorial resursion ——"))
+    (if (= n 1) 1 (* n (factorial (- n 1))))
+   )
+   (factorial 4)
+ )
+)
+
+; Factorial print. As we see, we reuse the same procedure
+; environmant for recursive calls of it.
+;
+; > Env #2 env-uid-2 factorial (n)
+; ~> Frame [0 of 4]
+;    n .... 1
+; ~> Frame [1 of 4]
+;    n .... 2
+; ~> Frame [2 of 4]
+;    n .... 3
+; ~> Frame [3 of 4]
+;    n .... 4
+;
+; > Env #1 env-uid-1 eval-private-scope
+; ~> Frame [0 of 1]
+;    factorial .... #<compound-procedure ( n )>
+;

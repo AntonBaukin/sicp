@@ -21,6 +21,36 @@
  (car (list-ref (check-env env) 1))
 )
 
+; Adds given to the info list of the environment.
+; (Alters the info list instance.)
+(define (env-info-add env . items)
+ (eval-env-info-set
+  env
+  (reverse
+   (append
+    (reverse items)
+    (reverse (eval-env-info env))
+   )
+  )
+ )
+)
+
+(define (env-info-has? env item)
+ (define (next info)
+  (cond
+   ((null? info) #f)
+   ((eq? item (car info)) #t)
+   (else (next (cdr info)))
+  )
+ )
+
+ (next (eval-env-info env))
+)
+
+(define (env-info-miss? env item)
+ (not (env-info-has? env item))
+)
+
 ; Invokes iterator for each frame of the given environment.
 ; It takes: (frame index size); where «size» is the number
 ; of frames in the environment, «index» of top one is 0.
@@ -155,10 +185,10 @@
  result ;<— last evaluated expression
 )
 
-(define (extend-environment vars vals base-env)
+(define (extend-environment vars vals base-env nest?)
  (cond
   ((= (length vars) (length vals))
-   (let ((env (eval-nest-env base-env)))
+   (let ((env (extend-environment-impl base-env nest?)))
     (assign-variables env (map cons vars vals))
     env ;<— resulting environment object
    )
@@ -170,4 +200,8 @@
 
   (else (error "Too few arguments supplied" vars vals))
  )
+)
+
+(define (extend-environment-impl env nest?)
+ ((if nest? eval-nest-env eval-extend-env) env)
 )
