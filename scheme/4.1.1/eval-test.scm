@@ -123,3 +123,33 @@
   (acc 2) (acc 3) (acc 5) ;<— set! returns the value
  )
 )
+
+; Basic evaluator: begin
+(assert-eq? 10
+ (eval-basic
+  (define sum 0)
+  (begin
+   (set! sum 4)
+   (+ sum 6)
+  )
+ )
+)
+
+; Basic evaluator: condition
+(assert-eq? 3
+ (eval-basic
+  (define point 0)
+
+  (define (next case)
+   (cond
+    ((= 0 case) (set! point 1))
+    ((= 1 case) (set! point 2))
+    (else (set! point 3))
+   )
+   (if (< point 3) (next point))
+  )
+
+  (next 0)
+  point ;<— expected result 3
+ )
+)

@@ -7,7 +7,7 @@
 ; expression into existing closure in Gambit Scheme — as
 ; evaluation in the given environment is not supported.
 ;
-; Warning! This implementation just resembles SICPS',
+; Warning! This implementation in the main is as SICPS',
 ; but not exactly the same! The main difference is that
 ; it uses red-black tree tables for the frames, thus
 ; there is no mess with the lists here.
@@ -38,8 +38,16 @@
    (eval-if exp env)
   )
 
+  ((cond? exp)
+   (eval-impl (cond->if exp) env)
+  )
+
   ((assignment? exp)
    (eval-assignment exp env)
+  )
+
+  ((begin? exp)
+   (eval-sequence (begin-actions exp) env)
   )
 
   ((lambda? exp)

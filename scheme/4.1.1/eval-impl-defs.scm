@@ -149,7 +149,7 @@
  (tagged-list? exp 'if)
 )
 
-(define (make-if prediciate consequent alternative)
+(define (make-if predicate consequent alternative)
  (list 'if predicate consequent alternative)
 )
 
@@ -185,5 +185,73 @@
   env
   (assignment-variable exp)
   (eval-impl (assignment-value exp) env)
+ )
+)
+
+(define (begin? exp)
+ (tagged-list? exp 'begin)
+)
+
+(define (begin-actions exp)
+ (cdr exp)
+)
+
+(define (cond? exp)
+ (tagged-list? exp 'cond)
+)
+
+(define (cond-clauses exp)
+ (cdr exp)
+)
+
+(define (cond-actions clause)
+ (cdr clause)
+)
+
+(define (cond->if exp)
+ (expand-clauses (cond-clauses exp))
+)
+
+(define (cond-predicate clause)
+ (car clause)
+)
+
+(define (cond-else-clause? clause)
+ (eq? 'else (cond-predicate clause))
+)
+
+(define (expand-clauses clauses)
+ (if (null? clauses) #f
+  (if (cond-else-clause? (car clauses))
+   (if (null? (cdr clauses))
+    (sequence->exp (cond-actions (car clauses)))
+    (error ("Condition else clause is not the last" clauses))
+   )
+   (make-if
+    (cond-predicate (car clauses))
+    (sequence->exp (cond-actions (car clauses)))
+    (expand-clauses (cdr clauses))
+   )
+  )
+ )
+)
+
+(define (last-exp? seq)
+ (null? (cdr seq))
+)
+
+(define (first-exp seq)
+ (car seq)
+)
+
+(define (make-begin seq)
+ (cons 'begin seq)
+)
+
+(define (sequence->exp seq)
+ (cond
+  ((null? seq) seq)
+  ((last-exp? seq) (first-exp seq))
+  (else (make-begin seq))
  )
 )
