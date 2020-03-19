@@ -31,6 +31,9 @@
 ;
 (define debug-impl void)
 
+; Placeholder for debug run layer.
+(define (debug-eval-cmd env cmd . args) void)
+
 ; More than in SICP: number, boolean, string, character, or void
 (define (self-evaluating? exp)
  (or

@@ -38,7 +38,7 @@
 )
 
 ; If the given environment was created for the given procedure,
-; we call it recursivele, and we do not need new environment,
+; we call it recursively, and we do not need a new environment,
 ; but must reuse the same one, creating the nested frame.
 ;
 ; Note: that environment [list] differs when nesting, but
