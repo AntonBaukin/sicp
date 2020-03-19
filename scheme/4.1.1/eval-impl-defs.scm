@@ -221,7 +221,7 @@
 )
 
 (define (expand-clauses clauses)
- (if (null? clauses) #f
+ (if (null? clauses) void
   (if (cond-else-clause? (car clauses))
    (if (null? (cdr clauses))
     (sequence->exp (cond-actions (car clauses)))
