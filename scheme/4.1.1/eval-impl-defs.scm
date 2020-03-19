@@ -10,10 +10,10 @@
 )
 
 ; Evaluator reference to use in recursive calls.
-(define eval-impl eval-basic)
+(define eval-impl void)
 
 ; Applicator reference to use in recursive calls.
-(define apply-impl apply-basic)
+(define apply-impl void)
 
 ; Entry point of debug commands evaluation.
 ; Here is null-implementation, real one is in
@@ -30,9 +30,6 @@
 ; + log-stack  prints current stack.
 ;
 (define debug-impl void)
-
-; Placeholder for debug run layer.
-(define (debug-eval-cmd env cmd . args) void)
 
 ; More than in SICP: number, boolean, string, character, or void
 (define (self-evaluating? exp)

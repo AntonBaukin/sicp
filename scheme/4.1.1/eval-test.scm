@@ -21,10 +21,10 @@
 
 ; Basic evaluator: self-evaluated values.
 (assert-eq? 123 (eval-basic 123))
-(assert-equal? 123.0 (eval-basic '123.0))
-(assert-eq? #t (eval-basic '#t))
-(assert-eq? #f (eval-basic '#f))
-(assert-eq? #\A (eval-basic '#\A))
+(assert-equal? 123.0 (eval-basic 123.0))
+(assert-eq? #t (eval-basic #t))
+(assert-eq? #f (eval-basic #f))
+(assert-eq? #\A (eval-basic #\A))
 
 ; Basic evaluator: some primitive ops.
 (assert-eq? 3 (eval-basic (+ 1 2)))
