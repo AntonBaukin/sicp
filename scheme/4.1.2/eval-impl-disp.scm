@@ -66,3 +66,42 @@
 
  (next forms)
 )
+
+; Gateway to «eval-disp-register», see «eval-impl-disp.scm».
+; Here expression is the arguments list, but each function
+; (even arguments) is evaluated via «eval-impl».
+;
+; Note: that special form processor has no access to the
+; clojure scope of the evaluator implementation, i.e.,
+; each «eval-impl-*.scm» definitions.
+;
+; Note: that due to some magic, special form symbol must
+; not be quoted. Check «4.1.2-4.a.scm» task.
+;
+(define (eval-disp-register-gateway exp env)
+ (define (make-op op-exp)
+  (define op (eval-impl op-exp env))
+  (lambda (call-exp call-env)
+   (apply-impl op (list call-exp call-env) env op)
+  )
+ )
+
+ (define (next tail res)
+  (if (null? tail) res
+   (next (cddr tail)
+    (append res
+     (list
+      (car tail)
+      (make-op (cadr tail))
+     )
+    )
+   )
+  )
+ )
+
+ (underlying-apply
+  eval-disp-register
+  ; Hint: we skip leading 'register.
+  (next (cdr exp) '())
+ )
+)

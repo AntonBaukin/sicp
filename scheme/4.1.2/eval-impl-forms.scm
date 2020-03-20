@@ -46,6 +46,17 @@
    )
   )
 
+  'eval
+
+  (lambda (exp env)
+   ; Here we invoke the evaluator twice. Inner call resolves
+   ; the expression that gives us the expression to evaluate
+   ; at the second call.
+   (eval-impl (eval-impl (cadr exp) env) env)
+  )
+
+  'register eval-disp-register-gateway
+
   'debug
 
   (lambda (exp env)

@@ -11,8 +11,9 @@
 
 (define eval-primes
  (list
-  ; This name is define in private scope of eval implementation.
-  ; It refers the top-level environment used as the default.
+  ; This name is defined in the private scope of eval
+  ; implementation. It refers the top-level environment
+  ; used as the default.
   global-env
 
   '+       +
@@ -33,9 +34,9 @@
   'list?   list?
   'append  append
   'map     map
-  'eval    eval-impl
-  'apply   apply-impl
   'eq?     eq?
   'equal?  equal?
+  'symbol? symbol?
+  'error   error
  )
 )

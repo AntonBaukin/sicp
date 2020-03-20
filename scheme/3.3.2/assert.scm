@@ -17,6 +17,10 @@
  (if x #t (assert-report reporter))
 )
 
+(define (assert-false? x . reporter)
+ (if (not x) #t (assert-report reporter))
+)
+
 ; Takes test predicate and single argument.
 ; Allows to print false value instead of plain #f.
 ; Test predicate may be a composition.
