@@ -33,10 +33,20 @@
   'pair?   pair?
   'list?   list?
   'append  append
+  'reverse reverse
   'map     map
+  'assoc   assoc
   'eq?     eq?
   'equal?  equal?
   'symbol? symbol?
   'error   error
+  'caar    caar
+  'cdar    cdar
+  'cadr    cadr
+  'cddr    cddr
+  'cadar   cadar
+  'caddr   caddr
+  'cddar   cddar
+  'caddar  caddar
  )
 )

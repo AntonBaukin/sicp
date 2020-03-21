@@ -27,7 +27,9 @@
 ; + log-env  prints environments stack except the global,
 ;   takes optional message arguments to log before the output;
 ;
-; + log-stack  prints current stack.
+; + log-stack  prints current stack;
+;
+; + pause  reads from console input (just press «Enter»).
 ;
 (define debug-impl void)
 
@@ -50,6 +52,7 @@
 (define (tagged-list? l tag)
  (and
   (list? l)
+  (not (null? l))
   (eq? tag (car l))
  )
 )

@@ -66,13 +66,30 @@
 ; Basic evaluator: recursive function.
 (assert-eq? 24
  (eval-basic
-   (define (factorial n)
-    (if (= n 1) (debug log-env "\n—— Factorial resursion ——"))
-    (if (= n 1) 1 (* n (factorial (- n 1))))
-   )
-   (factorial 4)
+  (define (factorial n)
+   (if (= n 1) (debug log-env "\n—— Factorial resursion ——"))
+   (if (= n 1) 1 (* n (factorial (- n 1))))
+  )
+  (factorial 4)
  )
 )
+
+; Basic evaluator: another recursive function.
+(assert-equal? '(1 2 3 a b c)
+ (eval-basic
+  (define (append tail res)
+   (if (null? tail) res
+    (cons
+     (car tail)
+     (append (cdr tail) res)
+    )
+   )
+  )
+
+  (append '(1 2 3) '(a b c))
+ )
+)
+
 ;
 ; Factorial print. As we see, we reuse the same procedure
 ; environmant for recursive calls of it.

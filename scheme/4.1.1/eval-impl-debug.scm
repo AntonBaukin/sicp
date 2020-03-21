@@ -22,6 +22,11 @@
    (apply debug-log-stack (cons env args))
   )
 
+  ((eq? cmd 'pause)
+   (debug-log "*** Paused. Press Enter...")
+   (read-char)
+  )
+
   (else (error "Unknown debug command" cmd))
  )
 )
@@ -62,6 +67,10 @@
 )
 
 (define (debug-log-print-env env)
+ (apply debug-log (debug-log-print-env-fmt env "\n> Env #"))
+)
+
+(define (debug-log-env-info-data env)
  (define (info-data info res)
   (cond
    ((null? info) res)
@@ -79,14 +88,10 @@
   )
  )
 
- (apply debug-log
-  (debug-log-print-env-fmt env
-   (reverse (info-data (eval-env-info env) '()))
-  )
- )
+ (reverse (info-data (eval-env-info env) '()))
 )
 
-(define (debug-log-print-env-fmt env info-data)
+(define (debug-log-print-env-fmt env prefix)
  (define (ins-space tail res)
   (cond
    ((null? tail) res)
@@ -103,7 +108,12 @@
   )
  )
 
- (cons "\n> Env #" (reverse (ins-space info-data '())))
+ (cons
+  prefix
+  (reverse
+   (ins-space (debug-log-env-info-data env) '())
+  )
+ )
 )
 
 (define (debug-log-print-env-add-info-data res info-item)
@@ -134,28 +144,30 @@
 )
 
 (define (debug-log-print-env-frame-var name value)
- (debug-log "   " name " .... " (debug-log-describe-var-value value))
+ (apply debug-log
+  (append
+   (list "   " name " .... ")
+   (debug-log-describe-var-value value)
+  )
+ )
 )
 
 (define (debug-log-describe-var-value value)
  (cond
-  ((procedure? value) "#<procedure>")
+  ((procedure? value) '("#<procedure>"))
 
   ((compound-procedure? value)
-   (apply string-append
-    (append
-     '("#<compound-procedure ( ")
-     (map
-      (lambda (p)
-       (string-append (symbol->string p) " ")
-      )
-      (procedure-parameters value)
-     )
-     '(")>")
-    )
+   (list
+    "#<compound-procedure "
+    (procedure-parameters value)
+    ">"
    )
   )
 
-  (else value)
+  ((environment? value)
+   (debug-log-print-env-fmt value "Env #")
+  )
+
+  (else (list value))
  )
 )

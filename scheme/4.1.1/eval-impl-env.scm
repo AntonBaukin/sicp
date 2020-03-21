@@ -77,9 +77,16 @@
  )
 )
 
+(define (lookup-special-global var-name-symbol)
+ (cond
+  ((eq? 'void var-name-symbol) void)
+  (else (error "Unbound variable name" var-name-symbol))
+ )
+)
+
 (define (lookup-variable var-name-symbol env)
  (if (null? env)
-  (error "Unbound variable name" var-name-symbol)
+  (lookup-special-global var-name-symbol)
   (let ((v (env-frame-lookup var-name-symbol env)))
    (if (not (eq? void v)) v
     (lookup-variable
