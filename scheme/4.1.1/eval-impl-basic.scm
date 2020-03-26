@@ -59,7 +59,7 @@
   )
 
   ((debug-command? exp)
-   (if debug-mode? (debug-call env exp))
+   (debug-call env exp)
   )
 
   ((application? exp)

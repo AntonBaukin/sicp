@@ -60,7 +60,7 @@
   'debug
 
   (lambda (exp env)
-   (if debug-mode? (debug-call env exp))
+   (debug-call env exp)
   )
  )
 )

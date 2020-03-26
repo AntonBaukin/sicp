@@ -1,8 +1,10 @@
-; Enable debug mode:
-(define basic-evaluator-debug? #t)
+(define (log . args) (for-each display args) (newline))
 
 (include "../3.3.2/assert.scm")
 (include "eval-disp.scm")
+
+; Enable debug mode:
+(eval-basic (debug on))
 
 ; For dispatching evaluator, see «eval-impl-disp.scm».
 ; Special forms are defined in «eval-impl-forms.scm».

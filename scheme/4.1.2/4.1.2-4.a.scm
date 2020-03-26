@@ -1,10 +1,10 @@
 (define (log . args) (for-each display args) (newline))
 
-; Enable debug mode:
-(define basic-evaluator-debug? #t)
-
 (include "../3.3.2/assert.scm")
 (include "eval-disp.scm")
+
+; Enable debug mode:
+(eval-basic (debug on))
 
 ; On how this works, see «eval-disp-register-gateway»
 ; in «eval-impl-disp.scm».

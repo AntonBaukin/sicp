@@ -32,6 +32,7 @@
   'null?   null?
   'pair?   pair?
   'list?   list?
+  'length  length
   'append  append
   'reverse reverse
   'map     map

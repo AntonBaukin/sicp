@@ -6,6 +6,11 @@
 
 (set! apply-impl apply-basic)
 
-(set! debug-impl debug-eval-cmd)
+(set! debug-impl
+ (with-exception-catcher
+  (lambda (e) void)
+  (lambda () debug-eval-cmd)
+ )
+)
 
 (apply define-primitives eval-primes)

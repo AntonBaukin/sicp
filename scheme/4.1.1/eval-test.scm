@@ -1,9 +1,9 @@
 (define (log . args) (for-each display args) (newline))
 
-(define basic-evaluator-debug? #t)
-
 (include "../3.3.2/assert.scm")
 (include "eval-basic.scm")
+
+(eval-basic (debug on))
 
 ; This form just returns the evaluated expression.
 (define eval-exp (make-eval void '() exp))
@@ -87,6 +87,21 @@
   )
 
   (append '(1 2 3) '(a b c))
+ )
+)
+
+; Basic evaluator: recursive function with two calls.
+(assert-equal? 55
+ (eval-basic
+  (define (fib n)
+   (cond
+    ((= n 0) 0)
+    ((= n 1) 1)
+    (else (+ (fib (- n 2)) (fib (- n 1))))
+   )
+  )
+
+  (fib 10)
  )
 )
 

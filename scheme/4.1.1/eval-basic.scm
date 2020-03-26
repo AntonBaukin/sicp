@@ -1,9 +1,5 @@
 (include "eval.scm")
 
-; Define this variable before importing «eval-basic.scm»
-; to enable the debug mode.
-(define-value-if-not 'basic-evaluator-debug? #f)
-
 ; Basic evaluator core files:
 (define-value-if-not 'eval-basic-includes
  (list
@@ -26,10 +22,7 @@
  (make-eval
   basic-evaluator-env
   eval-basic-includes
-  (begin
-   (debug-set basic-evaluator-debug?)
-   (eval-in-nested-env eval-impl exp env)
-  )
+  (eval-in-nested-env eval-impl exp env)
  )
 )
 

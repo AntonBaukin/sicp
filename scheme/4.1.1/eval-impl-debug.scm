@@ -1,11 +1,37 @@
 ; Default implementation of the logging utility.
 (define (debug-log . args) (for-each display args) (newline))
 
+; Escapes the given value not to evaluate it with logging message.
+(define (debug-escape value)
+ (list 'debug 'escape value)
+)
+
+(define (debug-escaped? x)
+ (and
+  (list? x)
+  (= 3 (length x))
+  (eq? 'debug (car x))
+  (eq? 'escape (cadr x))
+ )
+)
+
+(define (debug-unescape x)
+ (caddr x)
+)
+
 ; Extended logger that treats each item as an expression
 ; to evaluate, thus it treats each symbol as a variable.
 (define (debug-log-eval env . args)
  (apply debug-log
-  (map (lambda (exp) (eval-impl exp env)) args)
+  (map
+   (lambda (exp)
+    (if (debug-escaped? exp)
+     (debug-unescape exp)
+     (eval-impl exp env)
+    )
+   )
+   args
+  )
  )
 )
 
@@ -13,18 +39,38 @@
 (define (debug-eval-cmd env cmd . args)
  (cond
   ((eq? cmd 'log)
-   (apply debug-log-eval (cons env args))
+   (if debug-mode?
+    (apply debug-log-eval (cons env args))
+   )
   )
+  
   ((eq? cmd 'log-env)
-   (apply debug-log-env (append (list #t env) args))
+   (if debug-mode?
+    (apply debug-log-env (append (list #t env) args))
+   )
   )
+
   ((eq? cmd 'log-stack)
-   (apply debug-log-stack (cons env args))
+   (if debug-mode?
+    (apply debug-log-stack (cons env args))
+   )
   )
 
   ((eq? cmd 'pause)
-   (debug-log "*** Paused. Press Enter...")
-   (read-char)
+   (if debug-mode?
+    (begin
+     (debug-log "*** Paused. Press Enter...")
+     (read-char)
+    )
+   )
+  )
+
+  ((eq? cmd 'on)
+   (debug-set #t)
+  )
+
+  ((eq? cmd 'off)
+   (debug-set #f)
   )
 
   (else (error "Unknown debug command" cmd))

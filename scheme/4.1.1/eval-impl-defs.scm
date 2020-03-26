@@ -29,7 +29,11 @@
 ;
 ; + log-stack  prints current stack;
 ;
-; + pause  reads from console input (just press «Enter»).
+; + pause  reads from console input (just press «Enter»);
+;
+; + on  turns debugging mode on;
+;
+; + off turns debugging mode off;
 ;
 (define debug-impl void)
 
