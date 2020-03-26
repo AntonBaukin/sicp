@@ -61,7 +61,7 @@
 ; frame to the top of the stack.
 (define (eval-nest-env env)
  (define frame ((table-op-make EvalEnvFrame)))
- (define result (append '() env))
+ (define result (list-copy env))
 
  (set-car! (cdr result) (cons frame (list-ref env 1)))
  result ;<— resulting environment object
