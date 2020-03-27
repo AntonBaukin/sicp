@@ -63,6 +63,8 @@
    (eval-impl (caddr exp) eval-env)
   )
 
+  'apply apply-call
+
   'register eval-disp-register-gateway
 
   'debug

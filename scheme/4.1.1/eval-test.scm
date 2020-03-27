@@ -53,6 +53,7 @@
 )
 
 ; Basic evaluator: local scope of inner definitions.
+(log "\n—— The following exception print is correct:")
 (assert-error (lambda () (eval-basic xyz)) void)
 
 ; Basic evaluator: function definition.
@@ -183,5 +184,31 @@
 
   (next 0)
   point ;<— expected result 3
+ )
+)
+
+; Basic evaluator: apply form
+(assert-eq? 123
+ (eval-basic
+  (apply + '(100 20 3))
+ )
+)
+
+(assert-eq? 123
+ (eval-basic
+  (apply + (list 100 20 3))
+ )
+)
+
+(assert-eq? 123
+ (eval-basic
+  (apply + (append '(100) '(20) '(3)))
+ )
+)
+
+(assert-eq? 123
+ (eval-basic
+  (define (sum a b c) (+ a b c))
+  (apply sum '(100 20 3))
  )
 )

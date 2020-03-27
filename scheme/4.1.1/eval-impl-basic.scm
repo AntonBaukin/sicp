@@ -58,6 +58,10 @@
    )
   )
 
+  ((apply? exp)
+   (apply-call exp env)
+  )
+
   ((debug-command? exp)
    (debug-call env exp)
   )

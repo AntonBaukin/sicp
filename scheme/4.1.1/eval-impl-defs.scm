@@ -262,3 +262,17 @@
   (else (make-begin seq))
  )
 )
+
+(define (apply? exp)
+ (tagged-list? exp 'apply)
+)
+
+(define (apply-call exp env)
+ (eval-impl
+  (append
+   (list (cadr exp))
+   (eval-impl (caddr exp) env)
+  )
+  env
+ )
+)
