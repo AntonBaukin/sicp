@@ -77,25 +77,31 @@
  )
 )
 
-(define (lookup-special-global var-name-symbol)
+(define (lookup-special-global var-name-symbol env)
  (cond
   ((eq? 'void var-name-symbol) void)
-  (else (error "Unbound variable name" var-name-symbol))
+  (else
+   (if-debug
+    (debug-log-env #f env "\n*** UNBOUND VARIABLE "
+     (debug-escape var-name-symbol)
+    )
+   )
+   (error "Unbound variable name" var-name-symbol)
+  )
  )
 )
 
-(define (lookup-variable var-name-symbol env)
- (if (null? env)
-  (lookup-special-global var-name-symbol)
-  (let ((v (env-frame-lookup var-name-symbol env)))
-   (if (not (eq? void v)) v
-    (lookup-variable
-     var-name-symbol
-     (enclosing-environment env)
-    )
+(define (lookup-variable var-name-symbol ext-env)
+ (define (lookup env)
+  (if (null? env)
+   (lookup-special-global var-name-symbol ext-env)
+   (let ((v (env-frame-lookup var-name-symbol env)))
+    (if (eq? void v) (lookup (enclosing-environment env)) v)
    )
   )
  )
+
+ (lookup ext-env)
 )
 
 (define env-frame-table-add
@@ -231,4 +237,64 @@
 
 (define (extend-environment-impl env nest?)
  ((if nest? eval-nest-env eval-extend-env) env)
+)
+
+(define (merge-envs parent child)
+ (define (env->list env res)
+  (if (null? env) res
+   (env->list
+    (enclosing-environment env)
+    (cons env res)
+   )
+  )
+ )
+
+ (define (copy-env level env parent)
+  (define copy (list-copy env))
+  (define info (list-copy (list-ref env 3)))
+
+  (set-car! (cddr copy) parent)
+  (set-car! info level)
+  (set-car! (cdddr copy) info)
+  copy
+ )
+
+ (define (list->env level envs)
+  (if (null? envs) '()
+   (copy-env
+    level
+    (car envs)
+    (list->env (- level 1) (cdr envs))
+   )
+  )
+ )
+
+ (define (merge pes ces res)
+  (cond
+   ((and (null? pes) (null? ces))
+    res
+   )
+
+   ((null? pes)
+    (merge '() (cdr ces) (cons (car ces) res))
+   )
+
+   ((and (not (null? ces)) (eval-env-eq? (car pes) (car ces)))
+    (merge (cdr pes) (cdr ces) (cons (car pes) res))
+   )
+
+   (else
+    (merge (cdr pes) ces (cons (car pes) res))
+   )
+  )
+ )
+
+ ; Hint: reversed, global comes first
+ (define pes (env->list parent '()))
+ (define ces (env->list child '()))
+
+ ; Hint: reversed again, global comes last
+ (define mes (merge pes ces '()))
+
+ (list->env (- (length mes) 1) mes)
 )

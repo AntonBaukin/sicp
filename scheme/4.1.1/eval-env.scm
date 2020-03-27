@@ -94,6 +94,14 @@
  (next info0 info1)
 )
 
+; Checks that given environments are the same by
+; comparing on equality UIDs at index-1 of info
+(define (eval-env-eq? env-a env-b)
+ (define info-a (list-ref env-a 3))
+ (define info-b (list-ref env-b 3))
+ (equal? (cadr info-a) (cadr info-b))
+)
+
 ; Debug info assigned to each environment is a list
 ; of: (level ... other data ...). Integer level starts
 ; with 0 for the root environment. When extending, level

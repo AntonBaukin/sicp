@@ -55,6 +55,14 @@
    (eval-impl (eval-impl (cadr exp) env) env)
   )
 
+  'eval-dynamic
+
+  (lambda (exp env)
+   (define ext-env (eval-impl (cadr exp) env))
+   (define eval-env (merge-envs ext-env env))
+   (eval-impl (caddr exp) eval-env)
+  )
+
   'register eval-disp-register-gateway
 
   'debug
