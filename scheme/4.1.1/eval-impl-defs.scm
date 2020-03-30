@@ -80,10 +80,36 @@
  )
 )
 
+(define (define-make-lambda-varargs args)
+ (define (next args res)
+  (if (symbol? args)
+   (cons (reverse res) args)
+   (next
+    (cdr args)
+    (if (eq? void (car args)) res
+     (cons (car args) res)
+    )
+   )
+  )
+ )
+
+ (next args '())
+)
+
+(define (define-make-lambda-args args)
+ (if (list? args) args
+  (define-make-lambda-varargs args)
+ )
+)
+
+(define (define-make-lambda exp)
+ (make-lambda (cdadr exp) (cddr exp))
+)
+
 (define (define-get-value exp)
  (if (symbol? (cadr exp))
   (caddr exp)
-  (make-lambda (cdadr exp) (cddr exp))
+  (define-make-lambda exp)
  )
 )
 
@@ -144,8 +170,24 @@
  (cons 'lambda (cons parameters body))
 )
 
+(define DOT_SYMBOL (string->symbol "."))
+
+(define (lambda-short-varargs? args)
+ (and
+  (list? args)
+  (= 2 (length args))
+  (eq? DOT_SYMBOL (car args))
+ )
+)
+
 (define (lambda-parameters exp)
- (cadr exp)
+ (define args (cadr exp))
+
+ (if (lambda-short-varargs? args)
+  (set! args (cons void (cadr args)))
+ )
+
+ (define-make-lambda-args args)
 )
 
 (define (lambda-body exp)

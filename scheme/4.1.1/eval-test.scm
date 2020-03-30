@@ -212,3 +212,47 @@
   (apply sum '(100 20 3))
  )
 )
+
+; Basic evaluator: variable length arguments
+(assert-eq? 123
+ (eval-basic
+  (define (sum a . bc)
+   (apply + (cons a bc))
+  )
+
+  (sum 100 20 3)
+ )
+)
+
+(assert-eq? 123
+ (eval-basic
+  (define (sum . args)
+   (apply + args)
+  )
+
+  (sum 100 20 3)
+ )
+)
+
+; Basic evaluator: variable length arguments for lambdas
+(assert-eq? 123
+ (eval-basic
+  (define sum
+   (lambda (a . bc) (apply + (cons a bc)))
+  )
+
+  (sum 100 20 3)
+ )
+)
+
+(assert-eq? 123
+ (eval-basic
+  (define sum
+   ; BIG Note: this variant does not work in Gambit Scheme!
+   ; But for our evaluator we have supported it...
+   (lambda (. args) (apply + args))
+  )
+
+  (sum 100 20 3)
+ )
+)

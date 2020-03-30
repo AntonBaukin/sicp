@@ -218,7 +218,40 @@
  result ;<— last evaluated expression
 )
 
+(define (varargs-variables vars)
+ (if (list? vars) vars
+  (append (car vars) (list (cdr vars)))
+ )
+)
+
+(define (varargs-args-combine vars vals)
+ (define (next real-vars vals res)
+  (if (null? real-vars)
+   (append
+    (reverse res)
+    (list vals)
+   )
+   (next
+    (cdr real-vars)
+    (cdr vals)
+    (cons (car vals) res)
+   )
+  )
+ )
+
+ (next (car vars) vals '())
+)
+
+(define (varargs-arguments vars vals)
+ (if (list? vars) vals
+  (varargs-args-combine vars vals)
+ )
+)
+
 (define (extend-environment vars vals base-env nest?)
+ (set! vals (varargs-arguments vars vals))
+ (set! vars (varargs-variables vars))
+
  (cond
   ((= (length vars) (length vals))
    (let ((env (extend-environment-impl base-env nest?)))
