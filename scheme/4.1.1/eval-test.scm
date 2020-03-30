@@ -226,6 +226,16 @@
 
 (assert-eq? 123
  (eval-basic
+  (define (sum a b . c)
+   (apply + (cons a (cons b c)))
+  )
+
+  (sum 100 20 3)
+ )
+)
+
+(assert-eq? 123
+ (eval-basic
   (define (sum . args)
    (apply + args)
   )
@@ -239,6 +249,16 @@
  (eval-basic
   (define sum
    (lambda (a . bc) (apply + (cons a bc)))
+  )
+
+  (sum 100 20 3)
+ )
+)
+
+(assert-eq? 123
+ (eval-basic
+  (define sum
+   (lambda (a b . c) (apply + (cons a (cons b c))))
   )
 
   (sum 100 20 3)

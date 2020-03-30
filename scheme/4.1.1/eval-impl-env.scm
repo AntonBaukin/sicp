@@ -224,6 +224,13 @@
  )
 )
 
+; Takes variables and values and returns the list of arguments
+; to pass to the function invoked. If variables is a list, the
+; result is the values given. If it's a varargs pair, takes
+; real values and joins the rest.
+;
+; Also see «define-make-lambda-varargs» function.
+;
 (define (varargs-args-combine vars vals)
  (define (next real-vars vals res)
   (if (null? real-vars)

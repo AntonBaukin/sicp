@@ -80,6 +80,13 @@
  )
 )
 
+; For variable length arguments function, the arguments
+; is not a list of symbols, but a generic sequence of
+; pairs — CDR of the terminal pair is the name of
+; vararg argument.
+;
+; Also see «varargs-args-combine» function.
+;
 (define (define-make-lambda-varargs args)
  (define (next args res)
   (if (symbol? args)
