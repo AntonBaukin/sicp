@@ -277,7 +277,7 @@
  )
 )
 
-; Standard library: global definition with clojure
+; Basic evaluator: global definition with clojure
 (eval-basic
  (define my-value 'Abc)
  (define (get-value) my-value)
@@ -285,3 +285,34 @@
 )
 
 (assert-equal? 'Abc (eval-basic (Global)))
+
+; Standard library: mapping with primitive function
+(assert-equal? '(a b c)
+ (eval-basic
+  (map car '((a 1) (b 2) (c 3)))
+ )
+)
+
+(assert-equal? '((a 1) (b 2) (c 3))
+ (eval-basic
+  (map list '(a b c) '(1 2 3))
+ )
+)
+
+; Standard library: mapping with defined function
+(assert-equal? '(111 222 333)
+ (eval-basic
+  (define (sum . args) (apply + args))
+  (map sum '(100 200 300) '(10 20 30) '(1 2 3))
+ )
+)
+
+; Standard library: mapping with lambda
+(assert-equal? '(111 222 333)
+ (eval-basic
+  (map
+   (lambda (. args) (apply + args))
+   '(100 200 300) '(10 20 30) '(1 2 3)
+  )
+ )
+)

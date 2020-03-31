@@ -32,3 +32,6 @@
 (define-macro (eval-basic . script)
  `(basic-evaluator '(,@script))
 )
+
+; Now define standard global routines, such as map...
+(include "eval-basic-std.scm")
