@@ -276,3 +276,12 @@
   (sum 100 20 3)
  )
 )
+
+; Standard library: global definition with clojure
+(eval-basic
+ (define my-value 'Abc)
+ (define (get-value) my-value)
+ (global Global get-value)
+)
+
+(assert-equal? 'Abc (eval-basic (Global)))

@@ -13,6 +13,10 @@
  (list-ref env 2)
 )
 
+(define (global-env? env)
+ (null? (enclosing-environment env))
+)
+
 (define env-frame-table-lookup
  (table-op-lookup EvalEnvFrame)
 )
@@ -192,6 +196,18 @@
  (define value (eval-impl (define-get-value exp) env))
  (define-variable (define-get-variable exp) value env)
  value ;<— and return this value, not 'ok as in SICP
+)
+
+(define (get-global-env env)
+ (if (global-env? env) env
+  (get-global-env (enclosing-environment env))
+ )
+)
+
+(define (eval-global-definition exp env)
+ (define value (eval-impl (define-get-value exp) env))
+ (define-variable (define-get-variable exp) value (get-global-env env))
+ value
 )
 
 ; Here we evaluate the script line-by-line that allows

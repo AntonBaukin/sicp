@@ -62,6 +62,10 @@
    (apply-call exp env)
   )
 
+  ((global-definition? exp)
+   (eval-global-definition exp env)
+  )
+
   ((debug-command? exp)
    (debug-call env exp)
   )

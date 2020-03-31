@@ -36,6 +36,12 @@
    (eval-sequence (begin-actions exp) env)
   )
 
+  'global
+
+  (lambda (exp env)
+   (eval-global-definition exp env)
+  )
+
   'lambda
 
   (lambda (exp env)

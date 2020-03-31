@@ -73,6 +73,10 @@
  (tagged-list? exp 'define)
 )
 
+(define (global-definition? exp)
+ (tagged-list? exp 'global)
+)
+
 (define (define-get-variable exp)
  (if (symbol? (cadr exp))
   (cadr exp)
