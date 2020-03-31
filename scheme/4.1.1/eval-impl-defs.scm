@@ -49,6 +49,23 @@
  )
 )
 
+(define (DIRECT_VALUE) void)
+
+(define (direct-value? x)
+ (and
+  (pair? x)
+  (eq? DIRECT_VALUE (car x))
+ )
+)
+
+(define (unwrap-direct-value x)
+ (cdr x)
+)
+
+(define (tag-direct-value value)
+ (cons DIRECT_VALUE value)
+)
+
 (define (variable? exp)
  (symbol? exp)
 )
@@ -324,7 +341,9 @@
  (eval-impl
   (append
    (list (cadr exp))
-   (eval-impl (caddr exp) env)
+   ; Result of this call is always a direct value,
+   ; but not a variables to resolve further:
+   (map tag-direct-value (eval-impl (caddr exp) env))
   )
   env
  )

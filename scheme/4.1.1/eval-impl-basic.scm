@@ -22,6 +22,10 @@
    exp
   )
 
+  ((direct-value? exp)
+   (unwrap-direct-value exp)
+  )
+
   ((variable? exp)
    (lookup-variable exp env)
   )
