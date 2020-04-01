@@ -61,6 +61,19 @@
    (eval-impl (eval-impl (cadr exp) env) env)
   )
 
+  ; Regular evaluator is invoked in the context of the procedure
+  ; that calls eval-form. This may be not the context we want.
+  ; In cases, such as defining new forms with register, we
+  ; have to address the environment stored somewhere in the
+  ; call-one (up the environments chain, zero frames).
+  ;
+  ; Evaluation with dynamic context switch takes expression
+  ; list of two items: (env-select-exp body-exp), where
+  ; first expression selects the environmane — mostly,
+  ; this is the name of the variable, such as 'env.
+  ;
+  ; Samples are in the tasks of let-forms 4.1.2-6 and 4.1.2-7.
+  ;
   'eval-dynamic
 
   (lambda (exp env)
