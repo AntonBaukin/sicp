@@ -6,11 +6,12 @@
 ; Enable debug mode:
 (eval-basic (debug on))
 
-; Here we implement «let*» form directly via «let».
 ; For «register» see «4.1.2-4.a.scm».
 (eval-basic (register
- let ;<— copy from task 4.1.2-6
+ let ;<— we do not to quote it
 
+ ; On this implementation and dynamic evaluation,
+ ; see comments for task 4.1.2-6.
  (lambda (exp env) ;<— let-lambda
   (define (wrap-begin exp)
    (if (= 1 (length exp))
@@ -18,8 +19,13 @@
     (append '(begin) exp)
    )
   )
+
   (define (make-eval-dynamic exp)
    (list 'eval-dynamic 'env (wrap-begin exp))
+  )
+
+  (define (named-let? exp)
+   (symbol? (cadr exp))
   )
 
   (define (let->lambda clauses body)
@@ -33,32 +39,36 @@
       )
      )
     )
+
     (map make-eval-dynamic (map cdr clauses))
    )
   )
 
-  (eval (let->lambda (cadr exp) (cddr exp)))
- )
-
- let* ;<— we do not to quote it
-
- (lambda (exp env)
-  (define (let*->let clauses body)
+  (define (named-let->lambda name clauses body)
    (append
     (list
-     'let
-     (list (list (caar clauses) (cadar clauses)))
+    (list
+     (list
+      'lambda
+      '()
+      (append
+       (list 'define (cons name (map car clauses)))
+       (list (make-eval-dynamic body))
+      )
+      name
+     )
     )
-    (if (null? (cdr clauses))
-     body
-     (list (let*->let (cdr clauses) body))
     )
+    (map make-eval-dynamic (map cdr clauses))
    )
   )
 
-  ; See sample below that defines the need of wrapping
-  ; dynamic evaluation.
-  (eval-dynamic env (eval (let*->let (cadr exp) (cddr exp))))
+  (eval
+   (if (named-let? exp)
+    (named-let->lambda (cadr exp) (caddr exp) (cdddr exp))
+    (let->lambda (cadr exp) (cddr exp))
+   )
+  )
  )
 ))
 
@@ -66,7 +76,7 @@
 
 (assert-eq? 123
  (eval-basic
-  (let* (
+  (let (
     (a 100)
     (b 20)
     (c 3)
@@ -78,7 +88,7 @@
 
 (assert-eq? -123
  (eval-basic
-  (let* (
+  (let (
     (a 100)
     (b 20)
     (c 3)
@@ -91,18 +101,16 @@
  )
 )
 
-; This sample defines the need for outer eval-dynamic in let* form:
-; it must be invoked in context of lambda (a) to access it's argument.
 (assert-eq? 110
  (eval-basic
-  ((lambda (a) (let* ((b 10)) (+ a b))) 100)
+  ((lambda (a) (let ((b 10)) (+ a b))) 100)
  )
 )
 
 (assert-eq? 111
  (eval-basic
-  (let* ((a 100))
-   (let* ((b (/ a 10)))
+  (let ((a 100))
+   (let ((b (/ a 10)))
     (+ a b 1)
    )
   )
@@ -111,9 +119,9 @@
 
 (assert-eq? 111
  (eval-basic
-  (let* ((a 100))
-   (let* ((b (/ a 10)))
-    (let* ((c (/ a (* b b))))
+  (let ((a 100))
+   (let ((b (/ a 10)))
+    (let ((c (/ a (* b b))))
      (+ a b c)
     )
    )
@@ -121,33 +129,31 @@
  )
 )
 
+; Named let tests:
 
-; The following tests are specific for let* form:
-
-(assert-eq? 123
+(assert-eq? 1
  (eval-basic
-  (let* (
-    (a 100)
-    (b (/ a 5))
-    (c (/ (+ a b) 40))
+  (let abc ((a 1) (b 2))
+   (if (> a 0)
+    (abc (- a 1) (- b 1))
+    (+ a b)
    )
-   (+ a b c)
   )
  )
 )
 
-(assert-eq? 0
+(assert-equal? 55
  (eval-basic
-  (let* (
-    (a 100)
-    (b (/ a 5))
-   )
-   (let* (
-     (c (/ (+ a b) 40))
-     (d (- (+ a b c)))
+  (define (fib n)
+   ; Here «n» is in the scope of «fib», thus we have to
+   ; use dynamic evaluation to be able to get it let:
+   (let fib-iter ((a 1) (b 0) (count n))
+    (if (= 0 count) b
+     (fib-iter (+ a b) a (- count 1))
     )
-    (+ a b c d)
    )
   )
+
+  (fib 10)
  )
 )

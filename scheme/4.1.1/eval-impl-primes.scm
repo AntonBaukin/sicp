@@ -48,6 +48,7 @@
   'cadar       cadar
   'caddr       caddr
   'cddar       cddar
+  'cdddr       cdddr
   'caddar      caddar
  )
 )
