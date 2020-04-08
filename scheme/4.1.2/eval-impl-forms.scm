@@ -82,6 +82,26 @@
    (eval-impl (caddr exp) eval-env)
   )
 
+  ; Helper function that evaluates the given expression while
+  ; it returns not void, on else value breaks the loop and
+  ; returns previous value as the overall result.
+  ;
+  ; Note: this form is usefull as our evaluator has no
+  ; tail recursion optimization.
+  ;
+  'eval-loop
+
+  (lambda (exp env)
+   (define body
+    (if (= 1 (length (cdr exp)))
+     (cadr exp)
+     (append (list 'begin) (cdr exp))
+    )
+   )
+
+   (eval-loop body env)
+  )
+
   'apply apply-call
 
   'register eval-disp-register-gateway

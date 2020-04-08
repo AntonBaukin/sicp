@@ -348,3 +348,14 @@
   env
  )
 )
+
+(define (eval-loop exp env)
+ (define (next prev value)
+  (if (eq? void value)
+   prev
+   (next value (eval-impl exp env))
+  )
+ )
+
+ (next void #f)
+)
