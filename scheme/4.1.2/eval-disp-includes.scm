@@ -1,7 +1,9 @@
+(include "../2.5.1/defined.scm")
+
 ;
 ; Dispatching evaluator core files:
 ;
-(define eval-basic-includes
+(define-value-if-not 'eval-basic-includes
  (list
   "../4.1.1/eval-impl-env.scm"
   "../4.1.1/eval-impl-defs.scm"

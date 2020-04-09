@@ -29,6 +29,16 @@
   (std-map-next mapper streams '())
  )
 
- ; Define global map function:
+ (define (std-for-each iter stream)
+  (if (not (null? stream))
+   (begin
+    (iter (car stream))
+    (std-for-each iter (cdr stream))
+   )
+  )
+ )
+
+ ; Define global functions:
  (global map std-map)
+ (global for-each std-for-each)
 )

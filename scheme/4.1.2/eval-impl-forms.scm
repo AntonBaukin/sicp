@@ -69,10 +69,10 @@
   ;
   ; Evaluation with dynamic context switch takes expression
   ; list of two items: (env-select-exp body-exp), where
-  ; first expression selects the environmane — mostly,
+  ; first expression selects the environment — mostly,
   ; this is the name of the variable, such as 'env.
   ;
-  ; Samples are in the tasks of let-forms 4.1.2-6 and 4.1.2-7.
+  ; Samples are in the tasks of let-forms 4.1.2-{6 7 8 9}.
   ;
   'eval-dynamic
 

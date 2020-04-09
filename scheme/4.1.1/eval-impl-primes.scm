@@ -28,6 +28,7 @@
   'cdr             cdr
   'cons            cons
   'list            list
+  'not             not
   'null?           null?
   'pair?           pair?
   'list?           list?

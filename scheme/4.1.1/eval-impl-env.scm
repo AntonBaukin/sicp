@@ -95,17 +95,36 @@
  )
 )
 
-(define (lookup-variable var-name-symbol ext-env)
- (define (lookup env)
-  (if (null? env)
-   (lookup-special-global var-name-symbol ext-env)
-   (let ((v (env-frame-lookup var-name-symbol env)))
-    (if (eq? void v) (lookup (enclosing-environment env)) v)
-   )
+(define (lookup-variable-optional var-name-symbol env)
+ (define value
+  (if (not (null? env))
+   (env-frame-lookup var-name-symbol env)
   )
  )
 
- (lookup ext-env)
+ (cond
+  ((null? env) void)
+  ((not (eq? void value)) value)
+  (else
+   (lookup-variable-optional
+    var-name-symbol
+    (enclosing-environment env)
+   )
+  )
+ )
+)
+
+; Limitation of our implementation is that you can not
+; define a variable having initial value be «void».
+; This seems not to be a noticeable problem...
+;
+(define (lookup-variable var-name-symbol env)
+ (define value (lookup-variable-optional var-name-symbol env))
+
+ (if (eq? void value)
+  (lookup-special-global var-name-symbol env)
+  value
+ )
 )
 
 (define env-frame-table-add

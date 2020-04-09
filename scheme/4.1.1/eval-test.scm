@@ -316,3 +316,21 @@
   )
  )
 )
+
+; Standard library: for each
+(assert-equal? '(5 4 3 2 1)
+ (eval-basic
+  (define (rev seq)
+   (define s '())
+   (for-each
+    (lambda (item)
+     (set! s (cons item s))
+    )
+    seq
+   )
+   s ;<— resulting value
+  )
+
+  (rev '(1 2 3 4 5))
+ )
+)

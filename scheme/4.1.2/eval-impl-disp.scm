@@ -32,6 +32,9 @@
  (and (list? exp) (symbol? (car exp)))
 )
 
+; Here we delegate the implementation of special form,
+; if it was registered by the name, or fallback to
+; ordinary apply form.
 (define (eval-dispatch exp env)
  (define form (env-frame-table-lookup eval-disp-table (car exp)))
 
@@ -42,15 +45,19 @@
  )
 )
 
-; As in basic evaluator, apply calls are any lists,
-; and thay may not be dispatched either.
-(define (eval-disp-else exp env)
+(define (eval-disp-apply exp env)
  (apply-impl
   (eval-impl (operator exp) env)
   (list-of-values (operands exp) env)
   env
   exp
  )
+)
+
+; As in basic evaluator, apply calls are any lists,
+; and they may not be dispatched either.
+(define (eval-disp-else exp env)
+ (eval-disp-apply exp env)
 )
 
 ; Register takes arguments (form-symbol form-proc ...)
