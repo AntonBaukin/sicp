@@ -2,7 +2,7 @@
 ; Evaluator from task 4.3 that uses table of special forms.
 ; For this table we reuse class ops EvalEnvFrame from
 ; the environment — variable «eval-disp-table».
-(define eval-disp-table ((table-op-make EvalEnvFrame)))
+(define eval-disp-table (eval-env-frame-make))
 
 (define (eval-disp exp env)
  (cond
@@ -36,7 +36,7 @@
 ; if it was registered by the name, or fallback to
 ; ordinary apply form.
 (define (eval-dispatch exp env)
- (define form (env-frame-table-lookup eval-disp-table (car exp)))
+ (define form (eval-env-frame-lookup eval-disp-table (car exp)))
 
  (if (not (eq? void form))
   (form exp env)
@@ -64,7 +64,7 @@
 ; and adds the form processors to the table.
 (define (eval-disp-register . forms)
  (define (next tail)
-  (env-frame-table-add
+  (eval-env-frame-add
    eval-disp-table
    (cadr tail) ;<— first comes the table value
    (car tail)  ;<- then the key, form symbol

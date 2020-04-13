@@ -180,7 +180,7 @@
 (define (debug-log-print-env-frame frame index size)
  (debug-log "~> Frame [" index " of " size "]")
 
- ((table-op-iterate EvalEnvFrame)
+ (eval-env-frame-iterate
   frame
   (lambda (name value)
    (debug-log-print-env-frame-var name value)

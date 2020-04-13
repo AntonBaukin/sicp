@@ -1,2 +1,7 @@
+(include "../2.5.1/defined.scm")
+(include "../4.1.1/eval-env-tree.scm")
+(include "../4.1.1/eval-env.scm")
+(include "../4.1.1/eval.scm")
 (include "eval-disp-includes.scm")
-(include "../4.1.1/eval-basic.scm")
+(include "../4.1.1/eval-basic-routine.scm")
+(include "../4.1.1/eval-basic-std.scm")

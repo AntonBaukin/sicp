@@ -1,5 +1,8 @@
-(include "eval-disp-includes.scm")
-(include "../4.1.1/eval-test.scm")
+(define (log . args) (for-each display args) (newline))
+
+(include "../3.3.2/assert.scm")
+(include "eval-disp.scm")
+(include "../4.1.1/eval-test-items.scm")
 
 ; Dispatching evaluator: plain eval
 (assert-eq? 123

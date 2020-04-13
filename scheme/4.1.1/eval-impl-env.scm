@@ -17,10 +17,6 @@
  (null? (enclosing-environment env))
 )
 
-(define env-frame-table-lookup
- (table-op-lookup EvalEnvFrame)
-)
-
 (define (first-frame env)
  (car (list-ref (check-env env) 1))
 )
@@ -75,7 +71,7 @@
 )
 
 (define (env-frame-lookup var-name-symbol env)
- (env-frame-table-lookup
+ (eval-env-frame-lookup
   (first-frame env)
   var-name-symbol
  )
@@ -127,25 +123,21 @@
  )
 )
 
-(define env-frame-table-add
- (table-op-add EvalEnvFrame)
-)
-
 ; Like add, but first checks existing item not to overwrite it.
 ; Returns #f on existed, void on success.
-(define (env-frame-table-add-new table value key)
- (define v (env-frame-table-lookup table key))
+(define (eval-env-frame-add-new table value key)
+ (define v (eval-env-frame-lookup table key))
 
  (if (not (eq? void v)) #f
   (begin
-   (env-frame-table-add table value key)
+   (eval-env-frame-add table value key)
    void
   )
  )
 )
 
 (define (define-variable var-name-symbol value env)
- (env-frame-table-add
+ (eval-env-frame-add
   (first-frame env)
   value
   var-name-symbol
@@ -166,7 +158,7 @@
  (define (next tail)
   (if (not (null? tail))
    (begin
-    (env-frame-table-add-new frame (cadr tail) (car tail))
+    (eval-env-frame-add-new frame (cadr tail) (car tail))
     (next (cddr tail))
    )
   )
@@ -183,7 +175,7 @@
   (let ((v (env-frame-lookup var-name-symbol env)))
    (if (not (eq? void v))
     (begin
-     (env-frame-table-add (first-frame env) value var-name-symbol)
+     (eval-env-frame-add (first-frame env) value var-name-symbol)
      value ;<— return the new value
     )
 
@@ -202,7 +194,7 @@
  (define (next tail)
   (if (not (null? tail))
    (begin
-    (env-frame-table-add frame (cdar tail) (caar tail))
+    (eval-env-frame-add frame (cdar tail) (caar tail))
     (next (cdr tail))
    )
   )

@@ -1,17 +1,4 @@
-(include "../3.3.3/tree-red-black.scm")
-(include "../3.3.3/table-tree.scm")
-
-
-; «Class» (collection of ops) of environment frame table.
-; The implementation is based on red-black tree table from §3.3.3.
-(define EvalEnvFrame
- (make-table-tree
-  (lambda (a b)
-   (string<? (symbol->string a) (symbol->string b))
-  )
- )
-)
-
+;
 ; This file defines the environment as a list of three fields:
 ;
 ; 0) 'environment tag;
@@ -31,13 +18,12 @@
 ; your own ones. See «eval-prims.scm».
 ;
 (define (eval-make-env . definitions)
- (define frame ((table-op-make EvalEnvFrame)))
- (define frame-add (table-op-add EvalEnvFrame))
+ (define frame (eval-env-frame-make))
 
  (for-each
   (lambda (nv)
    ; Arguments are (table value keys...):
-   (frame-add frame (cdr nv) (car nv))
+   (eval-env-frame-add frame (cdr nv) (car nv))
   )
   definitions
  )
@@ -51,7 +37,7 @@
 ; All procedures in the info-list are invoked passing info
 ; as single argument, resulting info is expected.
 (define (eval-extend-env env)
- (define frame ((table-op-make EvalEnvFrame)))
+ (define frame (eval-env-frame-make))
 
  ; Resulting environment object:
  (list 'environment (list frame) env (eval-extend-env-info env))
@@ -60,7 +46,7 @@
 ; Creates a copy of the given environmant placing additional
 ; frame to the top of the stack.
 (define (eval-nest-env env)
- (define frame ((table-op-make EvalEnvFrame)))
+ (define frame (eval-env-frame-make))
  (define result (list-copy env))
 
  (set-car! (cdr result) (cons frame (list-ref env 1)))
@@ -129,7 +115,7 @@
 ; of the underlying system not to restrict creating
 ; initial (global) environment of the evaluator.
 (define (eval-env-define env var-name-symbol value)
- ((table-op-add EvalEnvFrame)
+ (eval-env-frame-add
   (car (list-ref env 1))
   value
   var-name-symbol

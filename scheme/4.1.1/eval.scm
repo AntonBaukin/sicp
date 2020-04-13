@@ -1,5 +1,3 @@
-(include "../2.5.1/defined.scm")
-(include "eval-env.scm")
 
 ; Works in Gambit Scheme. Macros makes make-eval-impl
 ; function to be like a special form.
@@ -88,4 +86,3 @@
 ; In Gambit we can't evaluate in the environment of
 ; a procedure invoked, i.e. in the closure.
 (define make-env-temp void)
-
