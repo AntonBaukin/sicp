@@ -306,6 +306,18 @@
  ((if nest? eval-nest-env eval-extend-env) env)
 )
 
+; This magic function takes two envioronments and combines
+; them to single one by finding the nearest common ancestor,
+; that is root evaluation environment created by «eval» each
+; time it's invoked (it has the global environment as it's
+; parent). Then envioronment in the child's hierarchy that
+; has this common ancestor is retargeted to the envioronment
+; of «parent» argument.
+;
+; This function is essential core of dynamic evaluation
+; that is invoked in one envioronment, but evaluated in
+; another.
+;
 (define (merge-envs parent child)
  (define (env->list env res)
   (if (null? env) res

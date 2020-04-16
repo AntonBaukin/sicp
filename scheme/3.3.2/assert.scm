@@ -48,9 +48,32 @@
   (lambda (e)
    (set! got #t)
    (if (and (procedure? catch) (not (eq? void catch)))
-    (catch
-     (error-exception-message e)
-     (error-exception-parameters e)
+    (cond
+     ; Exception raised manually with error?
+     ((error-exception? e)
+      (catch
+       (error-exception-message e)
+       (error-exception-parameters e)
+      )
+     )
+
+     ; Exception objects related to type checking?
+     ((type-exception? e)
+      (catch
+       (string-append
+        "(Argument "
+        (number->string (type-exception-arg-num e))
+        ") "
+        (if (symbol? (type-exception-type-id e))
+         (symbol->string (type-exception-type-id e))
+         "UNKNOWN TYPE"
+        )
+        " expected"
+       )
+       (type-exception-arguments e)
+      )
+     )
+     
     )
    )
   )
