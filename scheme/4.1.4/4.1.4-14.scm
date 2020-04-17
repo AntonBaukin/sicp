@@ -52,10 +52,10 @@
  )
 )
 
-; But as we want to use out own functions as mappers,
+; But as we want to use our own functions as mappers,
 ; we can't use underlying «map» as it does not expert
 ; to receive a list of '(procedure ...) treated as
-; a function inside our evaluator...
+; a function only inside our evaluator...
 (assert-error
  (lambda ()
   (eval-basic

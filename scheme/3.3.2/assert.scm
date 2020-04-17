@@ -73,7 +73,9 @@
        (type-exception-arguments e)
       )
      )
-     
+
+     ; Some sort of a fallback:
+     (else (catch "" e))
     )
    )
   )
