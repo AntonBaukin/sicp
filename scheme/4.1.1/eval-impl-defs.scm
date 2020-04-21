@@ -186,7 +186,7 @@
  (tagged-list? exp 'debug)
 )
 
-(define (debug-call env exp)
+(define (debug-call exp env)
  (apply debug-impl (cons env (cdr exp)))
 )
 
