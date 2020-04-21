@@ -15,21 +15,24 @@
 ; hidden (frames or recursive calls). Removing from else
 ; context is cruel side-effect that breaks everything!
 ;
-(define env-lookup-abstracts
+(define eval-disp-form-unbind
  (
   (lambda () ;<— immediately invoked function
+
+   ; Function that removes keys from our frame (tree table).
+   (define eval-env-frame-remove (table-op-remove EvalEnvFrame))
+
+   ; See remarks from «4.1.3-13-forms.scm».
+   (define (unbind-variable env name)
+    (eval-env-frame-remove (first-frame env) name)
+   )
 
    (define (unbind-form exp env)
     (unbind-variable env (cadr exp))
    )
-
-   ; Append our form to the default forms list:
-   (set! eval-disp-basic-forms
-    (append
-     eval-disp-basic-forms
-     (list 'unbind unbind-form)
-    )
-   )
+   
+   (eval-disp-register-form 'unbind unbind-form)
+   unbind-form ;<— resulting form
   )
  )
 )

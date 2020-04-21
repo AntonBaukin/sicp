@@ -138,3 +138,19 @@
   eval-disp-form-debug
  )
 )
+
+; Append form to the dispatcher forms list.
+;
+; Unlike «register» form that is invoked inside
+; evaulator, this form works on the implementation
+; level, and it has access to all included as
+; «eval-impl-*.scm» routines.
+;
+(define (eval-disp-register-form name form-proc)
+ (set! eval-disp-basic-forms
+  (append
+   eval-disp-basic-forms
+   (list name form-proc)
+  )
+ )
+)
