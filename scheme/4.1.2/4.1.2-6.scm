@@ -27,6 +27,11 @@
   ;
   ; We select environment by standard name.
   ; This is the environment of our lambda.
+  ;
+  ; Also compare how this form is implemented as a
+  ; regular procedure in the dispatcher layer, see:
+  ; «4.1.6/eval-impl-forms.scm».
+  ;
   (define (make-eval-dynamic exp)
    (list 'eval-dynamic 'env (wrap-begin exp))
   )

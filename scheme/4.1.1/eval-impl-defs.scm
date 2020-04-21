@@ -273,6 +273,13 @@
  (cdr exp)
 )
 
+(define (eval-wrap-begin exp)
+ (if (= 1 (length exp))
+  (car exp)
+  (append (list 'begin) exp)
+ )
+)
+
 (define (cond? exp)
  (tagged-list? exp 'cond)
 )
