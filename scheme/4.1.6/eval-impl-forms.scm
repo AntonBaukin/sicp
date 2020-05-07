@@ -1,6 +1,6 @@
 
 ; Direct implementation of «let» form, transformation
-; to lambda looks mesy in this case, compare it with
+; to lambda looks messy in this case, compare it with
 ; eval-inner variant in «4.1.2-6.scm».
 (define eval-disp-form-let
  (
