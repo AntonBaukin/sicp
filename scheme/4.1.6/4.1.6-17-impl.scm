@@ -6,7 +6,7 @@
    (define (transform body)
     (define defs (filter body definition?))
     (if (null? defs) body
-     (list (body->let defs (filter-not body definition?)))
+     (body->assign defs (filter-not body definition?))
     )
    )
 
@@ -21,6 +21,7 @@
 
    (define (def->unassigned def)
     (list
+     'define
      (def->var def)
 
      ; Yes, two quotes are here! Single quote means
@@ -48,9 +49,9 @@
     (list 'set! (def->var def) (def->value def))
    )
 
-   (define (body->let defs body)
+   (define (body->assign defs body)
     (append
-     (list 'let (map def->unassigned defs))
+     (map def->unassigned defs)
      (map def->set defs)
      body
     )
