@@ -39,3 +39,97 @@
   )
  )
 )
+
+(define eval-disp-form-and
+ (
+  (lambda () ;<— immediately invoked function
+   (define (next exp env)
+    (if (null? exp) #t
+     (if (eval-impl (car exp) env)
+      (next (cdr exp) env)
+      #f
+     )
+    )
+   )
+
+   (define (and-form exp env)
+    (next (cdr exp) env)
+   )
+
+   (eval-disp-register-form 'and and-form)
+   and-form ;<— resulting form
+  )
+ )
+)
+
+(define eval-disp-form-or
+ (
+  (lambda () ;<— immediately invoked function
+   (define (next exp env)
+    (if (null? exp) #f
+     (if (eval-impl (car exp) env)
+      #t
+      (next (cdr exp) env)
+     )
+    )
+   )
+
+   (define (or-form exp env)
+    (next (cdr exp) env)
+   )
+
+   (eval-disp-register-form 'or or-form)
+   or-form ;<— resulting form
+  )
+ )
+)
+
+(define (make-promise exp env)
+ (list 'promise exp env)
+)
+
+; Implements delay-form used for infinite streams.
+(define eval-disp-form-delay
+ (
+  (lambda () ;<— immediately invoked function
+   (define (eval-delay exp env)
+    (make-promise (cadr exp) env)
+   )
+
+   (eval-disp-register-form 'delay eval-delay)
+   eval-delay ;<— resulting form
+  )
+ )
+)
+
+(define eval-disp-eval-promise
+ (
+  (lambda () ;<— immediately invoked function
+   (define (eval-promise exp env)
+    (define p (eval-impl (cadr exp) env))
+    (eval-impl (cadr p) (caddr p))
+   )
+
+   (eval-disp-register-form 'eval-promise eval-promise)
+   eval-promise ;<— resulting form
+  )
+ )
+)
+
+; Instead of using Gambit Scheme macros, as we use to in
+; «3.5.1/stream.scm», here we create dedicated form for this.
+(define eval-disp-cons-stream
+ (
+  (lambda () ;<— immediately invoked function
+   (define (cons-stream exp env)
+    (cons
+     (eval-impl (cadr exp) env)
+     (make-promise (caddr exp) env)
+    )
+   )
+
+   (eval-disp-register-form 'cons-stream cons-stream)
+   cons-stream ;<— resulting form
+  )
+ )
+)

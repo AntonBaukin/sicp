@@ -25,7 +25,9 @@
   '<=              <=
   '>=              >=
   'car             car
+  'set-car!        set-car!
   'cdr             cdr
+  'set-cdr!        set-cdr!
   'cons            cons
   'list            list
   'not             not
@@ -43,6 +45,8 @@
   'string?         string?
   'string-append   string-append
   'number->string  number->string
+  'even?           even?
+  'odd?            odd?
   'error           error
   'caar            caar
   'cdar            cdar

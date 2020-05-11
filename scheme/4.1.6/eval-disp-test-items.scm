@@ -51,4 +51,42 @@
  )
 )
 
+; Dispatching evaluator: «and» form.
+(assert-true?
+ (eval-basic
+  (and (eq? 'abc 'abc) (= 1 1))
+ )
+)
+
+(assert-false?
+ (eval-basic
+  (and (eq? 'abc 'abc) (= 1 2))
+ )
+)
+
+(assert-false?
+ (eval-basic
+  (and (= 1 2) (error "Wrong!"))
+ )
+)
+
+; Dispatching evaluator: «or» form.
+(assert-true?
+ (eval-basic
+  (or (eq? 'abc 'def) (= 1 1))
+ )
+)
+
+(assert-false?
+ (eval-basic
+  (or (eq? 'abc 'def) (= 1 2))
+ )
+)
+
+(assert-true?
+ (eval-basic
+  (or (= 1 1) (error "Wrong!"))
+ )
+)
+
 (log "\n" "Dispatching Evaluator §4.1.6 successfully tested!" "\n")
