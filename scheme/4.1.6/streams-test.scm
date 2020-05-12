@@ -84,6 +84,4 @@
 
  (define integers-even (stream-filter even? integers))
  (assert-equal? '(2 4 6 8 10) (sub-stream->list 5 integers-even))
-
 )
-
