@@ -88,6 +88,14 @@
  (list 'promise exp env)
 )
 
+(define (eval-promise? x)
+ (and
+  (list? x)
+  (= 3 (length x))
+  (eq? 'promise (car x))
+ )
+)
+
 ; Implements delay-form used for infinite streams.
 (define eval-disp-form-delay
  (
@@ -113,6 +121,43 @@
    (eval-disp-register-form 'eval-promise eval-promise)
    eval-promise ;<— resulting form
   )
+ )
+)
+
+(define (resolved-promise? x)
+ (and
+  (list? x)
+  (= 3 (length x))
+  (eq? 'promise (car x))
+  (eq? 'resolved (cadr x))
+ )
+)
+
+(define (get-resolved-value promise)
+ (caddr promise)
+)
+
+(define (resolve-promise p)
+ (define result (eval-impl (cadr p) (caddr p)))
+
+ ; Memoize the value in the same record:
+ (set-car! (cdr p) 'resolved)
+ (set-car! (cddr p) result)
+
+ result
+)
+
+(define (eval-force p)
+ (cond
+  ((resolved-promise? p)
+   (get-resolved-value p)
+  )
+
+  ((eval-promise? p)
+   (resolve-promise p)
+  )
+
+  (else (error "Not a promise to force" p))
  )
 )
 

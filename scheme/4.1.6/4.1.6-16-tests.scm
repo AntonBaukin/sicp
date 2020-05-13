@@ -1,3 +1,4 @@
+; Enable debug mode:
 (eval-basic (debug on))
 
 ; Test error on referring anassigned variable:
