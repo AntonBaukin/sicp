@@ -32,4 +32,4 @@
  )
 )
 
-(log "Dispatching Evaluator successfully tested!" "\n")
+(log "\n" "Dispatching Evaluator §4.1.2 successfully tested!" "\n")

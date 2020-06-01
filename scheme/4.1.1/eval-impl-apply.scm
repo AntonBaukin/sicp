@@ -34,7 +34,11 @@
   )
  )
 
- (eval-sequence (procedure-body procedure) call-env)
+ (apply-compound-body procedure call-env)
+)
+
+(define (apply-compound-body procedure env)
+ (eval-sequence (procedure-body procedure) env)
 )
 
 ; If the given environment was created for the given procedure,
