@@ -204,15 +204,85 @@
  )
 )
 
-;(define eval-disp-form-quote
-; (
-;  (lambda () ;<— immediately invoked function
-;   (define (quote-form exp)
-;    
-;   )
-;
-;   (eval-disp-register-form 'quote quote-form)
-;   quote-form ;<— resulting form
-;  )
-; )
-;)
+(define eval-disp-form-and
+ (
+  (lambda () ;<— immediately invoked function
+   (define (next ps env)
+    (if (null? ps) #t
+     (if ((car ps) env)
+      (next (cdr ps) env)
+      #f
+     )
+    )
+   )
+   
+   (define (and-form exp)
+    (define ps (map eval-analyze (cdr exp)))
+    (lambda (env) (next ps env))
+   )
+
+   (eval-disp-register-form 'and and-form)
+   and-form ;<— resulting form
+  )
+ )
+)
+
+(define eval-disp-form-or
+ (
+  (lambda () ;<— immediately invoked function
+   (define (next ps env)
+    (if (null? ps) #f
+     (if ((car ps) env)
+      #t
+      (next (cdr ps) env)
+     )
+    )
+   )
+   
+   (define (or-form exp)
+    (define ps (map eval-analyze (cdr exp)))
+    (lambda (env) (next ps env))
+   )
+
+   (eval-disp-register-form 'or or-form)
+   or-form ;<— resulting form
+  )
+ )
+)
+
+(define eval-disp-form-let
+ (
+  (lambda () ;<— immediately invoked function
+   (define (let-form exp)
+    ; The list of variable names created for «let»:
+    (define vars (map car (cadr exp)))
+
+    (define valps ;<— analyze the values
+     (map
+      (lambda (exp) (eval-analyze (cadr exp)))
+      (cadr exp)
+     )
+    )
+
+    ; Analyzed wrapped body:
+    (define bodyp (eval-analyze (eval-wrap-begin (cddr exp))))
+
+    (lambda (env) ;<— resulting runner
+     ; Evaluate analyzed values:
+     (define vals (map (lambda (vp) (vp env)) valps))
+
+     ; Then we extend environment:
+     (define env-ext (extend-environment vars vals env #f))
+
+     ; Provide some info on the new environment:
+     (if-debug (env-info-add env-ext 'let vars))
+
+     (bodyp env-ext) ;<— run the analyzed body
+    )
+   )
+
+   (eval-disp-register-form 'let let-form)
+   let-form ;<— resulting form
+  )
+ )
+)
