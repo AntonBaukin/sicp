@@ -11,6 +11,10 @@
  )
 )
 
+(define (basic-eval-define var-name value)
+ (eval-env-define basic-evaluator-env var-name value)
+)
+
 ; This Gambit Scheme macros takes a script to evaluate
 ; being expressions then quoted. Using it allows you
 ; to write code as-is. See «eval-test.scm».

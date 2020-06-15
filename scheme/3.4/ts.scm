@@ -5,11 +5,13 @@
 
 (define started-at (timestamp))
 
-; Returns delta to start-at time rounded to '.000'.
+(define (reset-ts) (set! started-at (timestamp)))
+
+; Returns delta to start-at time rounded to '.000' seconds.
 (define (ts)
  (define t (- (timestamp) started-at))
- (define x (exact (round t)))
- (define y (exact (round (* (- t x) 1000))))
+ (define x (exact (truncate t)))
+ (define y (exact (truncate (* (- t x) 1000))))
 
  (string-append
   (number->string x)
