@@ -9,53 +9,20 @@
 ; support on the evaluator level.
 ;
 (define eval-primes
- (list
-  ; This name is defined in the private scope of eval
-  ; implementation. It refers the top-level environment
-  ; used as the default.
-  global-env
+ (append
+  (list
+   ; This name is defined in the private scope of eval
+   ; implementation. It refers the top-level environment
+   ; used as the default.
+   global-env
+  )
 
-  '+               +
-  '-               -
-  '*               *
-  '/               /
-  '=               =
-  '<               <
-  '>               >
-  '<=              <=
-  '>=              >=
-  'car             car
-  'set-car!        set-car!
-  'cdr             cdr
-  'set-cdr!        set-cdr!
-  'cons            cons
-  'list            list
-  'not             not
-  'null?           null?
-  'pair?           pair?
-  'list?           list?
-  'length          length
-  'append          append
-  'reverse         reverse
-  'assoc           assoc
-  'eq?             eq?
-  'equal?          equal?
-  'symbol?         symbol?
-  'procedure?      procedure?
-  'string?         string?
-  'string-append   string-append
-  'number->string  number->string
-  'even?           even?
-  'odd?            odd?
-  'error           error
-  'caar            caar
-  'cdar            cdar
-  'cadr            cadr
-  'cddr            cddr
-  'cadar           cadar
-  'caddr           caddr
-  'cddar           cddar
-  'cdddr           cdddr
-  'caddar          caddar
+  prime-ops-arithmetics
+  prime-ops-comparing
+  prime-ops-pairs
+  prime-ops-lists
+  prime-ops-checks
+  prime-ops-misc
+  prime-ops-cXr
  )
 )

@@ -282,6 +282,10 @@
 (assert-equal? 'Abc (eval-basic (Global)))
 
 ; Standard library: mapping with primitive function
+(assert-equal? '(1 4 9)
+ (eval-basic (map square '(1 2 3)))
+)
+
 (assert-equal? '(a b c)
  (eval-basic
   (map car '((a 1) (b 2) (c 3)))

@@ -73,6 +73,7 @@
    )
 
    (set! apply-compound-body apply-analyzed)
+   apply-analyzed ;<— resulting function
   )
  )
 )

@@ -1,0 +1,8 @@
+(include "../2.5.1/defined.scm")
+(include "../4.1.1/eval-env-tree.scm")
+(include "../4.1.1/eval-env.scm")
+(include "../4.1.1/eval.scm")
+(include "eval-lazy-includes.scm")
+(include "../4.1.1/eval-basic-routine.scm")
+(include "eval-lazy-cxr.scm")
+(include "../4.1.1/eval-basic-std.scm")

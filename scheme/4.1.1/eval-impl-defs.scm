@@ -366,3 +366,81 @@
 
  (next void #f)
 )
+
+(define prime-ops-arithmetics
+ (list
+  '+ +
+  '- -
+  '* *
+  '/ /
+ )
+)
+
+(define prime-ops-comparing
+ (list
+  '=      =
+  '<      <
+  '>      >
+  '<=     <=
+  '>=     >=
+  'eq?    eq?
+  'equal? equal?
+ )
+)
+
+(define prime-ops-pairs
+ (list
+  'car      car
+  'set-car! set-car!
+  'cdr      cdr
+  'set-cdr! set-cdr!
+  'cons     cons
+  'null?    null?
+  'pair?    pair?
+ )
+)
+
+(define prime-ops-lists
+ (list
+  'list    list
+  'list?   list?
+  'length  length
+  'append  append
+  'reverse reverse
+  'assoc   assoc
+ )
+)
+
+(define prime-ops-checks
+ (list
+  'not        not
+  'symbol?    symbol?
+  'procedure? procedure?
+  'string?    string?
+  'even?      even?
+  'odd?       odd?
+ )
+)
+
+(define prime-ops-misc
+ (list
+  'string-append  string-append
+  'number->string number->string
+  'error          error
+  'square         square
+ )
+)
+ 
+(define prime-ops-cXr
+ (list
+  'caar    caar
+  'cdar    cdar
+  'cadr    cadr
+  'cddr    cddr
+  'cadar   cadar
+  'caddr   caddr
+  'cddar   cddar
+  'cdddr   cdddr
+  'caddar  caddar
+ )
+)  
