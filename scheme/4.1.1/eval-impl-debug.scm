@@ -19,6 +19,10 @@
  (caddr x)
 )
 
+(define (debug-log-eval-msg-value exp env)
+ (eval-impl exp env)
+)
+
 ; Extended logger that treats each item as an expression
 ; to evaluate, thus it treats each symbol as a variable.
 (define (debug-log-eval env . args)
@@ -27,7 +31,7 @@
    (lambda (exp)
     (if (debug-escaped? exp)
      (debug-unescape exp)
-     (eval-impl exp env)
+     (debug-log-eval-msg-value exp env)
     )
    )
    args

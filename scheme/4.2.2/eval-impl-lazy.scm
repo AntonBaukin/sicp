@@ -69,3 +69,16 @@
   )
  )
 )
+
+(define debug-log-eval-msg-value-lazy
+ (
+  (lambda () ;<— immediately invoked function
+   (define (eval-msg-value exp env)
+    (resolve-value (eval-impl exp env))
+   )
+
+   (set! debug-log-eval-msg-value eval-msg-value)
+   eval-msg-value ;<— resulting function
+  )
+ )
+)
