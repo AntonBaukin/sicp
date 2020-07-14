@@ -12,8 +12,7 @@
 
     (lambda (env)
      (apply-impl
-      ; We resolve the thunk of function instance:
-      (resolve-value (fp env))
+      (fp env)
       ; Instead of calling execution procedures,
       ; we postpone their computation with thunks:
       (thunk-them aps env)

@@ -1,10 +1,9 @@
 ;
-; This implementation is essentially the same as one we
-; created in «4.1.6/eval-impl-forms.scm» for promises.
+; This implementation uses thunks without memoization.
+; Compare it with «eval-impl-thunk.scm».
 ;
 
 (define THUNK 'thunk)
-(define RESOLVED 'resolved)
 
 ; In SICP this function is named as «delay-it».
 (define (make-thunk some env)
@@ -27,22 +26,6 @@
  )
 )
 
-(define (resolved-thunk? x)
- (and
-  (list? x)
-  (= 3 (length x))
-  (eq? THUNK (car x))
-
-  ; We store this flag in the previous position of the expression.
-  ; Memoized value is stored instead of the environment.
-  (eq? RESOLVED (cadr x))
- )
-)
-
-(define (get-resolved-thunk-value thunk)
- (caddr thunk)
-)
-
 (define (invoke-thunk p)
  ((cadr p) (caddr p))
 )
@@ -57,14 +40,7 @@
  ; So, in our implementation thunks do form a tree
  ; of analyzed executor resolving.
  ;
- (define th (invoke-thunk p))
- (define result (resolve-value th))
-
- ; Memoize the value in the same record:
- (set-car! (cdr p) RESOLVED)
- (set-car! (cddr p) result)
-
- result
+ (resolve-value (invoke-thunk p))
 )
 
 ; In SICP this function is named as «force-it».
@@ -72,17 +48,10 @@
 ; function that evaluates before the resolve — as we
 ; use analyzer, see «eval-disp-apply-lazy».
 (define (resolve-value some)
- (cond
-  ((resolved-thunk? some)
-   (get-resolved-thunk-value some)
-  )
-
-  ((thunk? some)
-   (resolve-thunk some)
-  )
-
+ (if (thunk? some)
+  (resolve-thunk some)
   ; We expect this to be a direct value
   ; not wrapped into a thunk:
-  (else some)
+  some
  )
 )
