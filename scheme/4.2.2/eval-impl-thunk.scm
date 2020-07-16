@@ -8,11 +8,18 @@
 
 ; In SICP this function is named as «delay-it».
 (define (make-thunk some env)
- (if (not (procedure? some))
-  (error "Only analyzer executor may be thunked" some)
+ ;
+ ; There are three types of «some» expected:
+ ; - executor procedure, analyze result;
+ ; - a thunk;
+ ; - direct value not to thunk.
+ ;
+ ; Direct values are those
+ ;
+ (if (procedure? some)
+  (list THUNK some env)
+  some
  )
-
- (list THUNK some env)
 )
 
 (define (thunk-them them env)

@@ -13,9 +13,7 @@
     (lambda (env)
      (apply-impl
       (fp env)
-      ; Instead of calling execution procedures,
-      ; we postpone their computation with thunks:
-      (thunk-them aps env)
+      aps
       env
       exp
      )
@@ -34,14 +32,24 @@
 (define apply-basic-lazy
  (
   (lambda () ;<— immediately invoked function
+   (define (resolve-proc env)
+    (lambda (value)
+     (resolve-value
+      (if (procedure? value) (value env) value)
+     )
+    )
+   )
+
    (define (apply-basic-lazy procedure arguments env exp)
     ; Resolve procedure thunk before testing it:
     (set! procedure (resolve-value procedure))
 
     (if (compound-procedure? procedure)
-     (apply-basic-compound procedure arguments env exp)
+     ; Instead of calling execution procedures,
+     ; we postpone their computation with thunks:
+     (apply-basic-compound procedure (thunk-them arguments env) env exp)
      ; We resolve each thunk before invoking a primitive:
-     (underlying-apply procedure (map resolve-value arguments))
+     (underlying-apply procedure (map (resolve-proc env) arguments))
     )
    )
 
