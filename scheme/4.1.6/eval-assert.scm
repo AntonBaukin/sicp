@@ -5,7 +5,7 @@
  (define (assert-report reporter . vals)
   (define single
    (if (and (pair? reporter) (= 1 (length reporter)))
-    (car reporter) void
+    (car reporter) #f
    )
   )
 
@@ -26,8 +26,6 @@
   (define (convert-vals res vals)
    (if (null? vals) res
     (let ((v (car vals)))
-
-     ; TODO: print names of functions used for assertions
      (set! v
       (cond
        ((eq? - v) '-)

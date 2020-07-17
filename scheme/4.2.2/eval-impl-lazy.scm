@@ -1,29 +1,35 @@
-
-(define eval-disp-apply-lazy
+;
+; With lazy evaluation, we postpone computation of the operands.
+; We do not call analyzed argument procedures, «aps», but pass
+; them to thunk and resolve inside «apply-basic-lazy()».
+;
+(define eval-apply-call-aps-lazy
  (
   (lambda () ;<— immediately invoked function
-   (define (apply-lazy exp)
-    ; As we always require the operator, we analyze it ahead:
-    (define fp (eval-analyze (operator exp)))
-
-    ; Here we also analyze the operands. With lazy evaluation,
-    ; this stage might be also postponed, but we take it:
-    (define aps (map eval-analyze (operands exp)))
-
-    (lambda (env)
-     (apply-impl
-      (fp env)
-      aps
-      env
-      exp
-     )
-    )
-   )
-
-   ; Replace apply from analyzing evaluator:
-   (set! eval-disp-apply apply-lazy)
-   apply-lazy ;<— resulting function
+   (define (lazy-aps aps env) aps)
+   (set! eval-apply-call-aps lazy-aps)
+   lazy-aps ;<— resulting function
   )
+ )
+)
+
+; Instead of calling execution procedures,
+; we postpone their computation with thunks.
+(define (thunk-aps aps env)
+ (thunk-them aps env)
+)
+
+; We resolve each thunk before invoking a primitive.
+(define (resolve-aps aps env)
+ (map
+  ; Some may be: 1) analyzed procedure, 2) a thunk,
+  ; or 3) a direct value.
+  (lambda (some)
+   (resolve-value
+    (if (procedure? some) (some env) some)
+   )
+  )
+  aps
  )
 )
 
@@ -32,29 +38,18 @@
 (define apply-basic-lazy
  (
   (lambda () ;<— immediately invoked function
-   (define (resolve-proc env)
-    (lambda (value)
-     (resolve-value
-      (if (procedure? value) (value env) value)
-     )
-    )
-   )
-
-   (define (apply-basic-lazy procedure arguments env exp)
+   (define (apply-basic-lazy procedure aps env exp)
     ; Resolve procedure thunk before testing it:
     (set! procedure (resolve-value procedure))
 
     (if (compound-procedure? procedure)
-     ; Instead of calling execution procedures,
-     ; we postpone their computation with thunks:
-     (apply-basic-compound procedure (thunk-them arguments env) env exp)
-     ; We resolve each thunk before invoking a primitive:
-     (underlying-apply procedure (map (resolve-proc env) arguments))
+     (apply-basic-compound procedure (thunk-aps aps env) env exp)
+     (underlying-apply procedure (resolve-aps aps env))
     )
    )
 
    (set! apply-basic apply-basic-lazy)
-   (set! prime-ops-cXr '())
+   (set! prime-ops-cXr '()) ;<— revoke prime c..r
 
    apply-basic-lazy ;<— resulting function
   )

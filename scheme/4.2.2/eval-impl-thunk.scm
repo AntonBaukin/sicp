@@ -7,7 +7,7 @@
 (define RESOLVED 'resolved)
 
 ; In SICP this function is named as «delay-it».
-(define (make-thunk some env)
+(define (make-thunk some env mem?)
  ;
  ; There are three types of «some» expected:
  ; - executor procedure, analyze result;
@@ -17,28 +17,30 @@
  ; Direct values are those
  ;
  (if (procedure? some)
-  (list THUNK some env)
+  (list THUNK some env mem?)
   some
  )
 )
 
 (define (thunk-them them env)
- (map (lambda (some) (make-thunk some env)) them)
+ (map (lambda (some) (make-thunk some env #t)) them)
+)
+
+(define (thunk-them-not-mem them env)
+ (map (lambda (some) (make-thunk some env #f)) them)
 )
 
 (define (thunk? x)
  (and
   (list? x)
-  (= 3 (length x))
+  (= 4 (length x))
   (eq? THUNK (car x))
  )
 )
 
 (define (resolved-thunk? x)
  (and
-  (list? x)
-  (= 3 (length x))
-  (eq? THUNK (car x))
+  (thunk? x)
 
   ; We store this flag in the previous position of the expression.
   ; Memoized value is stored instead of the environment.
@@ -68,8 +70,12 @@
  (define result (resolve-value th))
 
  ; Memoize the value in the same record:
- (set-car! (cdr p) RESOLVED)
- (set-car! (cddr p) result)
+ (if (cadddr p) ;<— memoization required?
+  (begin
+   (set-car! (cdr p) RESOLVED)
+   (set-car! (cddr p) result)
+  )
+ )
 
  result
 )

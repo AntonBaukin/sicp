@@ -50,6 +50,10 @@
  (eval-disp-apply exp)
 )
 
+(define (eval-apply-call-aps aps env)
+ (map (lambda (ap) (ap env)) aps)
+)
+
 (define (eval-disp-apply exp)
  (define fp (eval-analyze (operator exp)))
  (define aps (map eval-analyze (operands exp)))
@@ -57,7 +61,7 @@
  (lambda (env)
   (apply-impl
    (fp env)
-   (map (lambda (ap) (ap env)) aps)
+   (eval-apply-call-aps aps env)
    env
    exp
   )
