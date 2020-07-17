@@ -428,6 +428,8 @@
   'number->string number->string
   'error          error
   'square         square
+  'newline        newline
+  'display        display
  )
 )
  

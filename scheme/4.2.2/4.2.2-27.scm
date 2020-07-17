@@ -46,4 +46,8 @@
  ; and else variable, «count», is updated!
  ;
  ; Unpredictable hell...
+ ;
+ ; Also check task «4.2.2-30-a-pablo.scm» where we consider
+ ; the same sample with more details.
+ ;
 )
