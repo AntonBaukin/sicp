@@ -17,6 +17,12 @@
  (null? (enclosing-environment env))
 )
 
+; Initial environment created by the evaluations
+; routine for each income script.
+(define (routine-env? env)
+ (global-env? (enclosing-environment env))
+)
+
 (define (first-frame env)
  (car (list-ref (check-env env) 1))
 )

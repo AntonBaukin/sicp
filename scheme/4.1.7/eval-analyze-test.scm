@@ -5,5 +5,4 @@
 (include "../4.1.1/eval-test-items.scm")
 (include "../4.1.2/eval-disp-test-items.scm")
 (include "../4.1.6/eval-disp-test-items.scm")
-
-(log "Analyzing Dispatch Evaluator §4.1.7 successfully tested!" "\n")
+(include "eval-analyze-test-items.scm")

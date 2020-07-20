@@ -356,6 +356,13 @@
  )
 )
 
+(define (eval-procedure? p)
+ (or
+  (procedure? p)
+  (compound-procedure? p)
+ )
+)
+
 (define (eval-loop exp env)
  (define (next prev value)
   (if (eq? void value)
@@ -391,8 +398,10 @@
 (define prime-ops-pairs
  (list
   'car      car
+  'car$     car
   'set-car! set-car!
   'cdr      cdr
+  'cdr$     cdr
   'set-cdr! set-cdr!
   'cons     cons
   'null?    null?
@@ -402,12 +411,13 @@
 
 (define prime-ops-lists
  (list
-  'list    list
-  'list?   list?
-  'length  length
-  'append  append
-  'reverse reverse
-  'assoc   assoc
+  'list     list
+  'list?    list?
+  'length   length
+  'append   append
+  'reverse  reverse
+  'assoc    assoc
+  'list-ref list-ref
  )
 )
 
@@ -415,7 +425,7 @@
  (list
   'not        not
   'symbol?    symbol?
-  'procedure? procedure?
+  'procedure? eval-procedure?
   'string?    string?
   'even?      even?
   'odd?       odd?

@@ -28,10 +28,10 @@
 (assert-error
  (lambda ()
   (eval-basic
-   (define (try a b)
+   (define (xtry a b)
     (if (= a 0) 1 b)
    )
-   (try 0 (/ 1 0))
+   (xtry 0 (/ 1 0))
   )
  )
  void
@@ -42,10 +42,10 @@
 ; «lazy» creates thunk and works like «delay» form.
 (assert-eq? 1
  (eval-basic
-  (define (try a b)
+  (define (xtry a b)
    (if (= a 0) 1 b)
   )
-  (try 0 (lazy (/ 1 0)))
+  (xtry 0 (lazy (/ 1 0)))
  )
 )
 

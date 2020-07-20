@@ -286,3 +286,37 @@
   )
  )
 )
+
+; Special form «try» allows to call an expression with
+; optional fallback one: (try expression [fallback]).
+(define eval-disp-form-try
+ (
+  (lambda () ;<— immediately invoked function
+   (define (try-form exp)
+    (define ep (eval-analyze (cadr exp)))
+
+    (define fp
+     (if (null? (cddr exp)) '()
+      (eval-analyze (caddr exp))
+     )
+    )
+
+    (lambda (env)
+     (with-exception-catcher
+      ; Handle fallback expression:
+      (lambda (e)
+       ; Has no fallback? Or invoke it:
+       (if (null? fp) void (fp e))
+      )
+
+      ; Try evaluate main expression:
+      (lambda () (ep env))
+     )
+    )
+   )
+
+   (eval-disp-register-form 'try try-form)
+   try-form ;<— resulting form
+  )
+ )
+)
