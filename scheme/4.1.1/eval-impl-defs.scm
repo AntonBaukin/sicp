@@ -40,6 +40,7 @@
 ; More than in SICP: number, boolean, string, character, or void
 (define (self-evaluating? exp)
  (or
+  (eq? '() exp)
   (number? exp)
   (eq? #t exp)
   (eq? #f exp)
@@ -404,6 +405,7 @@
   'cdr$     cdr
   'set-cdr! set-cdr!
   'cons     cons
+  'cons$    cons
   'null?    null?
   'pair?    pair?
  )
@@ -418,6 +420,7 @@
   'reverse  reverse
   'assoc    assoc
   'list-ref list-ref
+  'map$     map
  )
 )
 

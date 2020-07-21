@@ -81,10 +81,56 @@
   )
  )
 
- (define (map proc l)
+ (define (list->native l)
   (if (null? l) '()
-   (cons (proc (car l)) (map proc (cdr l)))
+   (cons$ (car l) (list->native (cdr l)))
   )
+ )
+
+ (define (slice n l)
+  (cond
+   ((null? l) '())
+   ((= 0 n) '())
+   (else
+    (cons$
+     (car l)
+     (slice (- n 1) (cdr l))
+    )
+   )
+  )
+ )
+
+ ; Ass «apply» form takes native list of arguments,
+ ; we have to create cross native-lazy stream ops.
+ (define (car-lists$ lists)
+  (if (null? lists) '()
+   (cons$
+    (car (car$ lists))
+    (car-lists$ (cdr$ lists))
+   )
+  )
+ )
+
+ (define (cdr-lists$ lists)
+  (if (null? lists) '()
+   (cons$
+    (cdr (car$ lists))
+    (cdr-lists$ (cdr$ lists))
+   )
+  )
+ )
+
+ (define (map-lists proc lists)
+  (if (null? (car$ lists)) '()
+   (cons
+    (apply proc (car-lists$ lists))
+    (map-lists proc (cdr-lists$ lists))
+   )
+  )
+ )
+
+ (define (map proc . lists)
+  (map-lists proc lists)
  )
 
 
@@ -98,5 +144,7 @@
  (global length length)
  (global list-ref list-ref)
  (global lists-equal? lists-equal?)
+ (global list->native list->native)
+ (global slice slice)
  (global map map)
 )

@@ -15,6 +15,7 @@
   "../4.2.2/eval-impl-lazy.scm"
   "../4.1.1/eval-impl-primes.scm"
   "../4.1.7/eval-impl-forms.scm"
+  "../4.2.2/eval-impl-lazy-forms.scm"
   "../4.1.2/eval-impl-set.scm"
  )
 )

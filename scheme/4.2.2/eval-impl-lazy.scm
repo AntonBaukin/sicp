@@ -1,21 +1,22 @@
 ;
 ; We may not simply resolve each evaluated value
 ; as evaluator is also invoked inside special forms.
+; So, user may only resolve with special form «resolve».
 ;
-(define eval-disp-lazy
- (
-  (lambda () ;<— immediately invoked function
-   (define (eval-lazy exp env)
-    (define result ((eval-analyze exp) env))
-    ; Resolve result for the root evaluation environment:
-    (if (routine-env? env) (resolve-value result) result)
-   )
-
-   (set! eval-disp eval-lazy)
-   eval-lazy ;<— resulting function
-  )
- )
-)
+;(define eval-disp-lazy
+; (
+;  (lambda () ;<— immediately invoked function
+;   (define (eval-lazy exp env)
+;    (define result ((eval-analyze exp) env))
+;    ; Resolve result for the root evaluation environment:
+;    (if (routine-env? env) (resolve-value result) result)
+;   )
+;
+;   (set! eval-disp eval-lazy)
+;   eval-lazy ;<— resulting function
+;  )
+; )
+;)
 
 ; With lazy evaluation, we postpone computation of the operands.
 ; We do not call analyzed argument procedures, «aps», but pass
@@ -73,20 +74,6 @@
   )
  )
 )
-
-;(define eval-resolve-form
-; (
-;  (lambda () ;<— immediately invoked function
-;   (define (resolve-form exp)
-;    (define p (eval-analyze (cadr exp)))
-;    (lambda (env) (resolve-value (p env)))
-;   )
-;
-;   (eval-disp-register-form 'resolve resolve-form)
-;   resolve-form ;<— resulting form
-;  )
-; )
-;)
 
 ; Support thunks when printing debug values.
 (define debug-log-describe-var-value-lazy

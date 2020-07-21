@@ -38,6 +38,20 @@
  )
 )
 
+; Is thunk memoized?
+(define (thunk-mem? thunk)
+ (cadddr thunk)
+)
+
+(define (thunk-offmem thunk)
+ (set-car! (cdddr thunk) #f)
+)
+
+(define (mem-thunk thunk result)
+ (set-car! (cdr thunk) RESOLVED)
+ (set-car! (cddr thunk) result)
+)
+
 (define (resolved-thunk? x)
  (and
   (thunk? x)
@@ -69,11 +83,16 @@
  (define th (invoke-thunk p))
  (define result (resolve-value th))
 
- ; Memoize the value in the same record:
- (if (cadddr p) ;<— memoization required?
-  (begin
-   (set-car! (cdr p) RESOLVED)
-   (set-car! (cddr p) result)
+ ; Memoize the value in the same record.
+ (if (thunk-mem? p)      ;<— memoization required?
+  (if (thunk? th)        ;<— are we in a chain of thunks?
+   (if (thunk-mem? th)   ;<— nested thunk is memized?
+    (mem-thunk p result)
+    ; In the case the nested thunk is not memized,
+    ; we force memoization off for this thunk:
+    (thunk-offmem p)
+   )
+   (mem-thunk p result)
   )
  )
 
