@@ -87,6 +87,18 @@
   )
  )
 
+ ; The main trick with task 33 is to call
+ ; this function from special form.
+ (define (native->pairs p)
+  (if (pair$? p)
+   (cons
+    (native->pairs (car$ p))
+    (native->pairs (cdr$ p))
+   )
+   p
+  )
+ )
+
  (define (slice n l)
   (cond
    ((null? l) '())
@@ -145,6 +157,7 @@
  (global list-ref list-ref)
  (global lists-equal? lists-equal?)
  (global list->native list->native)
+ (global native->pairs native->pairs)
  (global slice slice)
  (global map map)
 )

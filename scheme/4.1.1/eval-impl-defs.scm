@@ -408,6 +408,7 @@
   'cons$    cons
   'null?    null?
   'pair?    pair?
+  'pair$?   pair?
  )
 )
 
