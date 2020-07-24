@@ -44,6 +44,7 @@
   (make-list items)
  )
 
+ ; Warning! Works only for limited lists.
  (define (list? some)
   (or
    (null? some) ;<— unlike pair?
@@ -145,6 +146,21 @@
   (map-lists proc lists)
  )
 
+ ; Converts given pair to native pair suitable
+ ; for logging. Limits lists and streams items.
+ (define (pair->log limit p)
+  (cond
+   ((not (pair? p)) p)
+   ((= 0 limit) (cons$ '… '())) ;<— support for printing lists
+   (else
+    (cons$
+     (pair->log (- limit 1) (car p))
+     (pair->log (- limit 1) (cdr p))
+    )
+   )
+  )
+ )
+
 
  ; Define global functions:
  (global cons cons)
@@ -158,6 +174,7 @@
  (global lists-equal? lists-equal?)
  (global list->native list->native)
  (global native->pairs native->pairs)
+ (global pair->log pair->log)
  (global slice slice)
  (global map map)
 )

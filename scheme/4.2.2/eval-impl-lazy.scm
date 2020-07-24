@@ -79,10 +79,8 @@
 (define debug-log-describe-var-value-lazy
  (
   (lambda () ;<— immediately invoked function
-   (define var-value-impl debug-log-describe-var-value)
-
-   (define (var-value value)
-    (var-value-impl (resolve-value value))
+   (define (var-value env value)
+    (debug-log-describe-var-value-impl env (resolve-value value))
    )
 
    (set! debug-log-describe-var-value var-value)

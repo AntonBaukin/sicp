@@ -181,28 +181,28 @@
  (for-each-frame env debug-log-print-env-frame)
 )
 
-(define (debug-log-print-env-frame frame index size)
+(define (debug-log-print-env-frame env frame index size)
  (debug-log "~> Frame [" index " of " size "]")
 
  (eval-env-frame-iterate
   frame
   (lambda (name value)
-   (debug-log-print-env-frame-var name value)
+   (debug-log-print-env-frame-var env name value)
    void
   )
  )
 )
 
-(define (debug-log-print-env-frame-var name value)
+(define (debug-log-print-env-frame-var env name value)
  (apply debug-log
   (append
    (list "   " name " .... ")
-   (debug-log-describe-var-value value)
+   (debug-log-describe-var-value env value)
   )
  )
 )
 
-(define (debug-log-describe-var-value value)
+(define (debug-log-describe-var-value-impl env value)
  (cond
   ((procedure? value) '("#<procedure>"))
 
@@ -220,4 +220,8 @@
 
   (else (list value))
  )
+)
+
+(define debug-log-describe-var-value
+ debug-log-describe-var-value-impl
 )

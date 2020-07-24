@@ -52,7 +52,7 @@
 )
 
 ; Invokes iterator for each frame of the given environment.
-; It takes: (frame index size); where «size» is the number
+; It takes: (env frame index size); where «size» is the number
 ; of frames in the environment, «index» of top one is 0.
 (define (for-each-frame env iter)
  (define frames (list-ref (check-env env) 1))
@@ -61,7 +61,7 @@
  (define (next frames index)
   (if (not (null? frames))
    (begin
-    (iter (car frames) index size)
+    (iter env (car frames) index size)
     (next (cdr frames) (+ 1 index))
    )
   )
