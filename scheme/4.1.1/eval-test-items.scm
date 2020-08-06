@@ -70,6 +70,25 @@
  )
 )
 
+;
+; Factorial print. Notice, we reuse the same procedure
+; environmant for recursive calls of it:
+;
+; > Env #2 env-uid-2 factorial (n)
+; ~> Frame [0 of 4]
+;    n .... 1
+; ~> Frame [1 of 4]
+;    n .... 2
+; ~> Frame [2 of 4]
+;    n .... 3
+; ~> Frame [3 of 4]
+;    n .... 4
+;
+; > Env #1 env-uid-1 eval-private-scope
+; ~> Frame [0 of 1]
+;    factorial .... #<compound-procedure ( n )>
+;
+
 ; Basic evaluator: another recursive function.
 (assert-equal? '(1 2 3 a b c)
  (eval-basic
@@ -100,25 +119,6 @@
   (fib 10)
  )
 )
-
-;
-; Factorial print. As we see, we reuse the same procedure
-; environmant for recursive calls of it.
-;
-; > Env #2 env-uid-2 factorial (n)
-; ~> Frame [0 of 4]
-;    n .... 1
-; ~> Frame [1 of 4]
-;    n .... 2
-; ~> Frame [2 of 4]
-;    n .... 3
-; ~> Frame [3 of 4]
-;    n .... 4
-;
-; > Env #1 env-uid-1 eval-private-scope
-; ~> Frame [0 of 1]
-;    factorial .... #<compound-procedure ( n )>
-;
 
 ; Basic evaluator: basic lambda
 (assert-eq? 5
