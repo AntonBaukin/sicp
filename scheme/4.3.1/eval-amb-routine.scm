@@ -37,7 +37,7 @@
 )
 
 ; Runs amb evaluation and breaks it on the first result.
-(define-macro (eval-amb-result . script)
+(define-macro (eval-basic . script)
  `(eval-amb-result-impl '(,@script))
 )
 
