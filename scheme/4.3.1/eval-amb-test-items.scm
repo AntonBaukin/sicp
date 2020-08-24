@@ -3,40 +3,37 @@
 ;
 (eval-basic (debug on))
 
-; Amb evaluator: self-evaluated values.
+; Core evaluator: self-evaluated values.
 (assert-eq? 123 (eval-basic 123))
 (assert-equal? 123.0 (eval-basic 123.0))
 (assert-eq? #t (eval-basic #t))
 (assert-eq? #f (eval-basic #f))
 (assert-eq? #\A (eval-basic #\A))
 
-; Amb evaluator: access global variable.
+; Core evaluator: access global variable.
 (amb-eval-define 'abc 'ABC)
 (assert-eq? 'ABC (eval-basic abc))
 
-; Amb evaluator: stop on single value.
-(assert-equal? (list 123 void) (eval-amb-list 123))
-
-; Amb evaluator: call primitive functions.
+; Core evaluator: call primitive functions.
 (assert-eq? 3 (eval-basic (+ 1 2)))
 (assert-equal? '(1 . 2) (eval-basic (cons 1 2)))
 (assert-equal? '(1 2 3) (eval-basic (list 1 2 3)))
 
-; Amb evaluator: quotation.
+; Core evaluator: quotation.
 (assert-eq? 'abc (eval-basic (quote abc)))
 (assert-eq? 'abc (eval-basic 'abc))
 (assert-equal? '(a b c) (eval-basic '(a b c)))
 
-; Amb evaluator: if.
+; Core evaluator: if.
 (assert-eq? 1 (eval-basic (if (> 2 1) 1 2)))
 (assert-eq? 2 (eval-basic (if (< 2 1) 1 2)))
 
-; Amb evaluator: conditions.
+; Core evaluator: conditions.
 (assert-eq? 1 (eval-basic (cond ((= 1 1) 1))))
 (assert-eq? 2 (eval-basic (cond ((= 1 2) 1) ((= 2 2) 2))))
 (assert-eq? 3 (eval-basic (cond ((= 1 2) 1) ((= 2 1) 2) (else 3))))
 
-; Amb evaluator: simple definitions.
+; Core evaluator: simple definitions.
 (assert-eq? 123
  (eval-basic
   (define a 100)
@@ -46,7 +43,7 @@
  )
 )
 
-; Amb evaluator: function definition.
+; Core evaluator: function definition.
 (assert-eq? 123
  (eval-basic
   (define (plus a b) (+ a b))
@@ -54,7 +51,7 @@
  )
 )
 
-; Amb evaluator: recursive function.
+; Core evaluator: recursive function.
 (assert-eq? 24
  (eval-basic
   (define (factorial n)
@@ -65,7 +62,7 @@
  )
 )
 
-; Amb evaluator: recursive function with two calls.
+; Core evaluator: recursive function with two calls.
 (assert-equal? 55
  (eval-basic
   (define (fib n)
@@ -80,7 +77,7 @@
  )
 )
 
-; Amb evaluator: basic lambda.
+; Core evaluator: basic lambda.
 (assert-eq? 5
  (eval-basic
   (define sum (lambda (a b) (+ a b)))
@@ -88,7 +85,7 @@
  )
 )
 
-; Amb evaluator: lambda clojure.
+; Core evaluator: lambda clojure.
 (assert-eq? 5
  (eval-basic
   (define (make-sum a)
@@ -100,7 +97,7 @@
  )
 )
 
-; Amb evaluator: assignment.
+; Core evaluator: assignment.
 (assert-eq? 10
  (eval-basic
   (define (make-acc n)
@@ -112,7 +109,7 @@
  )
 )
 
-; Amb evaluator: begin.
+; Core evaluator: begin.
 (assert-eq? 10
  (eval-basic
   (define sum 0)
@@ -132,7 +129,7 @@
 
 (assert-equal? 'Abc (eval-basic (Global)))
 
-; Amb evaluator: apply form.
+; Core evaluator: apply form.
 (assert-eq? 123
  (eval-basic
   (apply + '(100 20 3))
@@ -158,7 +155,7 @@
  )
 )
 
-; Amb evaluator: variable length arguments
+; Core evaluator: variable length arguments.
 (assert-eq? 123
  (eval-basic
   (define (sum a . bc)
@@ -189,7 +186,7 @@
  )
 )
 
-; Amb evaluator: variable length arguments for lambdas
+; Core evaluator: variable length arguments for lambdas.
 (assert-eq? 123
  (eval-basic
   (define sum
@@ -222,7 +219,7 @@
  )
 )
 
-; Amb evaluator: and form.
+; Core evaluator: «and» form.
 (assert-true?
  (eval-basic
   (and (eq? 'abc 'abc) (= 1 1))
@@ -241,7 +238,7 @@
  )
 )
 
-; Amb evaluator: or form.
+; Core evaluator: «or» form.
 (assert-true?
  (eval-basic
   (or (eq? 'abc 'def) (= 1 1))
@@ -260,7 +257,7 @@
  )
 )
 
-; Amb evaluator: «let» form.
+; Core evaluator: «let» form.
 (assert-eq? 123
  (eval-basic
   (let (
@@ -364,4 +361,4 @@
  )
 )
 
-(log "\n" "Amb Evaluator [Core] of §4.3.1 successfully tested!" "\n")
+(log "\n" "Core of Amb Evaluator of §4.3.1 successfully tested!" "\n")

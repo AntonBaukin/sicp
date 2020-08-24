@@ -43,6 +43,12 @@
 
 ; Runs amb evaluation and collects a list of results
 ; with the pre-defined limit of 1000 items.
+;
+; The results are in FILO order (reversed)!
+;
+; Note: that the first item of the list is «void»
+; in the case when all the variants were checked.
+;
 (define-macro (eval-amb-list . script)
  `(eval-amb-list-impl 1000 '(,@script))
 )
@@ -60,14 +66,27 @@
 )
 
 (define (eval-amb-list-impl limit script)
+ (define LIMIT limit)
  (define result '())
+ (define acc '())
 
  (define (callback value)
-  (set! result (cons value result))
-  (set! limit (- limit 1))
+  (if (eq? void value)
+   (begin
+    (set! limit LIMIT)
+    (set! result (cons void acc))
+    (set! acc '())
+   )
+   (begin
+    (set! limit (- limit 1))
+    (set! result '())
+    (set! acc (cons value acc))
+   )
+  )
+
   (> limit 0) ;<— break if the limit is reached
  )
 
  (amb-evaluator callback script)
- (reverse result)
+ result
 )
