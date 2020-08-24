@@ -85,7 +85,16 @@
   (lambda () ;<— immediately invoked function
    (define (global-form exp)
     (define n (define-get-variable exp))
-    (define vp (eval-analyze (define-get-value exp)))
+
+    ; By default name is the same name symbol:
+    (define vp
+     (eval-analyze
+      (if (= 2 (length exp))
+       n
+       (define-get-value exp)
+      )
+     )
+    )
 
     (lambda (success fail env)
      (vp

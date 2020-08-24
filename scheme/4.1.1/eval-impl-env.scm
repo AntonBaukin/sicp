@@ -216,7 +216,16 @@
 )
 
 (define (eval-global-definition exp env)
- (define value (eval-impl (define-get-value exp) env))
+ (define value
+  (eval-impl
+   (if (= 2 (length exp))
+    (define-get-variable exp)
+    (define-get-value exp)
+   )
+   env
+  )
+ )
+
  (define-variable (define-get-variable exp) value (get-global-env env))
  value
 )
