@@ -50,7 +50,20 @@
 ; in the case when all the variants were checked.
 ;
 (define-macro (eval-amb-list . script)
- `(eval-amb-list-impl 1000 '(,@script))
+ `(eval-amb-list-impl 100 '(,@script))
+)
+
+; List version of amb with explicit limit.
+(define-macro (eval-amb-lim lim . script)
+ `(eval-amb-lim-impl ,lim '(,@script))
+)
+
+; Same macros as «eval-amb-list», but it checks that the leading
+; item of the resulting list is void (all variants are produced),
+; and returns reversed tail-list — in the expected order.
+;
+(define-macro (eval-amb-results . script)
+ `(eval-amb-results-impl (eval-amb-list-impl 100 '(,@script)))
 )
 
 (define (eval-amb-result-impl script)
@@ -88,5 +101,35 @@
  )
 
  (amb-evaluator callback script)
- result
+ (if (= limit 0) acc result)
+)
+
+(define (eval-amb-lim-impl limit script)
+ (define results (eval-amb-list-impl limit script))
+
+ (cond
+  ((null? results)
+   (error "Amb-evaluation produced nothing!")
+  )
+
+  ((eq? void (car results))
+   (reverse (cdr results))
+  )
+
+  (else (reverse results))
+ )
+)
+
+(define (eval-amb-results-impl results)
+ (cond
+  ((null? results)
+   (error "Amb-evaluation produced nothing!")
+  )
+
+  ((not (eq? void (car results)))
+   (error "Amb-evaluation gained the limit!")
+  )
+
+  (else (reverse (cdr results)))
+ )
 )

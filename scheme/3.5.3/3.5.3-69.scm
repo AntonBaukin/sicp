@@ -80,4 +80,9 @@
 
 (set! S (make-concatenator " " ijk->s))
 (map S (sub-stream->list 10 pythagorean-triples))
+
 (log "\nPythagorean triples: " (S))
+;
+; :> (3 4 5)=12 (6 8 10)=24 (5 12 13)=30 (9 12 15)=36 (8 15 17)=40
+; (12 16 20)=48 (7 24 25)=56 (10 24 26)=60 (15 20 25)=60 (20 21 29)=70
+;

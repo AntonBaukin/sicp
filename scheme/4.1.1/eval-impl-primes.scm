@@ -17,7 +17,7 @@
    global-env
   )
 
-  prime-ops-arithmetics
+  prime-ops-math
   prime-ops-comparing
   prime-ops-pairs
   prime-ops-lists

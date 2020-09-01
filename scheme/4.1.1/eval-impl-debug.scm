@@ -77,6 +77,18 @@
    (debug-set #f)
   )
 
+  ((eq? cmd 'get)
+   (debug-var-get (car args))
+  )
+
+  ((eq? cmd 'del)
+   (debug-var-set (car args) void)
+  )
+
+  ((eq? cmd 'inc)
+   (debug-var-inc (car args))
+  )
+
   (else (error "Unknown debug command" cmd))
  )
 )
@@ -174,7 +186,6 @@
 
   (else (cons info-item res))
  )
-
 )
 
 (define (debug-log-print-env-frames env)
@@ -224,4 +235,29 @@
 
 (define debug-log-describe-var-value
  debug-log-describe-var-value-impl
+)
+
+; Table that stores user-defined debugging variables.
+(define eval-debug-vars (eval-env-frame-make))
+
+(define (debug-var-get var)
+ (eval-env-frame-lookup eval-debug-vars var)
+)
+
+(define (debug-var-set var value)
+ (if (eq? void value)
+  (eval-env-frame-remove eval-debug-vars var)
+  (eval-env-frame-add
+   eval-debug-vars
+   value ;<— first comes the table value
+   var   ;<- then the key, form symbol
+  )
+ )
+)
+
+(define (debug-var-inc var)
+ (define i (debug-var-get var))
+ (debug-var-set var
+  (if (eq? void i) 1 (+ i 1))
+ )
 )

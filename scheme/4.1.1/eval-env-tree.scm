@@ -22,6 +22,10 @@
 ; Arguments: (frame name).
 (define eval-env-frame-lookup (table-op-lookup EvalEnvFrame))
 
+; Removes item from the frame altering it.
+; Arguments: (frame name).
+(define eval-env-frame-remove (table-op-remove EvalEnvFrame))
+
 ; Invoked with (frame iterator), where iterator takes:
 ; (name value) and returns void to continue iteration.
 ; This routine is used in the debugger.

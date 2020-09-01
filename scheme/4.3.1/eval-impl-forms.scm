@@ -351,24 +351,3 @@
   )
  )
 )
-
-;(define eval-amb-form-results
-; (
-;  (lambda () ;<— immediately invoked function
-;   (define (results-form exp)
-;    (define sp (analyze-amb-sequence (cdr exp)))
-;
-;    (lambda (success fail env) ;<— execution procedure
-;     (define (success-result fail2 val)
-;      (success fail2 (cons 'result val))
-;     )
-;
-;     (sp success-result fail env)
-;    )
-;   )
-;
-;   (eval-disp-register-form 'results results-form)
-;   results-form ;<— resulting form
-;  )
-; )
-;)

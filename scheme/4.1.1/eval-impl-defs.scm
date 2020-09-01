@@ -375,12 +375,14 @@
  (next void #f)
 )
 
-(define prime-ops-arithmetics
+(define prime-ops-math
  (list
-  '+ +
-  '- -
-  '* *
-  '/ /
+  '+        +
+  '-        -
+  '*        *
+  '/        /
+  'sqrt     sqrt
+  'integer? integer?
  )
 )
 
