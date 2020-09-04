@@ -381,6 +381,7 @@
   '-        -
   '*        *
   '/        /
+  'abs      abs
   'sqrt     sqrt
   'integer? integer?
  )
@@ -424,6 +425,7 @@
   'assoc    assoc
   'list-ref list-ref
   'map$     map
+  'member   member
  )
 )
 
