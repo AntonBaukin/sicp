@@ -1,3 +1,5 @@
+(include "../2.3.3/quick-sort.scm")
+
 (define (log . args) (for-each display args) (newline))
 
 (define (enumerate-range a b)
@@ -84,12 +86,35 @@
  (queen-boards max-column)
 )
 
+; First, sorts the results. Then removes reversed answers.
+(define (normalize results)
+ ; Compares two equal size lists of numbers.
+ (define (smaller? a b)
+  (cond
+   ((null? a) #f)
+   ((> (car a) (car b)) #f)
+   ((= (car a) (car b)) (smaller? (cdr a) (cdr b)))
+   (else #t)
+  )
+ )
+
+ (define sorted (quick-sort smaller? results))
+
+ (filter
+  (lambda (a)
+   (define b (member (reverse a) sorted))
+   (or (null? b) (smaller? a (car b)))
+  )
+  sorted
+ )
+)
+
 (define (test-board board-size max-column)
  (newline)
  (log "Board " board-size "x" max-column
   " ————————————————————————————————————————\n"
-  (queens board-size max-column)
+  (normalize (queens board-size max-column))
  )
 )
 
-(for-each (lambda (i) (test-board 8 i)) (enumerate-range 1 8))
+(for-each (lambda (i) (test-board i i)) (enumerate-range 3 8))
