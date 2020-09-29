@@ -426,6 +426,7 @@
   'list-ref list-ref
   'map$     map
   'member   member
+  'memq     memq
  )
 )
 

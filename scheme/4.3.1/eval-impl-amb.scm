@@ -87,22 +87,30 @@
 )
 
 ; It's «get-args» of SICP.
-(define (amb-apply-args success fail aps env)
- (if (null? aps)
-  (success fail '())
-  ((car aps) ;<— call current argument-proc
-   (lambda (fail2 arg) ;<— success2
-    (amb-apply-args
-     (lambda (fail3 args)
-      (success fail3 (cons arg args))
+(define amb-apply-args
+ (
+  (lambda () ;<— immediately invoked function
+   (define (apply-args-std success fail aps env)
+    (if (null? aps)
+     (success fail '())
+     ((car aps) ;<— call current argument-proc
+      (lambda (fail2 arg) ;<— success2
+       (apply-args-std
+        (lambda (fail3 args)
+         (success fail3 (cons arg args))
+        )
+        fail2
+        (cdr aps)
+        env
+       )
+      )
+      fail
+      env
      )
-     fail2
-     (cdr aps)
-     env
     )
    )
-   fail
-   env
+
+   apply-args-std ;<— resulting function
   )
  )
 )
