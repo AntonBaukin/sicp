@@ -11,29 +11,69 @@
 (amb-eval-define 'articles articles)
 (amb-eval-define 'prepositions prepositions)
 
+; Counter without amb unset.
+(define (make-counter value)
+ (lambda (m . args)
+  (cond
+   ((eq? m 'get) value)
+   ((eq? m 'set) (set! value (car args)))
+   ((eq? m 'inc) (set! value (+ value 1)))
+  )
+ )
+)
+
+(amb-eval-define 'make-counter make-counter)
+
 ;
 ; Implementation of parser from §4.3.2.
 ;
 (eval-basic
+ (define LIMIT 10)
+ (define counter (make-counter 0))
  (define *unparsed* '())
 
- (define (parse input)
+ (define (get-parsed) *unparsed*)
+
+ (define (set-parsed input)
   (debug log "parse:> input = " input)
   (set! *unparsed* input)
+  (counter 'set 0)
+ )
 
-  (let ((result (parse-sentence)))
-   (require (null? *unparsed*))
-   result
+ (define (parse-word word-list)
+  (require-not (null? *unparsed*))
+
+  (if (> (counter 'get) LIMIT)
+   (error "Parse seems hung on:" (car *unparsed*))
+  )
+  (counter 'inc)
+
+  (debug log "parse:> word = «"
+   (if (null? *unparsed*) "" (car *unparsed*)) "»"
+   " is " (car word-list) "?"
+  )
+
+  (require (memq (car *unparsed*) (cdr word-list)))
+
+  (let ((found-word (car *unparsed*)))
+   (counter 'set 0)
+   (set! *unparsed* (cdr *unparsed*))
+   (list (car word-list) found-word)
   )
  )
 
- (define (parse-sentence)
-  (list 'sentence
-   (parse-noun-phrase)
-   (parse-verb-phrase)
-  )
+ (define (plog result what)
+  (debug log "parse:> " what " = " result)
+  result
  )
 
+ (global get-parsed)
+ (global set-parsed)
+ (global parse-word)
+ (global plog)
+)
+
+(eval-basic
  (define (parse-simple-noun-phrase)
   (list 'simple-noun-phrase
    (parse-word articles)
@@ -41,6 +81,18 @@
   )
  )
 
+ (define (parse-prepositional-phrase)
+  (list 'prep-phrase
+   (parse-word prepositions)
+   (parse-noun-phrase)
+  )
+ )
+
+ (global parse-simple-noun-phrase)
+ (global parse-prepositional-phrase)
+)
+
+(eval-basic
  (define (parse-noun-phrase)
   (define (maybe-extend noun-phrase)
    (amb
@@ -49,7 +101,7 @@
      (list
       'noun-phrase
       noun-phrase
-      (parse-prepositional-phrase)
+      (plog (parse-prepositional-phrase) 'prep-phrase)
      )
     )
    )
@@ -66,7 +118,7 @@
      (list
       'verb-phrase
       verb-phrase
-      (parse-prepositional-phrase)
+      (plog (parse-prepositional-phrase) 'prep-phrase)
      )
     )
    )
@@ -75,25 +127,28 @@
   (maybe-extend (parse-word verbs))
  )
 
- (define (parse-prepositional-phrase)
-  (list 'prep-phrase
-   (parse-word prepositions)
-   (parse-noun-phrase)
+ (global parse-noun-phrase)
+ (global parse-verb-phrase)
+)
+
+(eval-basic
+ (define (parse-sentence)
+  (list 'sentence
+   (plog (parse-noun-phrase) 'noun-phrase)
+   (plog (parse-verb-phrase) 'verb-phrase)
   )
  )
 
- (define (parse-word word-list)
-  (debug log "parse:> word = «"
-   (if (null? *unparsed*) "" (car *unparsed*)) "»"
-   " is " (car word-list) "?"
-  )
+ (global parse-sentence)
+)
 
-  (require-not (null? *unparsed*))
-  (require (memq (car *unparsed*) (cdr word-list)))
+(eval-basic
+ (define (parse input)
+  (set-parsed input)
 
-  (let ((found-word (car *unparsed*)))
-   (set! *unparsed* (cdr *unparsed*))
-   (list (car word-list) found-word)
+  (let ((result (parse-sentence)))
+   (require (null? (get-parsed)))
+   result
   )
  )
 
