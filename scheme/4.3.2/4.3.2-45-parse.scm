@@ -1,10 +1,10 @@
 ;
 ; Vocabulary.
 ;
-(define nouns '(noun student professor cat class))
+(define nouns '(noun student professor cat class floor desk))
 (define verbs '(verb studies lectures eats sleeps))
 (define articles '(article the a))
-(define prepositions '(prep for to in by with))
+(define prepositions '(prep for to in by with of on))
 
 (amb-eval-define 'nouns nouns)
 (amb-eval-define 'verbs verbs)
