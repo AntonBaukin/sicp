@@ -59,3 +59,33 @@
 (define (make-random-n-bits seed bits)
  (make-random-in-range (make-random seed) 0 (expt 2 bits))
 )
+
+(define (shuffle random sequence)
+ (define (ith head tail i)
+  (if (= 0 i)
+   (cons (car tail) (append head (cdr tail)))
+   (ith (cons (car tail) head) (cdr tail) (- i 1))
+  )
+ )
+
+ (define (next sequence len res)
+  (cond
+   ((= 0 len) res)
+   ((= 1 len) (cons (car sequence) res))
+   (else
+    (let* (
+      (i (modulo (random) len))
+      (x (ith '() sequence i))
+     )
+     (next
+      (cdr x)
+      (- len 1)
+      (cons (car x) res)
+     )
+    )
+   )
+  )
+ )
+
+ (next sequence (length sequence) '())
+)

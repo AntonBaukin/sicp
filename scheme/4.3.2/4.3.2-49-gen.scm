@@ -1,15 +1,19 @@
 
 (eval-basic
+ (define (amb-of items)
+  (require (not (null? items)))
+  (amb (car items) (amb-of (cdr items)))
+ )
+
+ (global amb-of)
+)
+
+(eval-basic
  (define *generated* '())
  (define (get-generated) (reverse *generated*))
 
  (define (reset-generated)
   (set! *generated* '())
- )
-
- (define (amb-of items)
-  (require (not (null? items)))
-  (amb (car items) (amb-of (cdr items)))
  )
 
  (define (parse-word word-list)
