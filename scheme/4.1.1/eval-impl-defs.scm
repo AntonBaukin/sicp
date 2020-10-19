@@ -384,6 +384,8 @@
   'abs      abs
   'sqrt     sqrt
   'integer? integer?
+  'even?    even?
+  'odd?     odd?
  )
 )
 
