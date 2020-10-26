@@ -15,3 +15,17 @@
 
  (next lst)
 )
+
+; Creates iteration function having no arguments.
+; On each call the function returns whether an item
+; of the list in the same order, or empty list.
+(define (list-iterator lst)
+ (lambda ()
+  (if (null? lst) '()
+   (let ((result (car lst)))
+    (set! lst (cdr lst))
+    result
+   )
+  )
+ )
+)
