@@ -1,6 +1,7 @@
 ; Tests number
 (define T 10000)
 
+; Random seed (or current time):
 ;(define seed 1)
 
 (include "tree-red-black.scm")

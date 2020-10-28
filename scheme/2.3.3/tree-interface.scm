@@ -106,10 +106,10 @@
 ; items to the callback. Callback may stop (find behaviour).
 ;
 ; Arguments: (tree-node, callback).
-; Callback arguments: (stored item).
+; Callback arguments: (stored-item).
 ;
 ; As callback takes stored item, it may not alter the fields
-; used for the comparison (not to breat the tree order).
+; used for the comparison (not to break the tree order).
 ;
 ; Callback must return void to continue the iteration; on else
 ; values the iteration is breaked, and this value becomes
@@ -117,6 +117,16 @@
 ;
 (define (tree-op-iter tree-ops)
  (list-ref tree-ops 10)
+)
+
+; Inverses the control over «tree-op-iter».
+;
+; It returns an iteration function that provides tree nodes.
+; Function returns empty list when it reaches the tree end.
+;
+; Arguments: (tree-node).
+(define (tree-op-iterator table-ops)
+ (list-ref table-ops 11)
 )
 
 ; Adds item to the tree and returns new root node.
@@ -128,7 +138,7 @@
 ;
 ; Arguments: (tree-node, item).
 (define (tree-op-add tree-ops)
- (list-ref tree-ops 11)
+ (list-ref tree-ops 12)
 )
 
 ; Removes item from the tree and returns new root node.
@@ -136,7 +146,7 @@
 ;
 ; Arguments: (tree-node, item).
 (define (tree-op-delete tree-ops)
- (list-ref tree-ops 12)
+ (list-ref tree-ops 13)
 )
 
 ; Returns length of the tree (longest root-node way).

@@ -157,13 +157,14 @@
    post-build-op-list
   )
 
-  ; iter @ 10
+  ; iter @ 10, iterator @ 11
   make-tree-op-iter
+  make-tree-op-iterator
 
-  ; add @ 11
+  ; add @ 12
   (curry make-tree-op-add (make-rb-tree-balance-add))
 
-  ; delete @ 12
+  ; delete @ 13
   (curry make-tree-op-delete (make-rb-tree-balance-delete))
  )
 )

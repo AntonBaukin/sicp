@@ -25,6 +25,9 @@
 (define num-tree->str (make-tree->str-printer NumTree number->string))
 (define num-tree-smaller? (tree-op-smaller? NumTree))
 (define num-sort (set-op-make (tree-op-Set NumTree)))
+(define num-tree-iter (tree-op-iter NumTree))
+(define num-tree-iterator (tree-op-iterator NumTree))
+
 
 (define (add . nums)
  (for-each
