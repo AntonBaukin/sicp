@@ -44,16 +44,30 @@
    (if (eq? void r) table r)
   )
  )
+
+ ; Here kvx is a list of (k v (k . v)).
+ (define (iter-set kvx value)
+  (define kv (caddr kvx))
+  (set-cdr! kv value)
+ )
  
- (define (iter table visitor)
-  (iterate-list table
-   (lambda (kv)
-    (let ((res (visitor (car kv) (cdr kv))))
-     (cond
-      ((eq? #f res) #f) ;<— do break
-      ((eq? void res) void)
-      (else (set-cdr! kv res) void)
-     )
+ (define (iter table)
+  (define it (list-iterator table))
+  ; We cache «kvs» instance as it's allowed by the interface:
+  (define x (cons '() '()))
+  (define vx (cons '() x))
+  (define kvx (cons '() vx))
+  (define kvs (cons kvx iter-set))
+
+  (lambda ()
+   (define kv (it))
+
+   (if (null? kv) '()
+    (begin
+     (set-car! x kv) ;<— save the table pair
+     (set-car! vx (cdr kv))
+     (set-car! kvx (car kv))
+     kvs ;<— always return the same instance
     )
    )
   )

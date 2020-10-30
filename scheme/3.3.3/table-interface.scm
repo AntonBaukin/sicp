@@ -48,11 +48,28 @@
  (list-ref table-ops 6)
 )
 
-; Iterates over the table.
-; Arguments: (table visitor),
-; where visitor takes: (key value).
-; You may change the value returning not #f or void.
+; Iterates over the table using visitor pattern.
+; Arguments: (table visitor), where visitor takes: (key value).
+; You may change the stored value by returning not #f or void.
 ; By returning #f you break the iteration.
 (define (table-op-iterate table-ops)
  (list-ref table-ops 7)
+)
+
+; Inverses the control over «table-op-iterate».
+; Arguments: (table).
+;
+; It returns an iteration function that provides table items
+; as pairs of ((key value) . set)). By using function «set» you
+; may change the value stored as (set (key value) new-value),
+; where (key value) is the list provided. Note that this list
+; may contain additional items to be used by «set».
+;
+; Function returns empty list when it reaches the table end.
+;
+; Note: that you may only query (key value) and «set»,
+; but not cache or return this pair and the list.
+;
+(define (table-op-iterator table-ops)
+ (list-ref table-ops 8)
 )

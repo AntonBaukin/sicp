@@ -129,8 +129,10 @@
   (define stack (push '() node))
 
   (lambda ()
-   (if (null? stack) '()
-    (begin
+   (cond
+    ((null? stack) '())
+    ((null? (cdar stack)) '())
+    (else
      (set! stack (next stack))
      ; (log-stack stack '>>)
      (if (null? stack) '() (get stack))

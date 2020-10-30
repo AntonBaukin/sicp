@@ -10,10 +10,11 @@
   (lambda (a b) (key<? (car a) (car b)))
  ))
 
+ (define tree-get (tree-op-get TreeOps))
  (define tree-search (tree-op-search TreeOps))
  (define tree-add (tree-op-add TreeOps))
  (define tree-delete (tree-op-delete TreeOps))
- (define tree-iter (tree-op-iter TreeOps))
+ (define tree-iterator (tree-op-iterator TreeOps))
  (define tree-size (tree-op-size TreeOps))
 
  (define (make) '())
@@ -37,15 +38,30 @@
   (tree-delete tree (cons key '()))
  )
 
- (define (iter tree visitor)
-  (tree-iter tree
-   (lambda (kv)
-    (let ((res (visitor (car kv) (cdr kv))))
-     (cond
-      ((eq? #f res) #f) ;<— do break
-      ((eq? void res) void)
-      (else (set-cdr! kv res) void)
-     )
+ ; Here kvx is a list of (k v node).
+ (define (iter-set kvx value)
+  (define node (caddr kvx))
+  (define kv (tree-get node))
+  (set-cdr! kv value)
+ )
+
+ (define (iter tree)
+  (define it (tree-iterator tree))
+  ; We cache «kvn» instance as it's allowed by the interface:
+  (define x (cons '() '()))
+  (define vx (cons '() x))
+  (define kvx (cons '() vx))
+  (define kvn (cons kvx iter-set))
+
+  (lambda ()
+   (define node (it))
+
+   (if (null? node) '()
+    (let ((kv (tree-get node)))
+     (set-car! x node) ;<— save the node
+     (set-car! vx (cdr kv))
+     (set-car! kvx (car kv))
+     kvn ;<— always return the same instance
     )
    )
   )

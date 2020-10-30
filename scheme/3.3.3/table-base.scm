@@ -8,7 +8,7 @@
 ; Search takes (storage key) and returns (key . value)
 ; pair, or void on abcense.
 ;
-; Save is invokedonly on abcense of the key. It takes:
+; Save is invoked only on absense of the key. It takes:
 ; (storage key value) and returns new storage.
 ;
 ; Rewrite takes (storage (key . value) new-value), where
@@ -22,9 +22,8 @@
 ;
 ; Length takes (storage) and returns it's size.
 ;
-; Iter takes (storage visitor), where visitor takes:
-; (key value) and returns one of: #f — to break;
-; void — to continue; else — the new value to assign.
+; Iterator is defined in «table-op-iterator»,
+; but it takes (storage), not the external table.
 ;
 (define (make-table-base make search save rewrite without length iter)
  ; Hidden marker of a table.
@@ -166,9 +165,37 @@
  )
 
  (define (iterate table visitor)
+  (define it (iterator table))
+
+  (define (invoke kvs)
+   (define res (visitor (caar kvs) (cadar kvs)))
+
+   (cond
+    ((eq? #f res) #f) ;<— do break
+    ((eq? void res) (next))
+    (else
+     ((cdr kvs) (car kvs) res) ;<— assign the new value
+     (next)
+    )
+   )
+  )
+
+  (define (next)
+   ; Resulting pair of ((key value) . set)):
+   (define kvs (it))
+
+   (if (not (null? kvs))
+    (invoke kvs)
+   )
+  )
+
+  (next) ;<— cycle the iteration
+ )
+
+ (define (iterator table)
   (if (not (table? table))
    (error "May not iterate not a table!" table)
-   (iter (cdr table) visitor)
+   (iter (cdr table))
   )
  )
 
@@ -182,5 +209,6 @@
   size           ; 5
   clear          ; 6
   iterate        ; 7
+  iterator       ; 8
  )
 )
