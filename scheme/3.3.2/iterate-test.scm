@@ -28,7 +28,7 @@
   )
 )
 
-; Test iterator.
+; Test list iterator.
 (
   (lambda () ;<— immediately invoked function
    (define it (list-iterator sample))
@@ -58,3 +58,39 @@
 (assert-eq? 4 (find 4))
 (assert-eq? 5 (find 5))
 (assert-eq? void (find 6))
+
+(define (check-transform source expected transform)
+ (define it (list-iterator source))
+ (define tit (it-transform it transform))
+ (assert-equal? expected (iterator->list tit))
+)
+
+; Test transformation of null list.
+(check-transform '() '() square)
+
+; Test transformation of single item.
+(check-transform '(2) '(4) square)
+
+; Test transformation of the sample.
+(check-transform sample '(1 4 9 16 25) square)
+
+(define (check-join expected . lists)
+ (define it (list-iterator lists))
+ (define jit (join-iterators it list-iterator))
+ (assert-equal? expected (iterator->list jit))
+)
+
+; Test join iteration of 1..3 empty lists.
+(check-join '() '())
+(check-join '() '() '())
+(check-join '() '() '() '())
+
+; Test join iteration of various combinations.
+(check-join '(1) '(1))
+(check-join '(1 2) '(1 2))
+(check-join '(1 2 3) '(1 2 3))
+(check-join '(1 2) '(1) '(2))
+(check-join '(1 2 3) '(1) '(2) '(3))
+(check-join '(1 2 3) '(1 2) '(3))
+(check-join '(1 2 3) '(1) '(2 3))
+(check-join '(1 2 3 4 5) '(1) '(2 3) '(4 5))
