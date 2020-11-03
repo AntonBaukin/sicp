@@ -60,7 +60,7 @@
 ; Arguments: (table).
 ;
 ; It returns an iteration function that provides table items
-; as pairs of ((key value) . set)). By using function «set» you
+; as pairs of ((key value) . set). By using function «set» you
 ; may change the value stored as (set (key value) new-value),
 ; where (key value) is the list provided. Note that this list
 ; may contain additional items to be used by «set».
