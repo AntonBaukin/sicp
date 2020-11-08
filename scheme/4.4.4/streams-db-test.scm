@@ -2,6 +2,7 @@
 
 (include "../3.3.2/assert.scm")
 (include "stream.scm")
+(include "interfaces.scm")
 (include "streams-db.scm")
 
 (define db (make-streams-db))

@@ -5,33 +5,9 @@
 (include "../3.3.2/iterate.scm")
 (include "../3.3.3/tree-red-black.scm")
 (include "../3.3.3/table-tree.scm")
-
 ;
-; The following declarations define the interface of
-; Streams Database. For the given instance they return
-; bound method of accessing the database.
+; Depends on «stream.scm» and «interfaces.scm».
 ;
-
-; Streams getter.
-; For the given key returns a stream of records.
-; Returns empty stream when the key is not found.
-; Arguments: (key-symbol).
-(define (streams-db-get streams-db)
- (list-ref streams-db 0)
-)
-
-; Alls streams getter.
-; Returns a stream that combines all the streams stored.
-; Arguments: ().
-(define (streams-db-all streams-db)
- (list-ref streams-db 1)
-)
-
-; Adds value to the database by the given key.
-; Arguments: (key item).
-(define (streams-db-add streams-db)
- (list-ref streams-db 2)
-)
 
 ; Previously we used symbols as a keys.
 ; Here we replace it with strings as this is faster.
