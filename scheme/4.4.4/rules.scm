@@ -1,15 +1,17 @@
 ;
-; Implements interface to store and query the assertions.
+; Implements interface to store and query the rules.
 ; Depends on «defs.scm».
 ;
-(define (make-assertions-db make-streams-db)
+(define (make-rules-db make-streams-db)
  (define db (make-streams-db))
  (define db-get (streams-db-get db))
  (define db-all (streams-db-all db))
  (define db-add (streams-db-add db))
-
- (define (assertion-key assertion)
-  (car (untag assertion))
+ 
+ (define (rule-key rule)
+  (define con (conclusion rule))
+  (define key (car con))
+  (if (variable? key) '? key)
  )
 
  (define (pattern-key pattern)
@@ -25,14 +27,16 @@
   (check-frame frame)
 
   (if (use-index? pattern)
-   (db-get (pattern-key pattern))
+   (stream-append
+    (db-get (pattern-key pattern))
+    (db-get '?)
+   )
    (db-all)
   )
  )
 
- (define (add assertion)
-  (check-assertion assertion)
-  (db-add (assertion-key assertion) assertion)
+ (define (add rule)
+  (db-add (rule-key (check-rule rule)) rule)
  )
 
  (list fetch add)

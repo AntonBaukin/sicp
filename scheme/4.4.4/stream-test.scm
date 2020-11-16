@@ -40,21 +40,18 @@
  (sub-stream->list 5 (stream-map square integers))
 )
 
-; Identity function:
-(define (identity x) x)
-
 ( ; Tests streaming of empty list iterator:
- (lambda () ;<— immediately invoked function
+ (lambda ()
   (define it (list-iterator '()))
-  (define s (iterator->stream identity it))
+  (define s (iterator->stream it))
   (assert-test s stream-null?)
  )
 )
 
 ( ; Tests streaming of single item list iterator:
- (lambda () ;<— immediately invoked function
+ (lambda ()
   (define it (list-iterator '(a)))
-  (define s (iterator->stream identity it))
+  (define s (iterator->stream it))
 
   (assert-eq? 1 (stream-length s))
   (assert-eq? 'a (stream-ref s 0))
@@ -62,14 +59,24 @@
 )
 
 ( ; Tests streaming of several items list iterator:
- (lambda () ;<— immediately invoked function
+ (lambda ()
   (define it (list-iterator '(a b c d)))
-  (define s (iterator->stream identity it))
+  (define s (iterator->stream it))
 
   (assert-eq? 4 (stream-length s))
   (assert-eq? 'a (stream-ref s 0))
   (assert-eq? 'b (stream-ref s 1))
   (assert-eq? 'c (stream-ref s 2))
   (assert-eq? 'd (stream-ref s 3))
+ )
+)
+
+( ; Tests streaming of several items list iterator:
+ (lambda ()
+  (define a (iterator->stream (list-iterator '(a b c d))))
+  (define b (iterator->stream (list-iterator '(1 2 3))))
+  (define s (stream-append a b))
+
+  (assert-equal? '(a b c d 1 2 3) (stream->list s))
  )
 )

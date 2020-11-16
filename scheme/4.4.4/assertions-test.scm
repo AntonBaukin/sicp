@@ -34,8 +34,8 @@
 (define frame (make-frame '()))
 (assert-test frame frame?)
 
-(define GetBoys '(boy ?name))
-(define GetMikeFriends '(friend Mike ?name))
+(define GetBoys '(boy (? . name)))
+(define GetMikeFriends '(friend Mike (? . name)))
 (define GetMikeInfo '((? . what) Mike))
 
 (assert-test GetBoys query?)

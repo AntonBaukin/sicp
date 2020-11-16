@@ -43,3 +43,14 @@
 (define (assertions-db-add assertions-db)
  (list-ref assertions-db 1)
 )
+
+; The same as for the assertions.
+; Arguments: (pattern frame).
+(define (rules-db-fetch rules-db)
+ (list-ref rules-db 0)
+)
+
+; Arguments: (assertion).
+(define (rules-db-add rules-db)
+ (list-ref rules-db 1)
+)

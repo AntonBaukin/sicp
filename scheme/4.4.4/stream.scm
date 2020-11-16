@@ -104,3 +104,13 @@
 (define (join-iterator->stream super-it make-sub-it)
  (iterator->stream (join-iterators super-it make-sub-it))
 )
+
+(define (stream-append a b)
+ (if (stream-null? a)
+  b
+  (cons
+   (stream-car a)
+   (stream-append (stream-cdr a) b)
+  )
+ )
+)

@@ -66,9 +66,22 @@
  (tagged? what 'rule)
 )
 
+(define (rule-correct? rule)
+ (and
+  (list? rule)
+  (rule? rule)
+  (or
+   (= 2 (length rule))
+   (= 3 (length rule))
+  )
+  (list? (cadr rule))
+  ; TODO: check rule deeply
+ )
+)
+
 (define (check-rule rule)
- (if (rule? rule) rule
-  (error "Not a rule" rule)
+ (if (rule-correct? rule) rule
+  (error "Not a valid rule" rule)
  )
 )
 
@@ -137,4 +150,8 @@
   (eq? '? (car what))
   (symbol? (cdr what))
  )
+)
+
+(define (conclusion rule)
+ (cadr rule)
 )
