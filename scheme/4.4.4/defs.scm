@@ -15,9 +15,11 @@
 )
 
 ; Frames from SICP §4.4.4.8.
-(define (make-frame items)
- (cons 'frame items)
+(define (make-frame bindings)
+ (cons 'frame bindings)
 )
+
+(define empty-frame (make-frame '()))
 
 (define (frame? what)
  (tagged? what 'frame)
@@ -29,7 +31,7 @@
  )
 )
 
-(define (frame-items frame)
+(define (frame-bindings frame)
  (cdr (check-frame frame))
 )
 
@@ -37,15 +39,12 @@
  (cons name value)
 )
 
-; Creates a new frame by extending the given one
-; with the (name . value) variable binding.
-(define (frame-bind frame name value)
- (make-frame
-  (cons
-   (make-binding name value)
-   (frame-items frame)
-  )
- )
+(define (binding-name binding)
+ (car binding)
+)
+
+(define (binding-value binding)
+ (cdr binding)
 )
 
 (define (pattern? what)
@@ -150,6 +149,10 @@
   (eq? '? (car what))
   (symbol? (cdr what))
  )
+)
+
+(define (variable-name var)
+ (cdr var)
 )
 
 (define (conclusion rule)
