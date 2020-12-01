@@ -27,7 +27,7 @@
  )
 
  (define (record->iterator record)
-  (list-iterator (cdr record))
+  (list-iterator-ext void (cdr record))
  )
 
  (define (record->stream record)
@@ -46,7 +46,7 @@
 
  (define (get-all)
   (join-iterator->stream
-   (iterator table)
+   (voided-iterator (iterator table))
    (lambda (recset)
     ; Hint: check what returns table iterator.
     (record->iterator (cadar recset))

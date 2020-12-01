@@ -1,6 +1,12 @@
 ; Depends on «../3.3.2/iterate.scm».
 
 ;
+; Warning! This module, as whole QEval in this part,
+; does use «void» value as the iteration stop-signal
+; instead of the empty lists.
+;
+
+;
 ; Copy from «3.5.1/stream.scm» and «3.5.1/streams.scm»
 ; with functions specific for Queries Evaluator (QEval).
 ;
@@ -11,6 +17,8 @@
 (define the-empty-stream '())
 
 (define stream-null? null?)
+
+(define (void? x) (eq? void x))
 
 (define (stream-pair? x)
  (and
@@ -52,6 +60,35 @@
  )
 )
 
+(define (stream-flatmap mapper stream)
+ (stream-flatten (stream-map mapper stream))
+)
+
+; Does 1-level flattenning of the items that must be streams.
+; The resulting items are interleaved.
+(define (stream-flatten stream)
+ (if (stream-null? stream)
+  the-empty-stream
+  (interleave-delayed
+   (stream-car stream)
+   (delay (stream-flatten (stream-cdr stream)))
+  )
+ )
+)
+
+(define (interleave-delayed sa sb-delayed)
+ (if (stream-null? sa)
+  (force sb-delayed)
+  (cons-stream
+   (stream-car sa)
+   (interleave-delayed
+    (force sb-delayed)
+    (delay (stream-cdr sa))
+   )
+  )
+ )
+)
+
 ; Works for fixed length streams. Used mostly for the testing.
 (define (stream->list s)
  (if (stream-null? s) '()
@@ -83,6 +120,15 @@
  )
 )
 
+; HOF that wraps iterator stopping on empty list
+; to iterator stopping on void.
+(define (voided-iterator it)
+ (lambda ()
+  (define v (it))
+  (if (null? v) void v)
+ )
+)
+
 ; Takes iterator and returns a stream over it.
 ; Iterator is a function that returns an item on each call,
 ; or an empty list, when it's done. Transformation function
@@ -91,7 +137,7 @@
  (define (next)
   (define item (it))
 
-  (if (null? item)
+  (if (void? item)
    the-empty-stream
    (cons-stream item (next))
   )
@@ -102,15 +148,40 @@
 
 ; Creates composite iterator via «join-iterators» wrapped as a stream.
 (define (join-iterator->stream super-it make-sub-it)
- (iterator->stream (join-iterators super-it make-sub-it))
+ (iterator->stream (join-iterators-ext void void? super-it make-sub-it))
 )
 
 (define (stream-append a b)
  (if (stream-null? a)
   b
-  (cons
+  (cons-stream
    (stream-car a)
    (stream-append (stream-cdr a) b)
+  )
+ )
+)
+
+(define (stream-filter matcher stream)
+ (if (stream-null? stream)
+  the-empty-stream
+  (let ((x (matcher (stream-car stream))))
+   (cond
+    ((eq? #t x)
+     (cons-stream
+      (stream-car stream)
+      (stream-filter matcher (stream-cdr stream))
+     )
+    )
+    ((eq? #f x)
+     (stream-filter matcher (stream-cdr stream))
+    )
+    (else
+     (cons-stream
+      x ;<— use match result as a value
+      (stream-filter matcher (stream-cdr stream))
+     )
+    )
+   )
   )
  )
 )

@@ -40,19 +40,19 @@
  (sub-stream->list 5 (stream-map square integers))
 )
 
+(define (list->stream l)
+ (iterator->stream (list-iterator-ext void l))
+)
+
 ( ; Tests streaming of empty list iterator:
  (lambda ()
-  (define it (list-iterator '()))
-  (define s (iterator->stream it))
-  (assert-test s stream-null?)
+  (assert-test (list->stream '()) stream-null?)
  )
 )
 
 ( ; Tests streaming of single item list iterator:
  (lambda ()
-  (define it (list-iterator '(a)))
-  (define s (iterator->stream it))
-
+  (define s (list->stream '(a)))
   (assert-eq? 1 (stream-length s))
   (assert-eq? 'a (stream-ref s 0))
  )
@@ -60,8 +60,7 @@
 
 ( ; Tests streaming of several items list iterator:
  (lambda ()
-  (define it (list-iterator '(a b c d)))
-  (define s (iterator->stream it))
+  (define s (list->stream '(a b c d)))
 
   (assert-eq? 4 (stream-length s))
   (assert-eq? 'a (stream-ref s 0))
@@ -73,10 +72,57 @@
 
 ( ; Tests streaming of several items list iterator:
  (lambda ()
-  (define a (iterator->stream (list-iterator '(a b c d))))
-  (define b (iterator->stream (list-iterator '(1 2 3))))
+  (define a (list->stream '(a b c d)))
+  (define b (list->stream '(1 2 3)))
   (define s (stream-append a b))
 
   (assert-equal? '(a b c d 1 2 3) (stream->list s))
+ )
+)
+
+( ; Tests streams interleaved flattening:
+ (lambda ()
+  (define a (list->stream '(a b)))
+  (define b (list->stream '(1 2 3)))
+  (define c (list->stream '(- + *)))
+  (define d (list->stream '(U W)))
+  (define s (list->stream (list a b c d)))
+
+  (assert-equal? '(a 1 b - 2 U 3 + W *) (stream->list (stream-flatten s)))
+ )
+)
+
+( ; Tests streams (some being nulls) flattening:
+ (lambda ()
+  (define a (list->stream '(a b)))
+  (define b (list->stream '(1 2 3)))
+  (define c (list->stream '(c)))
+  (define d (list->stream '()))
+  (define s (list->stream (list a b d c d)))
+
+  (assert-equal? '(a 1 b c 2 3) (stream->list (stream-flatten s)))
+ )
+)
+
+( ; Tests stream filter:
+ (lambda ()
+  (assert-equal? '(2 6 8)
+   (stream->list (stream-filter even? (list->stream '(1 2 3 5 6 8 9))))
+  )
+ )
+)
+
+( ; Tests stream filter with transform:
+ (lambda ()
+  (assert-equal? '(4 36 64)
+   (stream->list
+    (stream-filter
+     (lambda (n)
+      (if (even? n) (square n) #f)
+     )
+     (list->stream '(1 2 3 5 6 8 9))
+    )
+   )
+  )
  )
 )

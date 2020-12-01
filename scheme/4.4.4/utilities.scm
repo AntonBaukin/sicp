@@ -1,5 +1,4 @@
 
-
 ; Converts variables «?some» of input query
 ; into pairs of (? . some).
 (define (parse-query query)
@@ -100,4 +99,28 @@
  )
 
  (next '() (frame-bindings frame))
+)
+
+; Takes parsed query (untagged pattern) and the frame,
+; and substitutes found variables.
+(define (instantiate query frame)
+ (cond
+  ((variable? query)
+   (let ((value (frame-get frame (variable-name query))))
+    (if (null? value)
+     (print-query query) ;<— return variable as «?name»
+     value ;<— return that value
+    )
+   )
+  )
+
+  ((pair? query)
+   (cons
+    (instantiate (car query) frame)
+    (instantiate (cdr query) frame)
+   )
+  )
+
+  (else query)
+ )
 )

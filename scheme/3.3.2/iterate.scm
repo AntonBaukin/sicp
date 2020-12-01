@@ -30,12 +30,36 @@
  )
 )
 
+(define (list-iterator-ext null-value lst)
+ (lambda ()
+  (if (null? lst) null-value
+   (let ((result (car lst)))
+    (set! lst (cdr lst))
+    result
+   )
+  )
+ )
+)
+
 ; Collectes iterated items to a list.
 (define (iterator->list it)
  (define (next result)
   (define item (it))
 
   (if (null? item)
+   (reverse result)
+   (next (cons item result))
+  )
+ )
+
+ (next '())
+)
+
+(define (iterator->list-ext isnull? it)
+ (define (next result)
+  (define item (it))
+
+  (if (isnull? item)
    (reverse result)
    (next (cons item result))
   )
@@ -56,14 +80,14 @@
 ; Performs composite iteration over several collections.
 ; Super iterator returns collections, and «make-sub-it»
 ; returns sub-iterator for given collection.
-(define (join-iterators super-it make-sub-it)
+(define (join-iterators-ext null-value isnull? super-it make-sub-it)
  (define coit '())
 
  (define (next)
   (if (null? coit)
    (let ((co (super-it)))
-    (if (null? co)
-     '() ;<— done the iteration
+    (if (isnull? co)
+     null-value ;<— done the iteration
      (begin
       (set! coit (make-sub-it co))
       (next)
@@ -71,7 +95,7 @@
     )
    )
    (let ((item (coit)))
-    (if (null? item)
+    (if (isnull? item)
      (begin
       (set! coit '())
       (next)
@@ -83,4 +107,8 @@
  )
 
  next ;<— resulting iterator
+)
+
+(define (join-iterators super-it make-sub-it)
+ (join-iterators-ext '() null? super-it make-sub-it)
 )
