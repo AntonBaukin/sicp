@@ -185,3 +185,7 @@
   )
  )
 )
+
+(define (singleton-stream item)
+ (cons-stream item the-empty-stream)
+)
