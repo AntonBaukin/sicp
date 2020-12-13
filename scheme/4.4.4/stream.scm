@@ -146,6 +146,10 @@
  (next)
 )
 
+(define (list->stream lst)
+ (iterator->stream (list-iterator-ext void lst))
+)
+
 ; Creates composite iterator via «join-iterators» wrapped as a stream.
 (define (join-iterator->stream super-it make-sub-it)
  (iterator->stream (join-iterators-ext void void? super-it make-sub-it))

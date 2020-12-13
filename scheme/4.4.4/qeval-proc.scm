@@ -4,7 +4,16 @@
 ;
 
 (define (qproc-and conjuncts frame-stream)
- frame-stream
+ (if (null? conjuncts)
+  frame-stream
+  (qproc-and
+   (cdr conjuncts)
+   (qeval-disp
+    (make-pattern (car conjuncts))
+    frame-stream
+   )
+  )
+ )
 )
 
 (define (qproc-or disjuncts frame-stream)
@@ -20,11 +29,17 @@
 )
 
 ; Override this mapping list with your own implementations.
-(define qeval-procs
- (list
-  (list 'and qproc-and)
-  (list 'or  qproc-or)
-  (list 'not qproc-not)
-  (list 'lisp-value qproc-lisp-value)
+(define set-qeval-procs
+ (
+  (lambda () ;<— immediately invoked function
+   (set! qeval-procs
+    (list
+     (list 'and qproc-and)
+     (list 'or  qproc-or)
+     (list 'not qproc-not)
+     (list 'lisp-value qproc-lisp-value)
+    )
+   )
+  )
  )
 )

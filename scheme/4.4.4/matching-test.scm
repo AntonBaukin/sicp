@@ -10,6 +10,11 @@
  (if (eq? void frame) 'null (frame->list frame))
 )
 
+(define (match-frame bindings query statement)
+ (define frame (pattern-match (parse-query query) statement (make-frame bindings)))
+ (if (eq? void frame) 'null (frame->list frame))
+)
+
 ; Matching: dummy queries without variables.
 (assert-equal? '() (match '(a) '(a)))
 (assert-equal? '() (match '(a b) '(a b)))
@@ -57,3 +62,9 @@
 (assert-equal? '((b (b)) (a a)) (match '(?a . ?b) '(a b)))
 (assert-equal? '((cd (c d)) (a a)) (match '(?a b . ?cd) '(a b c d)))
 (assert-equal? '((cd (c d)) (b b) (a a)) (match '(?a (?b . ?cd)) '(a (b c d))))
+
+; Matching: single frame on the input.
+(assert-equal? '((b b) (c c)) (match-frame '((c . c)) '(a ?b ?c) '(a b c)))
+
+; Matching: wrong value of the frame on the input.
+(assert-equal? 'null (match-frame '((c . x)) '(a ?b ?c) '(a b c)))

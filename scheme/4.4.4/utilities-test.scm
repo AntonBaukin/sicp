@@ -74,3 +74,19 @@
 (assert-equal? '(a . 1) (frame-get ab-frame 'a))
 (assert-equal? '(b . 2) (frame-get ab-frame 'b))
 (assert-equal? '() (frame-get ab-frame 'c))
+
+; Instantiate: scalar variables.
+(assert-equal? '(assert 1 + 2 = 3)
+ (instantiate
+  '(assert (? . a) + (? . b) = (? . c))
+  (make-frame '((a 1) (b 2) (c 3)))
+ )
+)
+
+; Instantiate: list variables.
+(assert-equal? '(assert (1 2) + (3 4) = (1 2 3 4))
+ (instantiate
+  '(assert (? . a) + (? . b) = (? . c))
+  (make-frame '((a 1 2) (b 3 4) (c 1 2 3 4)))
+ )
+)

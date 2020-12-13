@@ -25,16 +25,38 @@
 ; —————————————————————————————————————————————————————————
 
 ; List all known persons with their positions:
-(test-query
- (job ?name ?position)
+;(test-query
+; (job ?name ?position)
+;; —————————————————————————————————————————————————————————
+; (job (Aull DeWitt) (administration secretary))
+; (job (Cratchet Robert) (accounting scrivener))
+; (job (Scrooge Eben) (accounting chief accountant))
+; (job (Warbucks Oliver) (administration big wheel))
+; (job (Doom Hugo) (computer programmer trainee))
+; (job (Tweakit Lem E) (computer technician))
+; (job (Fect Cy D) (computer programmer))
+; (job (Hacker Alyssa P) (computer programmer))
+; (job (Bitdiddle Ben) (computer wizard))
+;)
+
+
 ; —————————————————————————————————————————————————————————
- (job (name Aull DeWitt) (position administration secretary))
- (job (name Cratchet Robert) (position accounting scrivener))
- (job (name Scrooge Eben) (position accounting chief accountant))
- (job (name Warbucks Oliver) (position administration big wheel))
- (job (name Doom Hugo) (position computer programmer trainee))
- (job (name Tweakit Lem E) (position computer technician))
- (job (name Fect Cy D) (position computer programmer))
- (job (name Hacker Alyssa P) (position computer programmer))
- (job (name Bitdiddle Ben) (position computer wizard))
+; —— Section Two: Test composite queries w/o rules       ——
+; —————————————————————————————————————————————————————————
+
+; «And» with two related conditions:
+(test-query
+ (and
+  (job ?person (computer programmer))
+  (address ?person ?where)
+ )
+; —————————————————————————————————————————————————————————
+ (and
+  (job (Fect Cy D) (computer programmer))
+  (address (Fect Cy D) (Cambridge (Ames Street) 3))
+ )
+ (and
+  (job (Hacker Alyssa P) (computer programmer))
+  (address (Hacker Alyssa P) (Cambridge (Mass Ave) 78))
+ )
 )

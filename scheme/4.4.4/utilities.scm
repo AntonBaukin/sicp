@@ -108,8 +108,8 @@
   ((variable? query)
    (let ((value (frame-get frame (variable-name query))))
     (if (null? value)
-     (print-query query) ;<— return variable as «?name»
-     value ;<— return that value
+     (print-query query)   ;<— return variable as «?name»
+     (binding-value value) ;<— return that value
     )
    )
   )

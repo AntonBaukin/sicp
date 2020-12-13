@@ -4,6 +4,7 @@
 ; Standard modules of QEval implementation:
 (define qeval-includes-std '(
  "../2.3.3/curry.scm"
+ "../3.3.2/iterate.scm"
  "../4.4.4/interfaces.scm"
  "../4.4.4/defs.scm"
  "../4.4.4/stream.scm"

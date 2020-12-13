@@ -2,7 +2,6 @@
 ; Creates data structure required for the assertions
 ; and the rules database defined in SICP §4.4.4.5.
 ;
-(include "../3.3.2/iterate.scm")
 (include "../3.3.3/tree-red-black.scm")
 (include "../3.3.3/table-tree.scm")
 ;

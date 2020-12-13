@@ -1,7 +1,15 @@
+;
+; QEval dispathing evaluator. Define it in modules.
+;
+(define qeval-disp void)
+;
+; Define list of lists: (symbolic-name sub-evaluator).
+;
+(define qeval-procs '())
 
 (define (tagged? what . tag)
  (and
-  (list? what)
+  (pair? what)
   (not (null? what))
   (or
    (null? tag)
