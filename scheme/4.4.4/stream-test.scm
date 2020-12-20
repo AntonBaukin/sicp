@@ -80,6 +80,26 @@
  )
 )
 
+( ; Tests stream interleaved with empty one:
+ (lambda ()
+  (define a (list->stream '(a b c)))
+  (define b (list->stream '()))
+  (define s (interleave-delayed a b))
+
+  (assert-equal? '(a b c) (stream->list s))
+ )
+)
+
+( ; Tests two streams interleaved:
+ (lambda ()
+  (define a (list->stream '(a b c)))
+  (define b (list->stream '(1 2 3)))
+  (define s (interleave-delayed a b))
+
+  (assert-equal? '(a 1 b 2 c 3) (stream->list s))
+ )
+)
+
 ( ; Tests streams interleaved flattening:
  (lambda ()
   (define a (list->stream '(a b)))
@@ -124,5 +144,11 @@
     )
    )
   )
+ )
+)
+
+( ; Tests singleton stream:
+ (lambda ()
+  (assert-equal? '(1) (stream->list (singleton-stream 1)))
  )
 )

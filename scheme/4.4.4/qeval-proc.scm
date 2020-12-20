@@ -1,6 +1,6 @@
 ;
 ; Procedures of QEval: and, or, not, lisp-value.
-; Depends on: «stream.scm», and «defs.scm».
+; Depends on: «stream.scm», «defs.scm», and «utilities.scm».
 ;
 
 (define (qproc-and conjuncts frame-stream)
@@ -17,14 +17,57 @@
 )
 
 (define (qproc-or disjuncts frame-stream)
- frame-stream
+ (if (null? disjuncts)
+  the-empty-stream
+  (interleave-delayed
+   (qeval-disp
+    (make-pattern (car disjuncts))
+    frame-stream
+   )
+   (delay
+    (qproc-or (cdr disjuncts) frame-stream)
+   )
+  )
+ )
 )
 
 (define (qproc-not operands frame-stream)
- frame-stream
+ (stream-flatmap
+  (lambda (frame)
+   (define single-frame (singleton-stream frame))
+   (define negated-frames
+    (qeval-disp
+     (make-pattern (car operands))
+     single-frame
+    )
+   )
+
+   (if (stream-null? negated-frames)
+    (singleton-stream frame)
+    the-empty-stream
+   )
+  )
+  frame-stream
+ )
+)
+
+(define (lisp-value-match? call frame)
+ (eval (instantiate call frame))
 )
 
 (define (qproc-lisp-value call frame-stream)
+ (stream-flatmap
+  (lambda (frame)
+   (if (lisp-value-match? call frame)
+    (singleton-stream frame)
+    the-empty-stream
+   )
+  )
+  frame-stream
+ )
+)
+
+(define (qproc-always-true ignore frame-stream)
  frame-stream
 )
 
@@ -38,6 +81,7 @@
      (list 'or  qproc-or)
      (list 'not qproc-not)
      (list 'lisp-value qproc-lisp-value)
+     (list 'always-true qproc-always-true)
     )
    )
   )
