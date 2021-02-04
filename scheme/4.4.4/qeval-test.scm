@@ -134,3 +134,10 @@
  (and (salary (Hacker Alyssa P) 40000) (lisp-value > 40000 30000))
  (and (salary (Bitdiddle Ben) 60000) (lisp-value > 60000 30000))
 )
+
+
+; —————————————————————————————————————————————————————————
+; —— Section Two: Standalone rules                       ——
+; —————————————————————————————————————————————————————————
+
+

@@ -76,7 +76,7 @@
 (assert-equal? '() (frame-get ab-frame 'c))
 
 ; Instantiate: scalar variables.
-(assert-equal? '(assert 1 + 2 = 3)
+(assert-equal? '(assert (1) + (2) = (3))
  (instantiate
   '(assert (? . a) + (? . b) = (? . c))
   (make-frame '((a 1) (b 2) (c 3)))
@@ -89,4 +89,74 @@
   '(assert (? . a) + (? . b) = (? . c))
   (make-frame '((a 1 2) (b 3 4) (c 1 2 3 4)))
  )
+)
+
+(define (deps? var exp . bindings)
+ (exp-depends-on?
+  (parse-query exp)
+  (cons '? var)
+  (make-frame (map parse-query bindings))
+ )
+)
+
+; Depends on: same variable.
+(assert-true? (deps? 'x '?x ))
+(assert-false? (deps? 'y '?x ))
+
+; Depends on: complex expression.
+(
+ (lambda (exp)
+  (assert-true? (deps? 'x exp))
+  (assert-true? (deps? 'y exp))
+  (assert-false? (deps? 'z exp))
+ )
+ '(and (person ?y) (not (busy ?x)))
+)
+
+; Depends on: expression in variable.
+(assert-true?
+ (deps?
+  'x
+  '(and (person ?y) (not (busy ?z)))
+  '(y (match ?v yes))
+  '(z (match ?x true))
+ )
+)
+
+; Rename vars: expression w/o vars.
+(assert-equal?
+ '(and (person Mike) (not? synth))
+ (rename-vars-in
+  (next-unique-var-id)
+  '(and (person Mike) (not? synth))
+ )
+)
+
+; Rename vars: expression with vars.
+(assert-equal?
+ '(and (person (? . $2:person)) (not? (? . $2:type)))
+ (rename-vars-in
+  (next-unique-var-id)
+  '(and (person (? . person)) (not? (? . type)))
+ )
+)
+
+; Resolve variables: no variables.
+(assert-equal? '((c . X) (b 1 2) (a . 1))
+ (resolve-all-vars '((a . 1) (b . (1 2)) (c . X)))
+)
+
+; Resolve variables: single post-reference.
+(assert-equal? '((c . X) (a . 1) (b . 1))
+ (resolve-all-vars '((a . 1) (b . (? . a)) (c . X)))
+)
+
+; Resolve variables: single pre-reference.
+(assert-equal? '((c . X) (a . 1) (b . X))
+ (resolve-all-vars '((a . 1) (b . (? . c)) (c . X)))
+)
+
+; Resolve variables: nested references.
+(assert-equal? '((a . X) (b . X) (c . X))
+ (resolve-all-vars '((a . (? . c)) (b . X) (c . (? . b))))
 )

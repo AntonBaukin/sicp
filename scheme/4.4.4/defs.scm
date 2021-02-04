@@ -55,6 +55,11 @@
  (cdr binding)
 )
 
+(define (binding-value-unlist binding)
+ (define v (binding-value binding))
+ (if (and (list? v) (= 1 (length v))) (car v) v)
+)
+
 (define (pattern? what)
  (tagged? what 'pattern)
 )

@@ -69,18 +69,16 @@
 
 ; Searches for binding with the given name.
 ; Returns empty list, if not found.
-(define (frame-get frame name)
- (define (next bindings)
-  (cond
-   ((null? bindings) '())
-   ((eq? name (binding-name (car bindings)))
-    (car bindings)
-   )
-   (else (next (cdr bindings)))
-  )
+(define (find-binding bindings name)
+ (cond
+  ((null? bindings) '())
+  ((eq? name (binding-name (car bindings))) (car bindings))
+  (else (find-binding (cdr bindings) name))
  )
+)
 
- (next (frame-bindings frame))
+(define (frame-get frame name)
+ (find-binding (frame-bindings frame) name)
 )
 
 ; Used for testing.
@@ -122,5 +120,111 @@
   )
 
   (else query)
+ )
+)
+
+(define (exp-depends-on? exp var frame)
+ (define (iter e)
+  (cond
+   ((variable? e)
+    (if (equal? var e) #t
+     (let ((b (frame-get frame (variable-name e))))
+      (if (null? b) #f (iter (binding-value b)))
+     )
+    )
+   )
+   ((pair? e) (or (iter (car e)) (iter (cdr e))))
+   (else #f)
+  )
+ )
+
+ (iter exp)
+)
+
+(define unique-var-id 1)
+
+(define (next-unique-var-id)
+ (define result unique-var-id)
+ (set! unique-var-id (+ unique-var-id 1))
+ result
+)
+
+(define (make-unique-var id var)
+ (cons '?
+  (string->symbol
+   (string-append
+    "$" (number->string id) ":"
+    (symbol->string (variable-name var))
+   )
+  )
+ )
+)
+
+(define (rename-vars-in id exp)
+ (define (iter exp)
+  (cond
+   ((variable? exp)
+    (make-unique-var id exp)
+   )
+
+   ((pair? exp)
+    (cons
+     (rename-vars-in id (car exp))
+     (rename-vars-in id (cdr exp))
+    )
+   )
+
+   (else exp)
+  )
+ )
+
+ (iter exp)
+)
+
+; Assuming that there is no cyclic dependencies
+(define resolve-all-vars
+ (
+  (lambda () ;<— immediately invoked function
+
+   (define (resolve-first head tail)
+    (if (null? tail) head
+     (let ((b (resolve-binding (append head tail) (car tail))))
+      (if (null? b)
+       (resolve-first (cons (car tail) head) (cdr tail))
+       ; After replacement we start again to back-resolve:
+       (resolve-first '() (append (cons b head) (cdr tail)))
+      )
+     )
+    )
+   )
+
+   (define (resolve-binding bindings b)
+    (define x (resolve-value bindings (binding-value b)))
+    (if (equal? x (binding-value b)) '()
+     (cons (binding-name b) x)
+    )
+   )
+
+   (define (resolve-value bindings value)
+    (cond
+     ((variable? value)
+      (let ((b (find-binding bindings (variable-name value))))
+       (if (null? b) value (binding-value-unlist b))
+      )
+     )
+     ((pair? value)
+      (cons
+       (resolve-value bindings (car value))
+       (resolve-value bindings (cdr value))
+      )
+     )
+     (else value)
+    )
+   )
+
+   (lambda (bindings)
+    (resolve-first '() bindings)
+   )
+  )
  )
 )
