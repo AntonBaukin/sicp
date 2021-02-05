@@ -104,10 +104,10 @@
 (define (instantiate query frame)
  (cond
   ((variable? query)
-   (let ((value (frame-get frame (variable-name query))))
-    (if (null? value)
-     (print-query query)   ;<— return variable as «?name»
-     (binding-value value) ;<— return that value
+   (let ((b (frame-get frame (variable-name query))))
+    (if (null? b)
+     (print-query query)                   ;<— return variable as «?name»
+     (instantiate (binding-value b) frame) ;<— resolve value recursively
     )
    )
   )

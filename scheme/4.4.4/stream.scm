@@ -165,6 +165,16 @@
  )
 )
 
+(define (stream-append-delayed a b-delayed)
+ (if (stream-null? a)
+  (force b-delayed)
+  (cons-stream
+   (stream-car a)
+   (stream-append-delayed (stream-cdr a) b-delayed)
+  )
+ )
+)
+
 (define (stream-filter matcher stream)
  (if (stream-null? stream)
   the-empty-stream

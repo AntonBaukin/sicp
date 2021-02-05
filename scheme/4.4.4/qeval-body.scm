@@ -24,6 +24,10 @@
  (adb-add (make-assertion statement))
 )
 
+(define (add-rule rule)
+ (rdb-add (parse-query rule))
+)
+
 (define (make-pattern-matcher pattern input-frame)
  (define query (untag (check-pattern pattern)))
 
@@ -44,8 +48,10 @@
 (define (simple-query pattern frame-stream)
  (stream-flatmap
   (lambda (frame)
-   ; TODO: extend query with rules matching
-   (fetch-assertions pattern frame)
+   (stream-append-delayed
+    (fetch-assertions pattern frame)
+    (delay (apply-rules pattern frame))
+   )
   )
   frame-stream
  )
@@ -68,5 +74,37 @@
 )
 
 (define (make-qeval-body)
- (list add-statement rdb-add eval-query)
+ (list add-statement add-rule eval-query)
+)
+
+(define (apply-rules pattern frame)
+ (stream-flatmap
+  (lambda (rule)
+   (apply-rule rule pattern frame)
+  )
+  (rdb-fetch pattern frame)
+ )
+)
+
+(define (apply-rule rule pattern frame)
+ (define unique-rule (rename-vars-in (next-unique-var-id) rule))
+
+ ; Note that heavy unify-match-resolved() resolves values
+ ; of variables that depend on other variables. Here we
+ ; do not apply it, but move to recursive instantiate().
+ (define match-frame
+  (unify-match
+   (untag pattern)
+   (rule-conclusion unique-rule)
+   frame
+  )
+ )
+
+ (if (eq? void match-frame)
+  the-empty-stream
+  (qeval-disp
+   (make-pattern (rule-body unique-rule))
+   (singleton-stream match-frame)
+  )
+ )
 )
