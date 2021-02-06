@@ -45,6 +45,13 @@
  (list-ref qeval 2)
 )
 
+; Returns a QEval query function with mapping.
+; Resulting function arguments: (mapper query).
+; Mapper takes: (frame).
+(define (qeval-query-map qeval)
+ (list-ref qeval 3)
+)
+
 ; Adds the list of statements (assertions) to the given QEval instance.
 (define (qeval-add-statements qeval statements)
  (for-each (qeval-add qeval) statements)
