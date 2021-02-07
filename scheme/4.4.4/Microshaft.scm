@@ -2,8 +2,8 @@
 ; Famous organization database from SICP §4.4.1
 ; that sounds like, you know...
 ;
-; In russian translation Hugo Doom is named as Hugo Doom.
-; I don't know why such a change, but Hugo does a lot of pain!
+; In russian translation Reasoner Louis is named as Hugo Doom.
+; I don't know why such a change, but Hugo is pretty harmful!
 ;
 (define Microshaft '(
  (address (Bitdiddle Ben) (Slumerville (Ridge Road) 10))
