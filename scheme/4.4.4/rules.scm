@@ -11,7 +11,7 @@
  (define (rule-key rule)
   (define con (conclusion rule))
   (define key (car con))
-  (if (variable? key) '? key)
+  (if (symbol? key) key '?)
  )
 
  (define (pattern-key pattern)

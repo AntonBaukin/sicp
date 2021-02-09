@@ -138,11 +138,26 @@
  (and 
   (list? what)
   (< 0 (length what))
-  (or
-   (constant-symbol? (car what))
-   (variable? (car what))
-  )
+  (complex-query-name? (car what))
   ; TODO: check query deeply
+ )
+)
+
+; In §4.4.1 is said that query name may be a symbol
+; or a variable. But in task 4.69 we see, that name
+; may be any expression containing symbols or vars.
+(define (complex-query-name? name)
+ (or
+  (constant-symbol? name)
+  (variable? name)
+  (and
+   (pair? name)
+   (complex-query-name? (car name))
+   (or
+    (null? (cdr name))
+    (complex-query-name? (cdr name))
+   )
+  )
  )
 )
 
