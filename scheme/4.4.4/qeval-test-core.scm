@@ -75,6 +75,17 @@
   )
  )
 
+ (define (var? x)
+  (and (pair? x) (eq? '? (car x)))
+ )
+
  (define b (find-binding (cdr frame) name))
- (if (null? b) '() (cdr b))
+
+ (cond
+  ((null? b) '())
+  ((var? (cdr b))
+   (frame-get frame (cddr b))
+  )
+  (else (cdr b))
+ )
 )

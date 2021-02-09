@@ -1,6 +1,7 @@
 (include "../4.4.4/qeval-test-core.scm")
 
 (add-rule (append () ?y ?y))
+
 (add-rule (append (?u . ?v) ?y (?u . ?z))
  (append ?v ?y ?z)
 )
