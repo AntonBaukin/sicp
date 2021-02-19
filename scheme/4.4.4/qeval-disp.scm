@@ -14,13 +14,42 @@
  )
 )
 
+; Redefine this function to protect the evaluator from infinite
+; recursion. Argument «case» is one of: 'push, or 'pop.
+;
+; On push, return #t to break, or raise an exception, log, etc.
+; Return #f to continue the evaluation.
+;
+; On pop normally return the given frames stream (the result).
+;
+(define (qeval-disp-protect case query frame-stream)
+ (cond
+  ((eq? 'push case) #f)
+  ((eq? 'pop case) frame-stream)
+  (else (error "Wrong QEval protection case" case))
+ )
+)
+
 (define (qeval-disp-impl pattern frame-stream)
  (define query (untag pattern))
  (define qproc (find-qproc (car query) qeval-procs))
 
- (if (null? qproc)
-  (simple-query pattern frame-stream)
-  (qproc (cdr query) frame-stream)
+ (cond
+  ((qeval-disp-protect 'push query frame-stream)
+   the-empty-stream
+  )
+
+  ((null? qproc)
+   (qeval-disp-protect 'pop query
+    (simple-query pattern frame-stream)
+   )
+  )
+
+  (else
+   (qeval-disp-protect 'pop query
+    (qproc (cdr query) frame-stream)
+   )
+  )
  )
 )
 

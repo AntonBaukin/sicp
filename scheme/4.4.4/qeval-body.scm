@@ -99,7 +99,7 @@
 )
 
 (define (apply-rule rule pattern frame)
- (define unique-rule (rename-vars-in (next-unique-var-id) rule))
+ (define unique-rule (rename-vars-in next-unique-var-id rule))
 
  ; Note that heavy unify-match-resolved() resolves values
  ; of variables that depend on other variables. Here we

@@ -160,17 +160,59 @@
  )
 )
 
-(define (rename-vars-in id exp)
+(define (string-search string char)
+ (define l (string-length string))
+
+ (define (next i)
+  (cond
+   ((= i l) -1)
+   ((eq? char (string-ref string i)) i)
+   (else (next (+ i 1)))
+  )
+ )
+
+ (next 0)
+)
+
+; Takes name of unique var of form $N:name and
+; returns a pair of (name:string . N:number),
+; or null, if name given is not a unique one.
+(define (decode-unique-var name-sym)
+ (define name (symbol->string name-sym))
+
+ (if (not (eq? #\$ (string-ref name 0))) '()
+  (let ((i (string-search name #\:)))
+   (if (= -1 i) '()
+    (cons
+     (substring name (+ i 1) (string-length name))
+     (string->number (substring name 1 i))
+    )
+   )
+  )
+ )
+)
+
+; Generates unique id on the first demand.
+(define (rename-vars-in make-id exp)
+ (define id '())
+
+ (define (get-id)
+  (if (null? id)
+   (set! id (make-id))
+  )
+  id
+ )
+
  (define (iter exp)
   (cond
    ((variable? exp)
-    (make-unique-var id exp)
+    (make-unique-var (get-id) exp)
    )
 
    ((pair? exp)
     (cons
-     (rename-vars-in id (car exp))
-     (rename-vars-in id (cdr exp))
+     (iter (car exp))
+     (iter (cdr exp))
     )
    )
 
@@ -181,7 +223,9 @@
  (iter exp)
 )
 
-; Assuming that there is no cyclic dependencies
+; Assuming that there is no cyclic dependencies, substitutes
+; each variable-referring value with the value of that variable.
+; Continues till no further replacement is possible.
 (define resolve-all-vars
  (
   (lambda () ;<— immediately invoked function

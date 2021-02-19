@@ -127,16 +127,16 @@
 (assert-equal?
  '(and (person Mike) (not? synth))
  (rename-vars-in
-  (next-unique-var-id)
+  next-unique-var-id
   '(and (person Mike) (not? synth))
  )
 )
 
 ; Rename vars: expression with vars.
 (assert-equal?
- '(and (person (? . $2:person)) (not? (? . $2:type)))
+ '(and (person (? . $1:person)) (not? (? . $1:type)))
  (rename-vars-in
-  (next-unique-var-id)
+  next-unique-var-id
   '(and (person (? . person)) (not? (? . type)))
  )
 )
