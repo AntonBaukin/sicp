@@ -6,24 +6,33 @@
 (define (make-qeval-loop-detector max-stack-depth max-repeat-count)
  (define (map-bindings result bindings)
   (if (null? bindings) result
-   (let ((x (map-binding (car bindings))))
-    (map-bindings
-     (if (null? x) result (cons x result))
-     (cdr bindings)
-    )
+   (map-bindings
+    (append (map-binding (car bindings)) result)
+    (cdr bindings)
    )
   )
  )
 
  (define (map-binding b)
-  (log "X> " (binding-value b))
+  (deep-map-reference '() (binding-name b) (binding-value b))
+ )
 
-  (if (variable? (binding-value b))
-   (map-reference
-    (binding-name b)
-    (variable-name (binding-value b))
+ (define (deep-map-reference result name item)
+  (cond
+   ((variable? item)
+    (append
+     (map-reference name (variable-name item))
+     result
+    )
    )
-   '()
+   ((pair? item)
+    (deep-map-reference
+     (deep-map-reference result name (car item))
+     name
+     (cdr item)
+    )
+   )
+   (else '())
   )
  )
 
@@ -33,17 +42,20 @@
 
   (if (or (null? sname) (null? tname))
    '()
-   (cons sname tname)
+   (list (cons sname tname))
   )
  )
 
  (define (make-entry query frame-stream)
   (if (stream-null? frame-stream)
    (list query empty-frame '())
-   (list
-    query
-    (stream-car frame-stream)
-    (map-bindings '() (frame-bindings (stream-car frame-stream)))
+   (let* (
+     (frame (stream-car frame-stream))
+     (mapped (map-bindings '() (frame-bindings frame)))
+    )
+    ;(log ">> " frame "\n")
+    ;(log "== " mapped "\n")
+    (list query frame mapped)
    )
   )
  )
@@ -199,7 +211,6 @@
 
  (lambda (bindings)
   (define index (make-index))
-  (log "  >> " bindings)
   (for-each (curry index-binding index) bindings)
   (check-index index)
  )

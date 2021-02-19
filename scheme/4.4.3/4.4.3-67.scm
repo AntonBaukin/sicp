@@ -70,11 +70,14 @@
 ; «4.4.3-67-inspect.scm».
 ;
 
-
+;
+; The same method also works with last sample of task 62.
+;
 (add-rule (last (?x) (?x)))
 
 (add-rule (last (?v . ?z) ?y)
  (last ?z ?y)
 )
 
+; QEval ERROR: detected open loop with rule variables pair «z:v»
 (log-query (last ?x (3)))
