@@ -85,8 +85,26 @@
  )
 )
 
+(define (eval-query-iter query)
+ (define parsed-query (parse-query query))
+ (define pattern (make-pattern parsed-query))
+
+ (stream->iterator
+  (stream-map
+   (curry instantiate parsed-query)
+   (eval-query-stream pattern)
+  )
+ )
+)
+
 (define (make-qeval-body)
- (list add-statement add-rule eval-query eval-query-map)
+ (list
+  add-statement
+  add-rule
+  eval-query
+  eval-query-map
+  eval-query-iter
+ )
 )
 
 (define (apply-rules pattern frame)

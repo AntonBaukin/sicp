@@ -52,7 +52,7 @@
 )
 
 (define (lisp-value-match? call frame)
- (eval (instantiate call frame))
+ (eval (prepare-for-eval (instantiate call frame)))
 )
 
 (define (qproc-lisp-value call frame-stream)

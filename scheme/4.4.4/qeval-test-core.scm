@@ -7,6 +7,7 @@
 (define qeval (make-qeval))
 (define query (qeval-query qeval))
 (define query-map (qeval-query-map qeval))
+(define query-iter-impl (qeval-query-iter qeval))
 
 ;
 ; Test support macroses.
@@ -51,6 +52,10 @@
 
 (define-macro (test-and-log-map mapper query . items)
  `(test-and-log-map-impl ,mapper (quote ,query) '(,@items))
+)
+
+(define-macro (query-iter query)
+ `(query-iter-impl (quote ,query))
 )
 
 (define (add-rule-impl qeval conclusion body-list)

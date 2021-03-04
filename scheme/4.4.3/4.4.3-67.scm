@@ -29,9 +29,9 @@
 ; The following query prints valid results after the error line:
 ; QEval ERROR: detected open loop with rule variables some:worker!
 ;
-;(log-query
-; (subordinates ?worker (Bitdiddle Ben))
-;)
+(log-query
+ (subordinates ?worker (Bitdiddle Ben))
+)
 
 ;
 ; If we trace the query execution, we see theese traces:

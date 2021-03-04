@@ -76,6 +76,15 @@
  )
 )
 
+(define (interleave a b)
+ (if (stream-null? a) b
+  (cons-stream
+   (stream-car a)
+   (interleave b (stream-cdr a))
+  )
+ )
+)
+
 (define (interleave-delayed sa sb-delayed)
  (if (stream-null? sa)
   (force sb-delayed)
@@ -144,6 +153,20 @@
  )
 
  (next)
+)
+
+; Iterator has no arguments. It returns items of the stream
+; on each call, or «void» when reaches it's end.
+(define (stream->iterator stream)
+ (lambda ()
+  (if (stream-null? stream)
+   void
+   (let ((result (stream-car stream)))
+    (set! stream (stream-cdr stream))
+    result
+   )
+  )
+ )
 )
 
 (define (list->stream lst)

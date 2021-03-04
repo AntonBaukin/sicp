@@ -24,7 +24,8 @@
 )
 
 ; Returns a QEval query function.
-; Resulting function arguments: (query), returns a list of answers.
+; Resulting function arguments: (query).
+; Returns a list of answers.
 (define (qeval-query qeval)
  (list-ref qeval 2)
 )
@@ -34,6 +35,14 @@
 ; Mapper takes: (frame).
 (define (qeval-query-map qeval)
  (list-ref qeval 3)
+)
+
+; Returns a QEval query function with iteration.
+; Resulting iteration function has no arguments.
+; On each call it returns the answer,
+; or «void» when reaches the end.
+(define (qeval-query-iter qeval)
+ (list-ref qeval 4)
 )
 
 ; Adds the list of statements (assertions) to the given QEval instance.

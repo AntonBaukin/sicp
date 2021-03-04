@@ -123,6 +123,21 @@
  )
 )
 
+(define (prepare-for-eval value)
+ (define (ps v)
+  ; We quote pairs not to treat them as function calls:
+  (if (pair? v) (list 'quote v) v)
+ )
+
+ (append
+  ; First item is function name on global scope:
+  (list (car value))
+  ; Each following item is a parameter of the call:
+  (map ps (cdr value))
+ )
+)
+
+
 (define (exp-depends-on? exp var frame)
  (define (iter e)
   (cond
