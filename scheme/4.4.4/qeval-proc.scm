@@ -84,9 +84,34 @@
 ; be deduced, such as in recursive samples of SICP,
 ; that cause infinite progression.
 ;
+; Special assignment of form ?:x treats name «x» as global
+; variable, and assigns that value excluding unique prefix.
+; This allows to pass values up the «stack».
+;
 (define (qproc-set exp frame-stream)
- (define (set-value frame exp)
+ (define (ordinary? name)
+  (not (eq? #\: (string-ref name 0)))
+ )
+
+ (define (assign-special frame name value)
   (frame-bind
+   frame
+   (string->symbol (substring name 1 (string-length name)))
+   value
+  )
+ )
+
+ (define (assign frame name value)
+  (define u (decode-unique-var name))
+
+  (if (or (null? u) (ordinary? (car u)))
+   (frame-bind frame name value)
+   (assign-special frame (car u) value)
+  )
+ )
+
+ (define (set-value frame exp)
+  (assign
    frame
    (variable-name (car exp))
    (cadr exp)
@@ -94,7 +119,7 @@
  )
 
  (define (set-eval frame exp)
-  (frame-bind
+  (assign
    frame
    (variable-name (car exp))
    (eval (prepare-for-eval (instantiate (cdr exp) frame)))
@@ -123,54 +148,99 @@
 )
 
 ; Simple «amb» form. The syntax is following:
-; (amb ?x value) where value may be a plain list,
-; a variable, or a list of variables
+; (amb ?x value) where value may be: a plain list,
+; a variable, a list of variables, produce function.
 ;
-; Produce function takes (value) and returns the next
-; value, or empty list to stop.
+; Produce function must be defined globally, and is
+; given by the name symbol. Hence, the value may not
+; be a plain symbol, or it's treated as a function.
+; Function takes (value) and returns the next one,
+; or empty list to stop. Initial value on the first
+; call is also empty list.
 ;
 ; Form produces a stream of frames where «?x» takes
 ; each value from the list.
 ;
-(define (qproc-amb exp frame-stream)
- (define (amb-any var value frame)
-  (cond
-   ((variable? value)
-    (let ((b (frame-get frame (variable-name value))))
-     (if (null? b)
-      (singleton-stream (frame-bind frame var value))
-      (amb-any var (binding-value b) frame)
-     )
-    )
-   )
+(define qproc-amb ;
+ (
+  (lambda () ;<— immediately invoked function
+   (define (produce-streams frame-stream var producer-name)
+    (define producer (eval producer-name))
 
-   ((list? value)
     (stream-flatmap
-     (lambda (item)
-      (amb-any var item frame)
+     (lambda (frame)
+      (produce-stream frame var producer)
      )
-     (list->stream value)
+     frame-stream
     )
    )
 
-   ((pair? value)
-    (amb-any var (list (car value) (cdr value)) frame)
+   (define (produce-stream frame var producer)
+    (define value '())
+
+    (define (next-stream)
+     (set! value (producer value))
+     (if (null? value)
+      the-empty-stream
+      (cons-stream
+       (frame-bind frame var value)
+       (next-stream) ;<— delayed
+      )
+     )
+    )
+
+    (next-stream)
    )
 
-   (else
-    (singleton-stream (frame-bind frame var value))
-   )
-  )
- )
+   (define (amb-any var value frame)
+    (cond
+     ((variable? value)
+      (let ((b (frame-get frame (variable-name value))))
+       (if (null? b)
+        (singleton-stream (frame-bind frame var value))
+        (amb-any var (binding-value b) frame)
+       )
+      )
+     )
 
- (if (and (= (length exp) 2) (variable? (car exp)))
-  (stream-flatmap
-   (lambda (frame)
-    (amb-any (variable-name (car exp)) (cadr exp) frame)
+     ((list? value)
+      (stream-flatmap
+       (lambda (item)
+        (amb-any var item frame)
+       )
+       (list->stream value)
+      )
+     )
+
+     ((pair? value)
+      (amb-any var (list (car value) (cdr value)) frame)
+     )
+
+     (else
+      (singleton-stream (frame-bind frame var value))
+     )
+    )
    )
-   frame-stream
+
+   (lambda (exp frame-stream) ;<— resulting procedure
+    (cond
+     ((and (= (length exp) 2) (variable? (car exp)) (symbol? (cadr exp)))
+      (produce-streams frame-stream (variable-name (car exp)) (cadr exp))
+     )
+
+     ((and (= (length exp) 2) (variable? (car exp)))
+      (stream-flatmap
+       (lambda (frame)
+        (amb-any (variable-name (car exp)) (cadr exp) frame)
+       )
+       frame-stream
+      )
+     )
+
+     (else (error "Wrong «amb» form" exp))
+    )
+   )
   )
-  (error "Wrong «amb» form" exp)
  )
 )
 
