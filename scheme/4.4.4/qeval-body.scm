@@ -38,7 +38,7 @@
  )
 )
 
-(define (fetch-assertions pattern frame)
+(define (find-assertions pattern frame)
  (stream-filter
   (make-pattern-matcher pattern frame)
   (adb-fetch pattern frame)
@@ -49,7 +49,7 @@
  (stream-flatmap
   (lambda (frame)
    (stream-append-delayed
-    (fetch-assertions pattern frame)
+    (find-assertions pattern frame)
     (delay (apply-rules pattern frame))
    )
   )

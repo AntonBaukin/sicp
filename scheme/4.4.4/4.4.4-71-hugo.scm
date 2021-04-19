@@ -9,7 +9,7 @@
    (stream-flatmap
     (lambda (frame)
      (stream-append
-      (fetch-assertions pattern frame)
+      (find-assertions pattern frame)
       (apply-rules pattern frame)
      )
     )
@@ -31,15 +31,6 @@
   )
 
   (set! simple-query hugo-query)
-
-  (set! qeval-procs
-   (list
-    (list 'and qproc-and)
-    (list 'or  hugo-disjoin)
-    (list 'not qproc-not)
-    (list 'lisp-value qproc-lisp-value)
-    (list 'always-true qproc-always-true)
-   )
-  )
+  (set! qproc-or hugo-disjoin)
  )
 )
