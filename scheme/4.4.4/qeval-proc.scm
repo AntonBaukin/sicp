@@ -252,33 +252,24 @@
  )
 )
 
-; Override this mapping list with your own implementations.
-(define set-qeval-procs
- (
-  (lambda () ;<— immediately invoked function
-   (set! qeval-procs
-    (list
-     (list 'and
-      (call-proc (lambda (e fs) (qproc-and e fs)))
-     )
-
-     (list 'or
-      (call-proc (lambda (e fs) (qproc-or e fs)))
-     )
-
-     (list 'not
-      (call-proc (lambda (e fs) (qproc-not e fs)))
-     )
-
-     (list 'lisp-value
-      (call-proc (lambda (e fs) (qproc-lisp-value e fs)))
-     )
-
-     (list 'always-true qproc-always-true)
-     (list 'set qproc-set)
-     (list 'amb qproc-amb)
-    )
-   )
-  )
+(define qeval-procs-std (list
+ (list 'and
+  (call-proc (lambda (e fs) (qproc-and e fs)))
  )
-)
+
+ (list 'or
+  (call-proc (lambda (e fs) (qproc-or e fs)))
+ )
+
+ (list 'not
+  (call-proc (lambda (e fs) (qproc-not e fs)))
+ )
+
+ (list 'lisp-value
+  (call-proc (lambda (e fs) (qproc-lisp-value e fs)))
+ )
+
+ (list 'always-true qproc-always-true)
+ (list 'set qproc-set)
+ (list 'amb qproc-amb)
+))

@@ -2,6 +2,7 @@
 ; QEval dispathing evaluator. Define it in modules.
 ;
 (define qeval-disp void)
+
 ;
 ; Define list of lists: (symbolic-name sub-evaluator).
 ;
@@ -119,7 +120,7 @@
 )
 
 (define (statement? what)
- (and 
+ (and
   (list? what)
   (< 1 (length what))
   (constant-symbol? (car what))
@@ -135,7 +136,7 @@
 )
 
 (define (query? what)
- (and 
+ (and
   (list? what)
   (< 0 (length what))
   (complex-query-name? (car what))

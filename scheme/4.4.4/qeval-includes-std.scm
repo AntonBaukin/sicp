@@ -15,4 +15,5 @@
  "../4.4.4/assertions.scm"
  "../4.4.4/rules.scm"
  "../4.4.4/qeval-body.scm"
+ "../4.4.4/qeval-setup.scm"
 ))
