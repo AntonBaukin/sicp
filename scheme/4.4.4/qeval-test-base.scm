@@ -3,3 +3,8 @@
 
 ; Populate QEval with Microshaft database.
 (qeval-add-statements qeval Microshaft)
+
+(define (qeval-reset-test new-includes)
+ (qeval-reset new-includes)
+ (qeval-add-statements qeval Microshaft)
+)

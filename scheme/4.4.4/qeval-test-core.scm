@@ -9,6 +9,14 @@
 (define query-map (qeval-query-map qeval))
 (define query-iter-impl (qeval-query-iter qeval))
 
+(define (qeval-reset new-includes)
+ (set! qeval-includes new-includes)
+ (set! qeval (make-qeval))
+ (set! query (qeval-query qeval))
+ (set! query-map (qeval-query-map qeval))
+ (set! query-iter-impl (qeval-query-iter qeval))
+)
+
 ;
 ; Test support macroses.
 ;
