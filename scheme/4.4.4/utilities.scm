@@ -59,12 +59,48 @@
 ; Creates a new frame by extending the given one
 ; with the (name . value) variable binding.
 (define (frame-bind frame name value)
- (make-frame
-  (cons
-   (make-binding name value)
-   (frame-bindings frame)
+ (define (rebind result rest)
+  (cond
+   ((null? rest)
+    (cons
+     (make-binding name value)
+     result
+    )
+   )
+
+   ((eq? name (binding-name (car rest)))
+    (append
+     result
+     (list (make-binding name value))
+     (cdr rest)
+    )
+   )
+
+   (else
+    (rebind (cons (car rest) result) (cdr rest))
+   )
   )
  )
+
+ (make-frame (rebind '() (frame-bindings frame)))
+)
+
+(define (frame-unbind frame name)
+ (define (unbind result rest)
+  (cond
+   ((null? rest) result)
+
+   ((eq? name (binding-name (car rest)))
+    (append result (cdr rest))
+   )
+
+   (else
+    (unbind (cons (car rest) result) (cdr rest))
+   )
+  )
+ )
+
+ (make-frame (unbind '() (frame-bindings frame)))
 )
 
 ; Searches for binding with the given name.

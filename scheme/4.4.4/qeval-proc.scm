@@ -31,22 +31,24 @@
  )
 )
 
-(define (qproc-not operands frame-stream)
- (stream-flatmap
-  (lambda (frame)
-   (define single-frame (singleton-stream frame))
-   (define negated-frames
-    (qeval-disp
-     (make-pattern (car operands))
-     single-frame
-    )
-   )
+(define (qproc-not-mapper pattern frame)
+ (define single-frame (singleton-stream frame))
 
-   (if (stream-null? negated-frames)
-    (singleton-stream frame)
-    the-empty-stream
-   )
-  )
+ (define negated-frames
+  (qeval-disp pattern single-frame)
+ )
+
+ (if (stream-null? negated-frames)
+  single-frame
+  the-empty-stream
+ )
+)
+
+(define (qproc-not operands frame-stream)
+ (define pattern (make-pattern (car operands)))
+
+ (stream-flatmap
+  (lambda (frame) (qproc-not-mapper pattern frame))
   frame-stream
  )
 )
