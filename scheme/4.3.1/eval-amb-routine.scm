@@ -17,6 +17,11 @@
  (eval-env-define amb-evaluator-env var-name value)
 )
 
+; As «amb-eval-define» for definition with the same name.
+(define (amb-eval-inject var-name)
+ (eval-env-define amb-evaluator-env var-name (eval var-name))
+)
+
 ; This Gambit Scheme macros takes a script to evaluate
 ; being expressions then quoted. Using it allows you
 ; to write code as-is. See «eval-test.scm».
@@ -24,7 +29,7 @@
 ; Callback takes single argument: a value, or «void».
 ; It combines a pair of top-level success and fail
 ; callbacks. Value «void» means absence of the
-; vallowing values.
+; following values.
 ;
 ; When callback returns «#t», it asks to continue
 ; the evaluation via failure continuation. In this
