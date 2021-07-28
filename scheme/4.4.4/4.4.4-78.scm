@@ -4,6 +4,7 @@
 (include "4.4.4-78-amb.scm")
 (include "4.4.4-78-stream.scm")
 (include "4.4.4-78-qeval.scm")
+(include "4.4.4-78-forms.scm")
 (include "4.4.4-78-routine.scm")
 (include "Microshaft.scm")
 
@@ -18,6 +19,11 @@
  '((1 a) (1 b) (2 a) (2 b))
  (eval-amb-results (list (amb-of '(1 2)) (amb 'a 'b)))
 )
+
+; Amb evaluator: catch form.
+(assert-equal? '(1) (eval-amb-results (amb-catch 1 'x)))
+(assert-equal? '(x) (eval-amb-results (amb-catch (amb) 'x)))
+(assert-equal? '(1 2 3) (eval-amb-results (amb-catch (amb 1 2 3) 'x)))
 
 (define (integers-stream from)
  (cons-stream from (integers-stream (+ 1 from)))
@@ -37,3 +43,5 @@
 
 ; Populate QEval Amb with Microshaft database.
 (qeval-add-statements qeval Microshaft)
+
+(include "4.4.4-78-tests.scm")

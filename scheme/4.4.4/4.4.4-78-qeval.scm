@@ -44,18 +44,29 @@
  )
 
  (define (eval-query query)
-  (define script (list 'eval-query query))
-  (eval-amb-result-impl script)
+  (define script (list 'eval-query (list 'quote query)))
+  (eval-amb-results-impl (eval-amb-list-impl 100 (list script)))
+ )
+
+ ; Amb forbids void value of variables (replace it with #f):
+ (define (pattern-match-safe pattern assertion frame)
+  (define result (pattern-match pattern assertion frame))
+  (if (eq? void result) #f result)
+ )
+
+ (define (eval-lisp-value call frame)
+  (eval (prepare-for-eval (instantiate call frame)))
  )
 
  ; Utilities provided for Amb evaluator:
  (amb-eval-define 'untag untag)
  (amb-eval-define 'adb-fetch adb-fetch)
- (amb-eval-define 'pattern-match pattern-match)
+ (amb-eval-define 'pattern-match pattern-match-safe)
  (amb-eval-define 'parse-query parse-query)
  (amb-eval-define 'make-pattern make-pattern)
  (amb-eval-define 'instantiate instantiate)
  (amb-eval-define 'empty-frame empty-frame)
+ (amb-eval-define 'eval-lisp-value eval-lisp-value)
 
  (list add-statement add-rule eval-query)
 )
@@ -73,13 +84,48 @@
  )
 
  (define (simple-query pattern frame)
-  (find-assertions pattern frame)
+  (amb
+   (find-assertions pattern frame)
+  )
  )
+
+ ; In this singlestanding task, we do not make Amb QEval modular.
+ ; Note the main difference with streamed QEval: Amb version
+ ; with single frame, not a stream of frames.
+ ; This due the nature of Amb.
+ (define (qeval-disp pattern frame)
+  (define query (untag pattern))
+  (define form (car query))
+
+  (cond
+   ((eq? form 'and)
+    (qeval-and (cdr query) frame)
+   )
+
+   ((eq? form 'or)
+    (qeval-or (cdr query) frame)
+   )
+
+   ((eq? form 'not)
+    (qeval-not (cdr query) frame)
+   )
+
+   ((eq? form 'lisp-value)
+    (qeval-value (cdr query) frame)
+   )
+
+   (else
+    (simple-query pattern frame)
+   )
+  )
+ )
+
+ (global qeval-disp)
 
  (define (eval-query query)
   (define parsed-query (parse-query query))
   (define pattern (make-pattern parsed-query))
-  (define frame (simple-query pattern empty-frame))
+  (define frame (qeval-disp pattern empty-frame))
 
   (instantiate parsed-query frame)
  )

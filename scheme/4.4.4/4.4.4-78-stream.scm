@@ -5,7 +5,7 @@
 ; is not so simple as injecting a function, as
 ; «cons-stream» is Gambit macros.
 ;
-; We do not implement this fotm in Amb as we use
+; We do not implement this form in Amb as we use
 ; streams only for the database (not to make one
 ; again with simple lists).
 ;

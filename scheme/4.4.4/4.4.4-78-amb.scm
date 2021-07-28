@@ -1,5 +1,7 @@
 (include "../4.3.1/eval-amb.scm")
 
+(eval-basic (debug on))
+
 (eval-basic
  (define (require p)
   (if (not p) (amb))

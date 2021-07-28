@@ -181,6 +181,34 @@
  )
 )
 
+; Unlike regular «set!» form, «setx!» does not reset the value
+; on failure, thus breaking Amb behaviour. This tricky case
+; is required for §4.4.4-78 task.
+(define eval-amb-form-setx
+ (
+  (lambda () ;<— immediately invoked function
+   (define (setx-form exp)
+    (define n (assignment-variable exp))
+    (define vp (eval-analyze (assignment-value exp)))
+
+    (lambda (success fail env)
+     (vp
+      (lambda (fail2 value)
+       (assign-variable env n value)
+       (success fail2 value)
+      )
+      fail
+      env
+     )
+    )
+   )
+
+   (eval-disp-register-form 'setx! setx-form)
+   setx-form ;<— resulting form
+  )
+ )
+)
+
 (define eval-amb-form-begin
  (
   (lambda () ;<— immediately invoked function
@@ -348,6 +376,39 @@
 
    (eval-disp-register-form 'amb amb-form)
    amb-form ;<— resulting form
+  )
+ )
+)
+
+; Invoked as (amb-catch exp fallback). If expression generates
+; no results (success is not invoked), calls the fallback expression.
+(define eval-amb-form-catch
+ (
+  (lambda () ;<— immediately invoked function
+   (define (catch-form exp)
+    (define pmain (eval-analyze (cadr exp)))
+    (define pfall (eval-analyze (caddr exp)))
+    (define invoked #f)
+
+    (lambda (success fail env) ;<— execution procedure
+     (pmain
+      (lambda (fail2 value)
+       (set! invoked #t)
+       (success fail2 value)
+      )
+      (lambda ()
+       (if invoked
+        (fail)
+        (pfall success fail env)
+       )
+      )
+      env
+     )
+    )
+   )
+
+   (eval-disp-register-form 'amb-catch catch-form)
+   catch-form ;<— resulting form
   )
  )
 )
