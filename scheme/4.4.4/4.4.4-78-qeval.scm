@@ -54,6 +54,11 @@
   (if (eq? void result) #f result)
  )
 
+ (define (unify-match-safe a b frame)
+  (define result (unify-match a b frame))
+  (if (eq? void result) #f result)
+ )
+
  (define (eval-lisp-value call frame)
   (eval (prepare-for-eval (instantiate call frame)))
  )
@@ -61,12 +66,18 @@
  ; Utilities provided for Amb evaluator:
  (amb-eval-define 'untag untag)
  (amb-eval-define 'adb-fetch adb-fetch)
+ (amb-eval-define 'rdb-fetch rdb-fetch)
  (amb-eval-define 'pattern-match pattern-match-safe)
  (amb-eval-define 'parse-query parse-query)
  (amb-eval-define 'make-pattern make-pattern)
  (amb-eval-define 'instantiate instantiate)
  (amb-eval-define 'empty-frame empty-frame)
  (amb-eval-define 'eval-lisp-value eval-lisp-value)
+ (amb-eval-define 'rename-vars-in rename-vars-in)
+ (amb-eval-define 'unify-match-safe unify-match-safe)
+ (amb-eval-define 'rule-conclusion rule-conclusion)
+ (amb-eval-define 'rule-body rule-body)
+ (amb-eval-define 'next-unique-var-id next-unique-var-id)
 
  (list add-statement add-rule eval-query)
 )
@@ -83,9 +94,34 @@
   matched-frame ;<— return matched frame of amb branch
  )
 
+ (define (apply-rules pattern frame)
+  (define rule (amb-of-stream (rdb-fetch pattern frame)))
+  (apply-rule rule pattern frame)
+ )
+
+ (define (apply-rule rule pattern frame)
+  (define unique-rule (rename-vars-in next-unique-var-id rule))
+
+  (define match-frame
+   (unify-match-safe
+    (untag pattern)
+    (rule-conclusion unique-rule)
+    frame
+   )
+  )
+
+  (require (pair? match-frame))
+
+  (qeval-disp
+   (make-pattern (rule-body unique-rule))
+   match-frame
+  )
+ )
+
  (define (simple-query pattern frame)
   (amb
    (find-assertions pattern frame)
+   (apply-rules pattern frame)
   )
  )
 
@@ -112,6 +148,10 @@
 
    ((eq? form 'lisp-value)
     (qeval-value (cdr query) frame)
+   )
+
+   ((eq? form 'always-true)
+    (always-true '() frame)
    )
 
    (else

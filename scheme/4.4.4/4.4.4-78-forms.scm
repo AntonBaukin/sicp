@@ -72,4 +72,10 @@
  )
 
  (global qeval-value)
+
+ (define (always-true ignore frame)
+  frame
+ )
+
+ (global always-true)
 )
