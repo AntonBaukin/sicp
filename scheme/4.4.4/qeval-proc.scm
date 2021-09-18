@@ -246,6 +246,52 @@
  )
 )
 
+(define (spaces words)
+ (define (next result items)
+  (if (null? items) result
+   (next
+    (cons
+     (car items)
+     (if (null? result) '() (cons " " result))
+    )
+    (cdr items)
+   )
+  )
+ )
+
+ (reverse (next '() words))
+)
+
+(define (qproc-debug exp frame-stream)
+ (define (cmd? cmd)
+  (and (pair? exp) (eq? (car exp) cmd))
+ )
+
+ (define (apply-log-list values)
+  (apply log (append (cdr exp) (spaces values)))
+ )
+
+ (define (debug-mapper frame)
+  (cond
+   ((equal? exp '(not use unique frames))
+    (set! use-unique-frames #f)
+   )
+
+   ((cmd? 'bindings)
+    (apply-log-list (frame-bindings frame))
+   )
+
+   ((cmd? 'frame)
+    (apply-log-list frame)
+   )
+  )
+
+  frame
+ )
+
+ (stream-map debug-mapper frame-stream)
+)
+
 ; This HOF wraps call to a procedure to allow it's redefinition
 ; in files included after this file.
 (define (call-proc proc-lambda)
@@ -272,6 +318,7 @@
  )
 
  (list 'always-true qproc-always-true)
- (list 'set qproc-set)
- (list 'amb qproc-amb)
+ (list 'set         qproc-set)
+ (list 'amb         qproc-amb)
+ (list 'debug       qproc-debug)
 ))

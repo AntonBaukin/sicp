@@ -82,7 +82,9 @@
   )
  )
 
- (make-frame (rebind '() (frame-bindings frame)))
+ (extend-frame frame
+  (rebind '() (frame-bindings frame))
+ )
 )
 
 (define (frame-unbind frame name)
@@ -100,7 +102,9 @@
   )
  )
 
- (make-frame (unbind '() (frame-bindings frame)))
+ (extend-frame frame
+  (make-frame (unbind '() (frame-bindings frame)))
+ )
 )
 
 ; Searches for binding with the given name.
@@ -114,7 +118,9 @@
 )
 
 (define (frame-get frame name)
- (find-binding (frame-bindings frame) name)
+ (if (null? frame) '()
+  (find-binding (frame-bindings frame) name)
+ )
 )
 
 ; Used for testing.
@@ -135,23 +141,34 @@
  (next '() (frame-bindings frame))
 )
 
+(define (frame-top-parent frame)
+ (if (null? (frame-parent frame))
+  frame
+  (frame-top-parent (frame-parent frame))
+ )
+)
+
 ; Takes parsed query (untagged pattern) and the frame,
 ; and substitutes found variables.
 (define (instantiate query frame)
+ (instantiate-impl query (frame-top-parent frame))
+)
+
+(define (instantiate-impl query frame)
  (cond
   ((variable? query)
    (let ((b (frame-get frame (variable-name query))))
     (if (null? b)
-     (print-query query)                   ;<— return variable as «?name»
-     (instantiate (binding-value b) frame) ;<— resolve value recursively
+     (print-query query)                        ;<— return variable as «?name»
+     (instantiate-impl (binding-value b) frame) ;<— resolve value recursively
     )
    )
   )
 
   ((pair? query)
    (cons
-    (instantiate (car query) frame)
-    (instantiate (cdr query) frame)
+    (instantiate-impl (car query) frame)
+    (instantiate-impl (cdr query) frame)
    )
   )
 

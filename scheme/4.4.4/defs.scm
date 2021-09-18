@@ -23,9 +23,30 @@
  (cdr tagged)
 )
 
-; Frames from SICP §4.4.4.8.
+; Frames from SICP §4.4.4.8 with support for task 79 (frames nesting).
 (define (make-frame bindings)
- (cons 'frame bindings)
+ ; ('frame . (bindings . parent))
+ (cons 'frame (cons bindings '()))
+)
+
+(define (frame-bindings frame)
+ (cadr (check-frame frame))
+)
+
+(define (frame-parent frame)
+ (cddr (check-frame frame))
+)
+
+(define (extend-frame frame bindings)
+ (cons 'frame (cons bindings (frame-parent frame)))
+)
+
+(define (make-sub-frame frame bindings)
+ (cons 'frame (cons bindings frame))
+)
+
+(define (derive-frame frame)
+ (make-sub-frame frame '())
 )
 
 (define empty-frame (make-frame '()))
@@ -38,10 +59,6 @@
  (if (frame? frame) frame
   (error "Not a frame" frame)
  )
-)
-
-(define (frame-bindings frame)
- (cdr (check-frame frame))
 )
 
 (define (make-binding name value)

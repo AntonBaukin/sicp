@@ -116,8 +116,17 @@
  )
 )
 
+; Support for task 79. Global switch of using variables
+; rename technique, default for SICP tasks.
+(define use-unique-frames #t)
+
 (define (apply-rule rule pattern frame)
- (define unique-rule (rename-vars-in next-unique-var-id rule))
+ (define used-rule
+  (if use-unique-frames
+   (rename-vars-in next-unique-var-id rule)
+   rule
+  )
+ )
 
  ; Note that heavy unify-match-resolved() resolves values
  ; of variables that depend on other variables. Here we
@@ -125,15 +134,15 @@
  (define match-frame
   (unify-match
    (untag pattern)
-   (rule-conclusion unique-rule)
-   frame
+   (rule-conclusion used-rule)
+   (if use-unique-frames frame (derive-frame frame))
   )
  )
 
  (if (eq? void match-frame)
   the-empty-stream
   (qeval-disp
-   (make-pattern (rule-body unique-rule))
+   (make-pattern (rule-body used-rule))
    (singleton-stream match-frame)
   )
  )

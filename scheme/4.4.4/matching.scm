@@ -48,32 +48,32 @@
  )
 )
 
-(define (unify-match a b frame)
+(define (unify-match pattern rule frame)
  (cond
   ; 1) May be due to 5) nested call:
   ((eq? void frame) void)
 
-  ; 2) The same expressions:
-  ((equal? a b) frame)
+  ; 2) The same symbols:
+  ((eq? pattern rule) frame)
 
-  ; 3) Left expression is a variable:
-  ((variable? a)
-   (extend-if-possible a b frame)
+  ; 3) Pattern expression is a variable:
+  ((variable? pattern)
+   (extend-rule pattern rule frame)
   )
 
-  ; 4) Right expression is a variable:
-  ((variable? b)
-   (extend-if-possible b a frame)
+  ; 4) Rule expression is a variable:
+  ((variable? rule)
+   (extend-pattern pattern rule frame)
   )
 
-  ; 4) Do match recursively:
-  ((and (pair? a) (pair? b))
-   (unify-match (cdr a) (cdr b)
-    (unify-match (car a) (car b) frame)
+  ; 5) Do match recursively:
+  ((and (pair? pattern) (pair? rule))
+   (unify-match (cdr pattern) (cdr rule)
+    (unify-match (car pattern) (car rule) frame)
    )
   )
 
-  ; 5) Have failed to match:
+  ; 6) Have failed to match:
   (else void)
  )
 )
@@ -86,28 +86,59 @@
  )
 )
 
-(define (extend-if-possible var value frame)
- (define var-name (variable-name var))
- (define binding (frame-get frame var-name))
+(define (extend-rule-frame-lookup pattern-var frame)
+ (define var-name (variable-name pattern-var))
+ (define lookup-frame (if (null? (frame-parent frame)) frame (frame-parent frame)))
+ (frame-get lookup-frame var-name)
+)
+
+(define (extend-rule pattern-var rule frame)
+ (define binding (extend-rule-frame-lookup pattern-var frame))
 
  (cond
   ((not (null? binding))
-   (unify-match (binding-value binding) value frame)
+   (unify-match (binding-value binding) rule frame)
   )
 
-  ((variable? value)
-   (let ((b (frame-get frame (variable-name value))))
+  ((variable? rule)
+   (let ((b (frame-get frame (variable-name rule))))
     (if (null? b)
-     (frame-bind frame var-name value)
-     (unify-match var (binding-value b) frame)
+     (frame-bind frame (variable-name pattern-var) rule)
+     (unify-match pattern-var (binding-value b) frame)
     )
    )
   )
 
-  ((exp-depends-on? value var frame)
+  ((exp-depends-on? pattern-var rule frame)
    void
   )
 
-  (else (frame-bind frame var-name value))
+  (else (frame-bind frame (variable-name pattern-var) rule))
+ )
+)
+
+(define (extend-pattern pattern rule-var frame)
+ (define var-name (variable-name rule-var))
+ (define binding (frame-get frame var-name))
+
+ (cond
+  ((not (null? binding))
+   (unify-match pattern (binding-value binding) frame)
+  )
+
+  ((variable? pattern)
+   (let ((b (frame-get frame (variable-name pattern))))
+    (if (null? b)
+     (frame-bind frame var-name pattern)
+     (unify-match (binding-value b) rule-var frame)
+    )
+   )
+  )
+
+  ((exp-depends-on? pattern rule-var frame)
+   void
+  )
+
+  (else (frame-bind frame var-name pattern))
  )
 )
