@@ -24,32 +24,39 @@
 )
 
 ; Frames from SICP §4.4.4.8 with support for task 79 (frames nesting).
+; Format: (list 'frame <bindings> <stack-level> <parent-frame>).
 (define (make-frame bindings)
- ; ('frame . (bindings . parent))
- (cons 'frame (cons bindings '()))
+ (list 'frame bindings 0 '())
 )
+
+(define empty-frame (make-frame '()))
 
 (define (frame-bindings frame)
  (cadr (check-frame frame))
 )
 
+(define (frame-level frame)
+ (list-ref frame 2)
+)
+
 (define (frame-parent frame)
- (cddr (check-frame frame))
+ (list-ref frame 3)
 )
 
 (define (extend-frame frame bindings)
- (cons 'frame (cons bindings (frame-parent frame)))
+ (list 'frame bindings (frame-level frame) (frame-parent frame))
 )
 
 (define (make-sub-frame frame bindings)
- (cons 'frame (cons bindings frame))
+ (cons parent (frame-parent frame))
+ (cons level (if (null? parent) 0 (+ 1 (frame-level parent))))
+
+ (list 'frame bindings level parent)
 )
 
 (define (derive-frame frame)
  (make-sub-frame frame '())
 )
-
-(define empty-frame (make-frame '()))
 
 (define (frame? what)
  (tagged? what 'frame)
@@ -62,7 +69,7 @@
 )
 
 (define (make-binding name value)
- (cons name value)
+ (list name value)
 )
 
 (define (binding-name binding)
@@ -70,12 +77,12 @@
 )
 
 (define (binding-value binding)
- (cdr binding)
+ (cadr binding)
 )
 
-(define (binding-value-unlist binding)
- (define v (binding-value binding))
- (if (and (list? v) (= 1 (length v))) (car v) v)
+; Binding extension is the list tail following (name value).
+(define (make-binding-ext name value ext-list)
+ (append (list name value) ext-list)
 )
 
 (define (pattern? what)

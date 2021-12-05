@@ -115,7 +115,7 @@
 (define (extend-rule-frame-lookup var-name frame)
  (define binding (frame-get frame var-name))
 
- (log "LOOKUP " var-name " << " frame " ==>> " binding)
+ ; (log "LOOKUP " var-name " << " frame " ==>> " binding)
  (if (parent-reference? var-name binding)
   (extend-rule-frame-lookup var-name (frame-parent frame))
   binding
@@ -123,7 +123,7 @@
 )
 
 (define (resolve-parent-variable frame var-name value)
- (log "RESOLVE " var-name " = " value " >> " (frame-bind frame var-name value))
+ ; (log "RESOLVE " var-name " = " value " >> " (frame-bind frame var-name value))
  (frame-bind frame var-name value)
 )
 
@@ -138,7 +138,7 @@
 (define (extend-rule pattern-var rule frame)
  (define binding (extend-rule-frame-lookup (variable-name pattern-var) frame))
 
- (log "EXT RULE> pattern-var = " pattern-var " >> rule = " rule " <<< " frame)
+ ; (log "EXT RULE> pattern-var = " pattern-var " >> rule = " rule " <<< " frame)
 
  (cond
   ((not (null? binding))
@@ -169,7 +169,7 @@
  (define var-name (variable-name rule-var))
  (define binding (frame-get frame var-name))
 
- (log "EXT PATTERN> pattern = " pattern " >> rule-var = " rule-var " <<< " frame)
+ ; (log "EXT PATTERN> pattern = " pattern " >> rule-var = " rule-var " <<< " frame)
 
  (cond
   ((not (null? binding))

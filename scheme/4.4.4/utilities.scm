@@ -1,3 +1,13 @@
+; Treats values of bindings: if the value is 1-element list,
+; returns element at zero, else — returns the value.
+(define (binding-value-unlist binding)
+ (define v (binding-value binding))
+ (if (and (list? v) (= 1 (length v))) (car v) v)
+)
+
+(define (extend-binding binding ext-list)
+ (make-binding-ext (binding-name binding) (binding-value binding) ext-list)
+)
 
 ; Converts variables «?some» of input query
 ; into pairs of (? . some).
