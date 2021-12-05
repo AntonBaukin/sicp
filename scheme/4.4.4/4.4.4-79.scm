@@ -1,37 +1,20 @@
 (include "../4.4.4/qeval-test-base.scm")
-
-;(add-rule (same ?x ?x))
-;
-;(add-rule (same-boss ?person ?colleague ?position)
-; (and
-;  (debug frame "enter")
-;  (supervisor ?person ?name)
-;  (supervisor ?colleague ?name)
-;  (job ?colleague ?position)
-;  (not (same ?person ?colleague))
-;  (debug frame "exit")
-; )
-;)
-;
-;(log-query
-;  (and
-;   (job ?name (computer . ?position))
-;   (same-boss ?name ?colleague ?coposition)
-;  )
-;)
+; (include "4.4.4-79-rules.scm")
 
 (query '(debug not use unique frames))
+; (include "4.4.4-79-tests.scm")
 
-(add-rule (boss-ben? ?name)
+(add-rule (same ?x ?x))
+
+(add-rule (test ?name)
  (and
-  (debug frame "ENTER boss-ben? :: ")
-  (supervisor ?name (Bitdiddle Ben))
+  (debug frame "test ENTER :: ")
+  (same ?name John)
+  (debug frame "test EXIT :: ")
  )
 )
 
 (log-query
-  (and
-   (job ?person (computer . ?position))
-   (boss-ben? ?person)
-  )
+ (test ?name)
 )
+
