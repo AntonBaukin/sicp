@@ -48,14 +48,11 @@
 )
 
 (define (make-sub-frame frame bindings)
- (cons parent (frame-parent frame))
- (cons level (if (null? parent) 0 (+ 1 (frame-level parent))))
-
- (list 'frame bindings level parent)
+ (list 'frame bindings (+ 1 (frame-level frame)) frame)
 )
 
-(define (derive-frame frame)
- (make-sub-frame frame '())
+(define (frame-set-parent frame parent)
+ (list 'frame (frame-bindings frame) (+ 1 (frame-level parent)) parent)
 )
 
 (define (frame? what)
@@ -78,6 +75,10 @@
 
 (define (binding-value binding)
  (cadr binding)
+)
+
+(define (binding-ext binding)
+ (cddr binding)
 )
 
 ; Binding extension is the list tail following (name value).

@@ -135,15 +135,23 @@
   (unify-match
    (untag pattern)
    (rule-conclusion used-rule)
-   (if use-unique-frames frame (derive-frame frame))
+   (if use-unique-frames frame (make-sub-frame frame '()))
   )
  )
 
+ (log "APPLY :: " (untag pattern) " <|> " (rule-conclusion used-rule) " << " match-frame)
+
  (if (eq? void match-frame)
   the-empty-stream
-  (qeval-disp
-   (make-pattern (rule-body used-rule))
-   (singleton-stream match-frame)
+  (stream-map
+   (lambda (frame)
+    ; With frames stack we do pop from match-frame:
+    (if use-unique-frames frame (frame-parent frame))
+   )
+   (qeval-disp
+    (make-pattern (rule-body used-rule))
+    (singleton-stream match-frame)
+   )
   )
  )
 )

@@ -15,6 +15,6 @@
 )
 
 (log-query
- (test ?name)
+ (test ?abc)
 )
 

@@ -67,13 +67,13 @@
 )
 
 ; Creates a new frame by extending the given one
-; with the (name . value) variable binding.
-(define (frame-bind frame name value)
+; with the (name value . ext) variable binding.
+(define (frame-bind frame name value . ext)
  (define (rebind result rest)
   (cond
    ((null? rest)
     (cons
-     (make-binding name value)
+     (make-binding-ext name value ext)
      result
     )
    )
@@ -81,7 +81,7 @@
    ((eq? name (binding-name (car rest)))
     (append
      result
-     (list (make-binding name value))
+     (list (make-binding-ext name value ext))
      (cdr rest)
     )
    )
@@ -127,10 +127,51 @@
  )
 )
 
+; Searches for binding within the frame's own bindings
+; not going up to the frame ancestors.
 (define (frame-get frame name)
  (if (null? frame) '()
   (find-binding (frame-bindings frame) name)
  )
+)
+
+; Same as frame-get, but goes up the stack.
+(define (frame-get-up frame name)
+ (define result (frame-get frame name))
+
+ (if (not (null? result)) result
+  (let ((parent (frame-parent frame)))
+   (if (null? parent) '()
+    (frame-get-up (frame-parent frame) name)
+   )
+  )
+ )
+)
+
+(define (frame-ancestor frame level)
+ (cond
+  ((null? frame) '())
+  ((= level (frame-level frame)) frame)
+  (else (frame-ancestor (frame-parent frame) level))
+ )
+)
+
+(define (frame-set-ancestor frame ancestor)
+ (cond
+  ((null? frame) frame)
+  ((= (frame-level frame) (+ 1 (frame-level ancestor)))
+   (frame-set-parent frame ancestor)
+  )
+  (else
+   (frame-set-parent frame
+    (frame-set-ancestor (frame-parent) frame ancestor)
+   )
+  )
+ )
+)
+
+(define (frame-get-at frame level name)
+ (frame-get (frame-ancestor frame level) name)
 )
 
 ; Used for testing.

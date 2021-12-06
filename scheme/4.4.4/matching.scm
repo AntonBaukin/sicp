@@ -47,9 +47,9 @@
    (frame-bind frame var-name assertion)
   )
 
-  ((parent-reference? var-name (binding-value b))
-   (resolve-parent-variable frame var-name assertion)
-  )
+;  ((parent-reference? var-name (binding-value b))
+;   (resolve-parent-variable frame var-name assertion)
+;  )
 
   (else
    (pattern-match (binding-value b) assertion frame)
@@ -62,7 +62,18 @@
  )
 )
 
+(define DEPTH 0)
+(define (protect-depth)
+ (if (> DEPTH 30)
+  (raise "Depth limit!")
+  (set! DEPTH (+ 1 DEPTH))
+ )
+)
+
 (define (unify-match pattern rule frame)
+ (log "UMATCH " pattern " <|> " rule " << " frame)
+ (protect-depth)
+
  (cond
   ; 1) May be due to 5) nested call:
   ((eq? void frame) void)
@@ -100,59 +111,114 @@
  )
 )
 
-(define (parent-reference? var-name some)
- (and
-  (variable? some)
-  (eq? var-name (variable-name some))
+(define (frame-bind-coupled pattern-var rule-var frame)
+ (log "BIND " (variable-name rule-var) " := " pattern-var " >> "
+  (frame-bind frame (variable-name rule-var) pattern-var (- (frame-level frame) 1))
+ )
+
+ (frame-bind frame (variable-name rule-var) pattern-var (- (frame-level frame) 1))
+)
+
+(define (frame-resolve-variable frame level var-name)
+ (define b (frame-get-at frame level var-name))
+ (log "RESOLVE " var-name " @ " level " := " b " << " frame)
+ (if (null? b) '() (binding-value b))
+)
+
+(define (frame-resolve-binding binding frame)
+ (define level (car (binding-ext binding)))
+ (define value (binding-value binding))
+
+ (if (not (variable? value)) value
+  (frame-resolve-variable frame level (variable-name value))
  )
 )
 
-; Creates recursive reference on itself as a special flag.
-(define (make-parent-reference var-name frame)
- (frame-bind frame var-name (cons '? var-name))
-)
+(define (frame-var-lookup pattern-var frame)
+ (define b (frame-get-up frame (variable-name pattern-var)))
+ (log "LOOKUP " pattern-var " @ " frame " :=> " b)
 
-(define (extend-rule-frame-lookup var-name frame)
- (define binding (frame-get frame var-name))
-
- ; (log "LOOKUP " var-name " << " frame " ==>> " binding)
- (if (parent-reference? var-name binding)
-  (extend-rule-frame-lookup var-name (frame-parent frame))
-  binding
+ (cond
+  ((null? b) '())
+  ((null? (binding-ext b)) (binding-value b))
+  (else (frame-resolve-binding b frame))
  )
 )
 
-(define (resolve-parent-variable frame var-name value)
- ; (log "RESOLVE " var-name " = " value " >> " (frame-bind frame var-name value))
- (frame-bind frame var-name value)
+(define (frame-bind-up-deps frame binding value)
+ (define var-name (binding-name binding))
+ (define ref-var (binding-value binding))
+ (define ext (binding-ext binding)) ;<— (level) or ()
+
+ ; Frame level of this binding:
+ (define level (if (null? ext) '() (car ext)))
+
+ ; Always assign the value in the current frame:
+ (define result (frame-bind frame var-name value))
+
+ ; Frame ancestor at the level (if defined):
+ (define anc (if (null? level) result (frame-ancestor result level)))
+
+ (log "UP! binding = " binding " := " value " << " frame)
+ (log "    level = " level " ref-var = " ref-var)
+ (log "    anc = " anc)
+
+ (cond
+  ; {binding has no level reference}
+  ((null? level) result)
+
+  ; {not a variable reference}
+  ((not (variable? ref-var)) result)
+
+  ; {no target ancestor level — maybe an error!}
+  ((or (null? anc) (eq? anc result)) result)
+
+  (else
+   (let ((b (frame-get anc (variable-name ref-var))))
+    (if (null? b)
+     (frame-set-ancestor result
+      ; The same value is set up the variables trace:
+      (frame-bind anc (variable-name ref-var) value)
+     )
+     (frame-set-ancestor result
+      ; Recursively assign the value up the stack:
+      (frame-bind-up-deps anc b value)
+     )
+    )
+   )
+  )
+ )
 )
 
-(define (extend-rule-couple-variables pattern-var rule-var frame)
- (define coupled-frame (frame-bind frame (variable-name rule-var) pattern-var))
+(define (unify-match-pattern-binding pattern-binding rule frame)
+ (log "UMB! pattern-binding = " pattern-binding " rule = " rule " <<< " frame)
+ (unify-match (binding-value pattern-binding) rule frame)
+)
 
- (if use-unique-frames coupled-frame
-  (make-parent-reference (variable-name pattern-var) coupled-frame)
+(define (unify-match-rule-binding pattern rule-binding frame)
+ (log "UMB! pattern = " pattern " rule-binding = " rule-binding
+   " <<< " (frame-bind-up-deps frame rule-binding pattern)
+ )
+ (unify-match pattern (binding-value rule-binding)
+  (frame-bind-up-deps frame rule-binding pattern)
  )
 )
 
 (define (extend-rule pattern-var rule frame)
- (define binding (extend-rule-frame-lookup (variable-name pattern-var) frame))
+ (define binding (frame-var-lookup pattern-var frame))
 
- ; (log "EXT RULE> pattern-var = " pattern-var " >> rule = " rule " <<< " frame)
+ (log "EXT RULE> pattern-var = " pattern-var " >> rule = " rule " <<< " frame)
 
  (cond
   ((not (null? binding))
-   (unify-match (binding-value binding) rule frame)
+   (unify-match-pattern-binding binding rule frame)
   )
 
   ((variable? rule)
    (let ((b (frame-get frame (variable-name rule))))
     (if (null? b)
-     (extend-rule-couple-variables pattern-var rule frame)
-     (begin
-      ; (log "UMATCH pattern-var = " pattern-var " value = " (binding-value b))
-      (unify-match pattern-var (binding-value b) frame)
-     )
+     (frame-bind-coupled pattern-var rule frame)
+     (unify-match-rule-binding pattern-var b frame)
     )
    )
   )
@@ -169,21 +235,18 @@
  (define var-name (variable-name rule-var))
  (define binding (frame-get frame var-name))
 
- ; (log "EXT PATTERN> pattern = " pattern " >> rule-var = " rule-var " <<< " frame)
+ (log "EXT PATTERN> pattern = " pattern " >> rule-var = " rule-var " <<< " frame)
 
  (cond
   ((not (null? binding))
-   (unify-match pattern (binding-value binding) frame)
+   (unify-match-rule-binding pattern binding frame)
   )
 
   ((variable? pattern)
    (let ((b (frame-get frame (variable-name pattern))))
     (if (null? b)
      (frame-bind frame var-name pattern)
-     (begin
-      ; (log "UMATCH " (binding-value b) " rule-var = " rule-var)
-      (unify-match (binding-value b) rule-var frame)
-     )
+     (unify-match-pattern-binding b rule-var frame)
     )
    )
   )
