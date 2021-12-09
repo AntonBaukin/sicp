@@ -1,6 +1,15 @@
+(add-rule (boss-ben? ?name)
+ (and
+  ; (debug frame ">> boss-ben? :: ")
+  (supervisor ?name (Bitdiddle Ben))
+  ; (debug frame "<< boss-ben? :: ")
+ )
+)
+
 (test-query
  (and
   (job ?person (computer . ?position))
+  ; (debug frame ":: person computer :: ")
   (boss-ben? ?person)
  )
 ; —————————————————————————————————————————————————————————
@@ -20,41 +29,70 @@
  (and (job (Hacker Alyssa P) (computer programmer)) (boss-ben? (Hacker Alyssa P)))
 )
 
+(define (any-<? a b)
+ (cond
+  ((and (string? a) (string? b))
+   (string-ci<? a b)
+  )
 
+  ((and (symbol? a) (symbol? b))
+   (string-ci<? (symbol->string a) (symbol->string b))
+  )
 
+  ((and (number? a) (number? b))
+   (< a b)
+  )
 
+  (else #f)
+ )
+)
 
-;(add-rule (same-boss ?person ?colleague ?position)
-; (and
-;  (debug frame "enter")
-;  (supervisor ?person ?name)
-;  (supervisor ?colleague ?name)
-;  (job ?colleague ?position)
-;  (not (same ?person ?colleague))
-;  (debug frame "exit")
-; )
-;)
+(define (lists-<? a b)
+ (cond
+  ((and (null? a) (null? b) #t))
+  ((or (not (list? a)) (not (list? b))) #f)
+  ((or (null? a) (null? b)) #f)
+  ((not (any-<? (car a) (car b))) #f)
+  (else (lists-<? (cdr a) (cdr b)))
+ )
+)
+
+(add-rule (same-boss ?person ?colleague ?position)
+ (and
+  ; (debug frame ">> same-boss :: ")
+  (supervisor ?person ?name)
+  (supervisor ?colleague ?name)
+  (job ?colleague ?position)
+  (lisp-value lists-<? ?person ?colleague)
+  ; (debug frame "<< same-boss :: ")
+ )
+)
+
+(add-rule (same-boss-computer ?name ?colleague)
+ (and
+  (job ?name (computer . ?position))
+  ; (debug frame ":: person computer :: ")
+  (same-boss ?name ?colleague ?coposition)
+ )
+)
+
+(test-query
+ (same-boss-computer ?person ?colleague)
+; —————————————————————————————————————————————————————————
+ (same-boss-computer (Fect Cy D) (Tweakit Lem E))
+ (same-boss-computer (Bitdiddle Ben) (Scrooge Eben))
+)
+
+; Sample logging:
 ;
-;(log-query
-;  (and
-;   (job ?name (computer . ?position))
-;   (same-boss ?name ?colleague ?coposition)
-;  )
-;)
-
-;(add-rule (lives-near ?person-a ?person-b)
-; (and
-;  (debug frame "lives-near ENTER :: ")
-;  (address ?person-a (?town . ?address-a))
-;  (address ?person-b (?town . ?address-b))
-;  (not (same ?person-a ?person-b))
-;  (debug frame "lives-near ADDRESS :: ")
-; )
-;)
+; >> same-boss :: frame ((position (? . coposition) 1) (person (Fect Cy D)) ⏎
+;    (colleague (? . colleague) 1)) 2 (frame ((position (programmer)) ⏎
+;    (name (Fect Cy D)) (colleague (? . colleague) 0)) 1 ⏎
+;    (frame ((person (Fect Cy D))) 0 ()))
 ;
-;(log-query
-; (lives-near ?person (Hacker Alyssa P))
-;; —————————————————————————————————————————————————————————
-;; (lives-near (Fect Cy D) (Hacker Alyssa P))
-;)
-
+; << same-boss :: frame ((person (Fect Cy D)) (colleague (Tweakit Lem E)) ⏎
+;    (name (Bitdiddle Ben)) (position (computer technician))) 2 ⏎
+;    (frame ((coposition (computer technician)) (colleague (Tweakit Lem E)) ⏎
+;    (position (programmer)) (name (Fect Cy D))) 1 ⏎
+;    (frame ((colleague (Tweakit Lem E)) (person (Fect Cy D))) 0 ()))
+;

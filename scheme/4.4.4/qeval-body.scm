@@ -128,6 +128,10 @@
   )
  )
 
+; (define abc (log "APPLY :: " (untag pattern)
+;  " <|> " (rule-conclusion used-rule) " << " frame)
+; )
+
  ; Note that heavy unify-match-resolved() resolves values
  ; of variables that depend on other variables. Here we
  ; do not apply it, but move to recursive instantiate().
@@ -138,8 +142,6 @@
    (if use-unique-frames frame (make-sub-frame frame '()))
   )
  )
-
- (log "APPLY :: " (untag pattern) " <|> " (rule-conclusion used-rule) " << " match-frame)
 
  (if (eq? void match-frame)
   the-empty-stream
