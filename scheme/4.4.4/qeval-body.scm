@@ -148,7 +148,7 @@
   (stream-map
    (lambda (frame)
     ; With frames stack we do pop from match-frame:
-    (if use-unique-frames frame (frame-parent frame))
+    (if use-unique-frames frame (frame-resolve-backward-links frame))
    )
    (qeval-disp
     (make-pattern (rule-body used-rule))

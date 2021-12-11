@@ -202,12 +202,72 @@
 )
 
 (define (unify-match-rule-binding pattern rule-binding frame)
-; (log "UMrB! pattern = " pattern " rule-binding = " rule-binding
-;   " <<< " (frame-bind-up-deps frame rule-binding pattern)
-; )
-
+; (log "UMrB! pattern = " pattern " rule-binding = " rule-binding " <<< " frame)
  (unify-match pattern (binding-value rule-binding)
   (frame-bind-up-deps frame rule-binding pattern)
+ )
+)
+
+(define (frame-bind-backward-links frame upper-var-name value)
+; (log "BACKWARD BIND " upper-var-name " := " value " <<< " frame)
+ (frame-set-parent frame
+  ; Mark backward links with -1 level:
+  (frame-bind (frame-parent frame) upper-var-name value -1)
+ )
+)
+
+; (frame ((z (b) -1) (v ()) (u a) (y (b))) 1 (frame ((z ((? . u) ? . z) -1)) 0 ()))
+;
+(define (frame-resolve-backward-links frame)
+ (define source (frame-bindings frame))
+
+ (define (substitute v)
+  (cond
+   ((variable? v)
+    (let ((x (find-binding source (variable-name v))))
+     (if (null? x) v
+      ; Possible cause of infinite recursion in case of cyclic references:
+      (substitute (binding-value x))
+     )
+    )
+   )
+
+   ((pair? v)
+    (cons (substitute (car v)) (substitute (cdr v)))
+   )
+
+   (else v)
+  )
+ )
+
+ (define (resolve-binding b)
+  (define ext (binding-ext b))
+
+  ; { not a backward link? }
+  (if (or (null? ext) (not (eq? -1 (car ext)))) b
+   (make-binding
+    (binding-name b)
+    (substitute (binding-value b))
+    ; the extension -1 is dropped
+   )
+  )
+ )
+
+ (define (resolve-bindings bindings result)
+  (if (null? bindings) result
+   (resolve-bindings
+    (cdr bindings)
+    (cons (resolve-binding (car bindings)) result)
+   )
+  )
+ )
+
+; (log "RESOLVE BACKWARD << " frame "\n>>"
+;  (resolve-bindings (frame-bindings (frame-parent frame)) '())
+; )
+
+ (extend-frame (frame-parent frame)
+  (resolve-bindings (frame-bindings (frame-parent frame)) '())
  )
 )
 
@@ -234,13 +294,19 @@
    void
   )
 
-  (else (frame-bind frame (variable-name pattern-var) rule))
+  (else
+   (if use-unique-frames
+    (frame-bind frame (variable-name pattern-var) rule)
+    ; Pattern variable is defined in the parent frame of current
+    ; rule processing as pattern comes from upper level:
+    (frame-bind-backward-links frame (variable-name pattern-var) rule)
+   )
+  )
  )
 )
 
 (define (extend-pattern pattern rule-var frame)
- (define var-name (variable-name rule-var))
- (define binding (frame-get frame var-name))
+ (define binding (frame-get frame (variable-name rule-var)))
 
 ; (log "EXT PATTERN> pattern = " pattern " >> rule-var = " rule-var " <<< " frame)
 
@@ -252,7 +318,7 @@
   ((variable? pattern)
    (let ((b (frame-get frame (variable-name pattern))))
     (if (null? b)
-     (frame-bind frame var-name pattern)
+     (frame-bind frame (variable-name rule-var) pattern)
      (unify-match-pattern-binding b rule-var frame)
     )
    )
@@ -262,6 +328,6 @@
    void
   )
 
-  (else (frame-bind frame var-name pattern))
+  (else (frame-bind frame (variable-name rule-var) pattern))
  )
 )

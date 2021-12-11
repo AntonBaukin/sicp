@@ -142,7 +142,9 @@
  (if (not (null? result)) result
   (let ((parent (frame-parent frame)))
    (if (null? parent) '()
-    (frame-get-up (frame-parent frame) name)
+    ; WARNING: under consideration: parent Vs any ancestor?
+    ; (frame-get-up (frame-parent frame) name)
+    (frame-get (frame-parent frame) name)
    )
   )
  )

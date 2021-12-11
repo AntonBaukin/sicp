@@ -5,7 +5,7 @@
 ;
 (include "../4.4.4/qeval-test-base.scm")
 ;
-; The implementation of nested frames is included in core
+; The implementation of nested frames is included in the core
 ; implementation of QEval with and is turned on with
 ; the following instruction:
 ;
