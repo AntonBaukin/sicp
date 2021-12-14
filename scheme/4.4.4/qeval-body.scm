@@ -128,10 +128,6 @@
   )
  )
 
-; (define abc (log "APPLY :: " (untag pattern)
-;  " <|> " (rule-conclusion used-rule) " << " frame)
-; )
-
  ; Note that heavy unify-match-resolved() resolves values
  ; of variables that depend on other variables. Here we
  ; do not apply it, but move to recursive instantiate().

@@ -38,20 +38,9 @@
  )
 )
 
-; (define DEPTH 0)
-; (define (protect-depth)
-;  (if (> DEPTH 50)
-;   (raise "Depth limit!")
-;   (set! DEPTH (+ 1 DEPTH))
-;  )
-; )
-
 (define (extend-if-consistent var assertion frame)
  (define var-name (variable-name var))
  (define b (frame-get frame var-name))
-
-; (log "EXT?Co var = " var " ::= " assertion " << " frame)
-; (protect-depth)
 
  (cond
   ((null? b)
@@ -71,9 +60,6 @@
 )
 
 (define (unify-match pattern rule frame)
-; (log "UMATCH " pattern " <|> " rule " << " frame)
-; (protect-depth)
-
  (cond
   ; 1) May be due to 5) nested call:
   ((eq? void frame) void)
@@ -112,13 +98,6 @@
 )
 
 (define (frame-bind-coupled pattern-var rule-var frame)
-; (log "BIND " (variable-name rule-var) " := " pattern-var " >> "
-;  (if use-unique-frames
-;   (frame-bind frame (variable-name rule-var) pattern-var)
-;   (frame-bind frame (variable-name rule-var) pattern-var (- (frame-level frame) 1))
-;  )
-; )
-
  (if use-unique-frames
   (frame-bind frame (variable-name rule-var) pattern-var)
   (frame-bind frame (variable-name rule-var) pattern-var (- (frame-level frame) 1))
@@ -127,7 +106,6 @@
 
 (define (frame-resolve-variable frame level var-name)
  (define b (frame-get-at frame level var-name))
-; (log "RESOLVE " var-name " @ " level " := " b " << " frame)
 
  (cond
   ((null? b) '())
@@ -151,7 +129,6 @@
 
 (define (frame-var-lookup pattern-var frame)
  (define b (frame-get-up frame (variable-name pattern-var)))
-; (log "LOOKUP " pattern-var " @ " frame " :=> " b)
 
  (cond
   ((null? b) '())
@@ -173,10 +150,6 @@
 
  ; Frame ancestor at the level (if defined):
  (define anc (if (null? level) result (frame-ancestor result level)))
-
-; (log "UP! binding = " binding " := " value " << " frame)
-; (log "    level = " level " ref-var = " ref-var)
-; (log "    anc = " anc)
 
  (cond
   ; {binding has no level reference}
@@ -206,19 +179,16 @@
 )
 
 (define (unify-match-pattern-binding pattern-binding rule frame)
-; (log "UMpB! pattern-binding = " pattern-binding " rule = " rule " <<< " frame)
  (unify-match (binding-value pattern-binding) rule frame)
 )
 
 (define (unify-match-rule-binding pattern rule-binding frame)
-; (log "UMrB! pattern = " pattern " rule-binding = " rule-binding " <<< " frame)
  (unify-match pattern (binding-value rule-binding)
   (frame-bind-up-deps frame rule-binding pattern)
  )
 )
 
 (define (frame-bind-backward-links frame upper-var-name value)
-; (log "BACKWARD BIND " upper-var-name " := " value " <<< " frame)
  (frame-set-parent frame
   ; Mark backward links with -1 level:
   (frame-bind (frame-parent frame) upper-var-name value -1)
@@ -271,10 +241,6 @@
   )
  )
 
-; (log "RESOLVE BACKWARD << " frame "\n>>"
-;  (resolve-bindings (frame-bindings (frame-parent frame)) '())
-; )
-
  (extend-frame (frame-parent frame)
   (resolve-bindings (frame-bindings (frame-parent frame)) '())
  )
@@ -282,8 +248,6 @@
 
 (define (extend-rule pattern-var rule frame)
  (define binding (frame-var-lookup pattern-var frame))
-
-; (log "EXT RULE> pattern-var = " pattern-var " >> rule = " rule " <<< " frame)
 
  (cond
   ((not (null? binding))
@@ -316,8 +280,6 @@
 
 (define (extend-pattern pattern rule-var frame)
  (define binding (frame-get frame (variable-name rule-var)))
-
-; (log "EXT PATTERN> pattern = " pattern " >> rule-var = " rule-var " <<< " frame)
 
  (cond
   ((not (null? binding))
