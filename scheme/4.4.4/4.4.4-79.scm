@@ -11,10 +11,15 @@
 ;
 (query '(debug not use unique frames))
 
-; Additional tests without logging:
+;
+; Primary tests (without logging):
+;
 (include "4.4.4-79-tests.scm")
 (include "qeval-test-cases.scm")
 
+;
+; Special demonstration for this task:
+;
 (add-rule (same-traced ?x ?x)
  (debug frame ":: same :: ")
 )
@@ -66,3 +71,41 @@
 (test-query (test-john Ben))
 
 ; >> test-john :: frame ((name Ben)) 1 (frame () 0 ())
+
+;
+; Recursive deduction from task 4.4.1-61.scm:
+;
+(add-rule (append () ?y ?y))
+
+(add-rule (append (?u . ?v) ?y (?u . ?z))
+ (append ?v ?y ?z)
+)
+
+(test-query
+ (append (a) (b) ?z)
+; —————————————————————————————————————————————————————————
+ (append (a) (b) (a b))
+)
+
+(test-query
+ (append (a b) (c d) ?z)
+; —————————————————————————————————————————————————————————
+ (append (a b) (c d) (a b c d))
+)
+
+(test-query
+ (append ?x ?y (a b c d))
+; —————————————————————————————————————————————————————————
+ (append (a b c d) () (a b c d))
+ (append () (a b c d) (a b c d))
+ (append (a) (b c d) (a b c d))
+ (append (a b) (c d) (a b c d))
+ (append (a b c) (d) (a b c d))
+)
+
+; (log-query (append ?x ?y (a b))), 3rd result: (append (a) (b) (a b)),
+;  has the following frame to resolve:
+;
+; (frame ((y (b))) 2 (frame ((u a) (v () -1) (y (b)) (z (b))) 1 ⏎
+; (frame ((y (b)) (x ((? . u) ? . v) -1)) 0 ())))
+;

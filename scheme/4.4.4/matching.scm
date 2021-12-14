@@ -128,7 +128,16 @@
 (define (frame-resolve-variable frame level var-name)
  (define b (frame-get-at frame level var-name))
 ; (log "RESOLVE " var-name " @ " level " := " b " << " frame)
- (if (null? b) '() (binding-value b))
+
+ (cond
+  ((null? b) '())
+  ((null? (binding-ext b))
+   (binding-value b)
+  )
+  (else ; This variable also refers upper level:
+   (frame-resolve-variable frame (car (binding-ext b)) var-name)
+  )
+ )
 )
 
 (define (frame-resolve-binding binding frame)
