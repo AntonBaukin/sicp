@@ -59,6 +59,9 @@
  )
 )
 
+; In original SICP implementation, matching rules and patterns
+; is symmetrical, but task 79 forces us to treat them differently.
+; Check extend-rule() and extend-pattern().
 (define (unify-match pattern rule frame)
  (cond
   ; 1) May be due to 5) nested call:
@@ -188,6 +191,13 @@
  )
 )
 
+; See extend-rule(). With nested frames each binding may have special
+; extension: additional number being the up stack level. Value -1
+; of this level has special meaning: the value of the binding
+; of reference to the closest variable up the stack.
+;
+; Continue reading in frame-resolve-backward-links()...
+;
 (define (frame-bind-backward-links frame upper-var-name value)
  (frame-set-parent frame
   ; Mark backward links with -1 level:
@@ -195,6 +205,19 @@
  )
 )
 
+; The following sample is for append implementation from task «4.4.1-61.scm»,
+; and it is placed in the test of task 79, in file «4.4.4-79.scm»:
+; (append (a) (b) ?z) => (append (a) (b) (a b)).
+;
+; When we deduce a variable, we move it's value up the stack of the frames.
+; This sample has two frames: initial with level 0, and nested with level 1.
+;
+; Frame item (z (b) -1) has special level -1. It means that we need to move
+; the deduced value (b) up the stack to level 0, where the same variable «z»
+; has the value of ((? . u) ? . z). Note that it also refers itself, but
+; from the upper level that does not exist. So, (b) is assigned to
+; ((? . u) ? . ()) === ((? . u)) => u = b.
+;
 ; (frame ((z (b) -1) (v ()) (u a) (y (b))) 1 (frame ((z ((? . u) ? . z) -1)) 0 ()))
 ;
 (define (frame-resolve-backward-links frame)
@@ -246,6 +269,15 @@
  )
 )
 
+; When extending a rule with pattern being a variable, we first try
+; to take the value of this variable: if it exists, we continue
+; the matching recursively. Else, we define this variable being
+; the reference to yet unresolved pattern one.
+;
+; For standard implementation of SICP with unique names, we just
+; save the variable object. For task 79 with nested frames we
+; have to save special upward link object.
+;
 (define (extend-rule pattern-var rule frame)
  (define binding (frame-var-lookup pattern-var frame))
 
@@ -278,6 +310,10 @@
  )
 )
 
+; Extending pattern is easier than extending a rule as we just
+; continue matcjing recursovely, if the variable exists, or,
+; define a new binding with the value being the pattern,
+; or the value of that pattern-a-variable.
 (define (extend-pattern pattern rule-var frame)
  (define binding (frame-get frame (variable-name rule-var)))
 

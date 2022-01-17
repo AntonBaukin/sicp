@@ -73,7 +73,7 @@
 ; >> test-john :: frame ((name Ben)) 1 (frame () 0 ())
 
 ;
-; Recursive deduction from task 4.4.1-61.scm:
+; Recursive deduction from task «4.4.1-61.scm»:
 ;
 (add-rule (append () ?y ?y))
 
